@@ -1,0 +1,25 @@
+{
+  "users": [
+    {
+      "id": "59f5",
+      "newUser": {
+        "username": "berkan1234@gmail.com",
+        "password": "12345"
+      }
+    },
+    {
+      "id": "a02b",
+      "newUser": {
+        "username": "deneme2",
+        "password": "12345"
+      }
+    },
+    {
+      "id": "269b",
+      "newUser": {
+        "username": "deneme",
+        "password": "12345"
+      }
+    }
+  ]
+}
