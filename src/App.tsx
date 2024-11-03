@@ -2,6 +2,7 @@ import { ToastContainer } from 'react-toastify'
 import './App.css'
 import RouterConfig from './config/RouterConfig'
 import 'react-toastify/dist/ReactToastify.css';
+import Spinner from './components/Spinner';
 
 function App() {
  
@@ -9,6 +10,7 @@ function App() {
     <>
       <RouterConfig />
       <ToastContainer autoClose={2000}/>
+      <Spinner />
     </>
   )
 }

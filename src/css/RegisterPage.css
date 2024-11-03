@@ -9,14 +9,6 @@
     align-items: center;
 }
 
-.right-side {
-    background-color:#f0f0f0;
-    display: flex;
-    justify-content: center; /* Yatayda ortala */
-    align-items: center; /* Dikeyde ortala */
-}
 
-.right-side img {
-    max-width: 150%; /* Resmin maksimum genişliğini ayarlayın */
-    height: auto; /* Oran koruma */
-}
+
+

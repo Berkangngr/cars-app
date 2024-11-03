@@ -1,8 +1,8 @@
 import React from 'react'
 import { Routes , Route} from 'react-router-dom'
 import HomePage from '../pages/HomePage'
-import LoginPage from '../pages/LoginPage'
 import RegisterPage from '../pages/RegisterPage'
+import LoginPage from '../pages/LoginPage'
 
 function RouterConfig() {
   return (

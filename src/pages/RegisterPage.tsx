@@ -1,5 +1,4 @@
 import React from 'react';
-import RegisterImages from '../images/LoginPageİmage-Photoroom.png';
 import { Grid, Box, TextField, Button, InputAdornment } from '@mui/material';
 import '../css/RegisterPage.css';
 import Person2Icon from '@mui/icons-material/Person2';
@@ -9,7 +8,8 @@ import { registerPageSchemas } from '../schemas/RegisterPageSchema';
 import registerPageService from '../services/RegisterPageService';
 import { UserType } from '../types/Types';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
+
 
 
 function RegisterPage() {
@@ -20,7 +20,10 @@ function RegisterPage() {
     try {
       const payload : UserType = {
         username : values.username,
-        password : values.password
+        password : values.password,
+        name: values.name,
+        lastName:values.lastName,
+        confirPassword:values.confirmPassword
       }
    const response =   await registerPageService.register(payload)
    if (response) {
@@ -38,6 +41,9 @@ function RegisterPage() {
     initialValues: {
      username: "",
      password:"",
+     confirmPassword:"",
+     name: "",
+     lastName:"",
     },
     onSubmit: submit,
     validationSchema : registerPageSchemas
@@ -49,10 +55,51 @@ function RegisterPage() {
   }
   
   return (
-    <Grid container className="container" spacing={0}>
-      <Grid item xs={12} md={6} className="left-side">
+    <Grid container className="container" 
+    spacing={0}>
+      <Grid item xs={12}  className="left-side">
 
         <Box onSubmit={handleSubmit} component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
+
+          {/* İsim */}
+
+          <TextField
+          id='name'
+          value={values.name}
+          onChange={handleChange}
+          placeholder='Name' 
+          variant="standard"
+          helperText = {errors.name && <span style={{color:'red', fontSize:'10px'}}>{errors.name}</span>
+          }
+           fullWidth
+           InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Person2Icon />
+              </InputAdornment>
+            ),
+          }}
+          />
+
+          {/* Soyisim */}
+
+          <TextField
+          id='lastName'
+          value={values.lastName}
+          onChange={handleChange}
+          placeholder='Last Name' 
+          variant="standard"
+          helperText = {errors.lastName && <span style={{color:'red', fontSize:'10px'}}>{errors.lastName}</span>
+          }
+           fullWidth
+           InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Person2Icon />
+              </InputAdornment>
+            ),
+          }}
+          />
 
          {/* Kullanıcı Adı Kısmı */}
           <TextField
@@ -92,13 +139,30 @@ function RegisterPage() {
             ),
           }}
           />
+
+          {/* Şifre tekrarı */}
+
+          <TextField 
+          id='confirmPassword'
+          value={values.confirmPassword}
+          onChange={handleChange}
+          placeholder='Şifre' 
+          type="password" 
+          variant="standard"
+          helperText = {errors.confirmPassword && <span style={{color:'red',fontSize:'10px'}}>{errors.confirmPassword}</span>}
+          fullWidth
+          InputProps={{
+            startAdornment:(
+              <InputAdornment position='start'>
+              <LockIcon />
+            </InputAdornment>
+            ),
+          }}
+          />
           
-          <Button type='submit' variant="contained" color="success">Kaydol</Button>
+          <Button type='submit' variant="contained" color="success">sign up</Button>
 
         </Box>
-      </Grid>
-      <Grid item xs={12} md={6} className="right-side">
-        <img src={RegisterImages} alt="Register" />
       </Grid>
     </Grid>
   );
