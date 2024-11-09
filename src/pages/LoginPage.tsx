@@ -7,14 +7,23 @@ import { useFormik } from 'formik';
 import { loginPageSchema } from '../schemas/LoginPageSchema';
 import {  useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
+import loginPageService from '../services/LoginPageService';
 
 
 function LoginPage() {
 //  Giriş başarılı olursa bu ekrana gönder.
   const navigate = useNavigate()
 
-  const submit = () => {
-    // devam edicez
+  const submit = (values : any,action : any) => {
+    // Buradan servise istek atacağımız için try catch içerisine alalım ki servisin ayakta olmadığı durumlarda patlamayalım, 
+    // servisi başka bir klasöre açıp oradan çağırıcaz ki daha düzenli olsn kodumuz. services/LoginPageService içerisinde.
+    try {
+      loginPageService.login()
+      navigate("/")
+      clear()
+    } catch (error) {
+      
+    }
   }
 
   const {values, handleSubmit, handleChange, errors , resetForm} = useFormik({

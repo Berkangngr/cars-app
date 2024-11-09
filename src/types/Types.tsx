@@ -1,7 +1,8 @@
 export interface UserType {
-    username : string,
-    password : string,
-    name:string,
-    lastName:string,
-    confirPassword:string
+    FirstName:string,
+    LastName:string,
+    UserName : string,
+    Password : string,
+    Email:string,
+    Image:string
 }
