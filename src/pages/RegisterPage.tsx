@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import { Grid, Box, TextField, Button, InputAdornment, Avatar } from '@mui/material';
 import '../css/RegisterPage.css';
@@ -18,22 +20,33 @@ function RegisterPage() {
 
   const submit = async (values: any, actions: any) => {
     try {
+      // FormData nesnesini oluştur ve tüm alanları ekle
       
-      const payload: UserType = {
-        FirstName: values.FirstName,
-        LastName: values.LastName,
-        UserName: values.UserName,
-        Password: values.Password,
-        Email: values.Email,
-        Image: values.Image,
-      };
-      registerPageService.register(payload)
+      const formData = new FormData();
+      formData.append("FirstName", values.FirstName);
+      formData.append("LastName",values.LastName);
+      formData.append("UserName",values.UserName);
+      formData.append("Password",values.Password);
+      formData.append("Email",values.Email);
+      if (values.Image) {
+        formData.append("Image",values.Image); // Burası sadece ımage varsa ekler
+      }
 
-      const response = await registerPageService.register(payload);
+      // register fonksiyonuna FormData nesnesini gönderdik.
+      const response = await registerPageService.register(formData);
+
       if (response) {
         clear();
         toast.success("Kullanıcı kaydedildi.");
-        navigate("/login");
+        const redirectUrl = response.redirectUrl;
+        if (redirectUrl) {
+          if (redirectUrl === "/Account/Login") {
+            navigate("/login");
+          }else {
+            navigate(redirectUrl);
+          }
+        }
+        
       }
     } catch (error) {
       toast.error("Kullanıcı kaydedilirken hata oluştu.");

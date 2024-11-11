@@ -1,17 +1,43 @@
-import { AxiosResponse } from "axios";
-import axios from "../config/AxiosConfig";
-import { LoginUserType } from "../types/LoginUserType";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-class LoginPageService {
-   login() : Promise<LoginUserType []> {
-    return new Promise ((resolve : any, reject : any) => {
-        axios.get("/member/appuser/index")
-        .then((response : AxiosResponse< any, any>) => resolve(response.data))
-        .catch((error : any) => reject(error))
-    })
-   }
+
+
+
+import { toast } from 'react-toastify';
+import axios from '../config/AxiosConfig';
+
+
+interface LoginResponse {
+   success: boolean;
+   message?: string;
+   token?:string; //Geri dönecek bir token varmı yok mu?
+   redirectUrl?:string;
 }
 
-// https://www.aracimhakkinda.com/member/appuser
+const login = async(username: string, password: string, returnUrl: string = "/"): Promise<LoginResponse> => {
+    try {
+        const response = await axios.post("/Account/Login", {
+            username,
+            password,
+            ReturnUrl: returnUrl,
+        });
 
-export default new LoginPageService();
+        return {
+            success: true,
+            message:"Login başarılı!",
+            token:response.data.token,  // Eğer token dönüyorsa
+            redirectUrl: response.data.redirectUrl, // API’den gelen redirect URL’i al anlamında.
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error.response?.data?.message || 'Giriş hatası!',
+        };
+    }
+};
+
+export default {
+    login,
+}
+

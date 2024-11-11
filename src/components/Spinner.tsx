@@ -1,22 +1,24 @@
-import React from 'react'
-import store from '../zustand/Store';
+import { CircularProgress, Box } from '@mui/material';
+import useAuthStore from '../zustand/authStore';
 
-// Burada loading ikonunu oluşturacağız.
+const GlobalLoadingSpinner = () => {
+  const isLoading = useAuthStore((state) => state.isLoading); // Global loading durumunu alıyoruz
 
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-function Spinner() {
+  if (!isLoading) return null; // Loading durumu false ise spinner'ı göstermiyoruz
+
   return (
-    <>
-    <Backdrop
-        sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
-        open={false}
-        
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
-    </>
-  )
-}
+    <Box
+      sx={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 9999, // Diğer içeriklerin önünde olması için yüksek z-index
+      }}
+    >
+      <CircularProgress />
+    </Box>
+  );
+};
 
-export default Spinner
+export default GlobalLoadingSpinner;
