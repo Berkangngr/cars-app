@@ -12,6 +12,7 @@ import Link from '@mui/material/Link';
 import loginPageService from '../services/LoginPageService';
 import useAuthStore from '../zustand/authStore';
 import { toast } from 'react-toastify';
+import Spinner from '../components/Spinner'
 
 
 function LoginPage() {
@@ -22,6 +23,7 @@ function LoginPage() {
   const setUsername = useAuthStore((state) => state.setUsername);
   const setPassword = useAuthStore((state) => state.setPassword);
   const clearAuth = useAuthStore((state) => state.clearAuth);
+  const isLoading = useAuthStore((state) => state.isLoading);
 
   const submit = async (values : {username: string; password: string},action : any) => {
     // Buradan servise istek atacağımız için try catch içerisine alalım ki servisin ayakta olmadığı durumlarda patlamayalım, 
@@ -47,9 +49,10 @@ function LoginPage() {
           navigate('/') //Eğer redirectUrl yoksa varsayılan ana sayfaya git.
         }
         action.resetForm();//Formu kayıt yaptıktan sonra sıfırlıyoruz formik fonksiyonunu kullanarak.
-    } else {
-      toast.error(response.message);
-    }
+     }
+    // else {
+    //   // toast.error(response.message);
+    // }
 
     
 
@@ -79,6 +82,15 @@ function LoginPage() {
 
         <Box onSubmit={handleSubmit} component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
 
+
+        <Box sx={{ position: 'relative' }}>
+          {/* Spinner */}
+          {isLoading && <Spinner />}
+         {/* Form */}
+         <Box
+            // component="form"
+            sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}
+          >
          {/* Kullanıcı Adı Kısmı */}
           <TextField
           id='username'
@@ -133,6 +145,8 @@ function LoginPage() {
     </Link>
     </div>
 
+        </Box>
+        </Box>
         </Box>
       </Grid>
       <Grid item xs={12} md={6} className="right-side">
