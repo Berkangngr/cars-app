@@ -6,6 +6,8 @@ import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import CurrencyLiraIcon from '@mui/icons-material/CurrencyLira';
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import WarehouseIcon from '@mui/icons-material/Warehouse';
+import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
 
 function Sidebar() {
   return (
@@ -45,13 +47,17 @@ function Sidebar() {
         <RecentActorsIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
           <ListItemText sx={{color:'#333333e1'}} primary="Müşteriler" />
         </ListItem>
+        <ListItem  component={Link} to="/cars">
+        <TimeToLeaveIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
+          <ListItemText sx={{color:'#333333e1'}} primary="Araçlar" />
+        </ListItem>
       </List>
       <Divider />
       
       <List subheader={<ListSubheader sx={{ backgroundColor: '#efedf1', fontWeight: 'bold', color: '#333' }}>Raporlar</ListSubheader>}>
-          <ListItem component={Link} to="/report">
-          <BarChartIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
-            <ListItemText sx={{color:'#333333e1'}} primary="Rapor İsim1"  />
+          <ListItem component={Link} to="/report/stockReport">
+          <WarehouseIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
+            <ListItemText sx={{color:'#333333e1'}} primary="Stok Raporu"  />
           </ListItem>
           <ListItem component={Link} to="/report">
           <BarChartIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>

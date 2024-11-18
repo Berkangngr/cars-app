@@ -8,6 +8,8 @@ import Service from '../pages/Service'
 import Receivables from '../pages/Receivables'
 import Customers from '../pages/Customers'
 import Reports from '../pages/Reports'
+import CarsPage from '../pages/CarsPage'
+import StockReport from '../pages/StockReport'
 
 
 function RouterConfig() {
@@ -22,6 +24,8 @@ function RouterConfig() {
 <Route  path='/receivables' element={<Receivables/>} />
 <Route  path='/customers' element={<Customers/>} />
 <Route  path='/report' element={<Reports/>} />
+<Route path='/cars' element={<CarsPage/>} />
+<Route path='/report/stockReport' element={<StockReport/>} />
 </Routes>
 
 
