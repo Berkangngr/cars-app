@@ -3,8 +3,15 @@ import './App.css'
 import RouterConfig from './config/RouterConfig'
 import 'react-toastify/dist/ReactToastify.css';
 import GlobalLoadingSpinner from './components/Spinner';
+import useAuthStore from './zustand/authStore';
+import { useEffect } from 'react';
 
 function App() {
+  const loadTokenFromCookie = useAuthStore((state) => state.loadTokenFromCookie);
+
+  useEffect(() => {
+    loadTokenFromCookie();
+  },[loadTokenFromCookie]);
  
   return (
     <>

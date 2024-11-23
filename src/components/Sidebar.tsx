@@ -17,11 +17,11 @@ function Sidebar() {
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           width: 240,
-          backgroundColor: '#efedf1',
+          backgroundColor: '#faf8fd',
           boxShadow: 'none',
-          position: 'fixed', // Sidebar'ı sabit tutuyoruz
-          top: '64px', // Navbar'ın altına gelecek şekilde ayarlandık
-          zIndex: 1000, // Sidebar'ın doğru sırada kalmasını sağlıyoruz
+          position: 'fixed',
+          top: '64px', 
+          zIndex: 1000, 
         },
       }}
       variant="permanent"  // Kalıcı sidebar

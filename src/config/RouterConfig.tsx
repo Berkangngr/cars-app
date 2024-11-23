@@ -16,8 +16,8 @@ function RouterConfig() {
   return (
   
 <Routes>
-<Route  path='/' element={<HomePage/>} />
-<Route  path='/login' element={<LoginPage/>} />
+<Route  path='/home' element={<HomePage/>} />
+<Route  path='/' element={<LoginPage/>} />
 <Route  path='/register' element={<RegisterPage/>} />
 <Route  path='/newRepair' element={<NewRepairPage/>} />
 <Route  path='/service' element={<Service/>} />
@@ -33,3 +33,5 @@ function RouterConfig() {
 }
 
 export default RouterConfig
+
+// /member/appuser/index

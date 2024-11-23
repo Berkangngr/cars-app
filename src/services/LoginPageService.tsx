@@ -12,11 +12,11 @@ interface LoginResponse {
    redirectUrl?:string;
 }
 
-const login = async(username: string, password: string, returnUrl: string = "/"): Promise<LoginResponse> => {
+const login = async(email: string, password: string, returnUrl: string = "/"): Promise<LoginResponse> => {
     
     try {
         const response = await axios.post("/Account/Login", {
-            username,
+            email,
             password,
             ReturnUrl: returnUrl,
         });
@@ -29,6 +29,7 @@ const login = async(username: string, password: string, returnUrl: string = "/")
             token:response.data.token,  // Eğer token dönüyorsa
             redirectUrl: response.data.redirectUrl, // API’den gelen redirect URL’i al anlamında.
         };
+        
     } catch (error: any) {
         const errorMessage = error.response?.data?.message || 'Giriş hatası!';
 

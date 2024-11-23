@@ -3,14 +3,14 @@
 }
 
 .left-side {
-    background-color: #f0f0f0;
+    background-color: #faf8fd;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .right-side {
-    background-color:#f0f0f0;
+    background-color:#faf8fd;
     display: flex;
     justify-content: center; /* Yatayda ortala */
     align-items: center; /* Dikeyde ortala */

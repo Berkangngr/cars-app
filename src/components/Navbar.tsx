@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -7,14 +7,34 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import logo from '../images/Logo.png';
 import { Link } from 'react-router-dom';
 import { Divider } from '@mui/material';
+import axios from '../config/AxiosConfig';
+import {toast} from 'react-toastify';
+import {UserType} from '../types/Types';
+
+
+interface ApiResponse {
+  data:any;
+}
 
 function Navbar() {
+const [userData, setUserData] = useState<string>();
+const [error, setError] = useState<string>("");
+
+
+useEffect(() => {
+  const fetchData = async () => {
+
+  }
+
+})
+  
+
   return (
     <>
     <AppBar 
     position="static"
     sx={{
-        backgroundColor: '#efedf1',
+        backgroundColor: '#faf8fd',
         boxShadow:'none',
         backdropFilter: 'blur(10px)',
     }}
