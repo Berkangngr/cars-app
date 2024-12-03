@@ -2,6 +2,8 @@ import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import { Button } from '@mui/material';
+import {useState, useEffect} from 'react';
+import axios from 'axios';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 70 },
@@ -36,6 +38,23 @@ const rows = [
 const paginationModel = { page: 0, pageSize: 10 };
 
 function Dashboard() {
+const [data, setData] = useState([]);
+
+useEffect(() => {
+  const fetchData = async () => {
+
+    try {
+      const response = await axios.get(`/member/Islem/ListIslemD`);
+      setData(response.data);
+
+    } catch (error) {
+      console.log("Veri alınırken hata oluştu",error)
+    }
+  };
+  fetchData();
+}, [])
+
+
   return (
     <Paper
       sx={{
@@ -49,7 +68,7 @@ function Dashboard() {
       }}
     >
       <DataGrid
-        rows={rows}
+        rows={data}
         columns={columns}
         initialState={{
           pagination: {

@@ -14,7 +14,9 @@ interface AuthState {
     loadTokenFromCookie:() => void;
     clearAuth: () => void; //Buda giriş yapıldıktan sonra temizlemek için.
     setLoading:(loading: boolean) => void;
-}
+};
+
+
 
 const useAuthStore = create <AuthState>((set) => ({
     email:"",
@@ -33,5 +35,7 @@ const useAuthStore = create <AuthState>((set) => ({
         }
     },
 }));
+
+
 
 export default useAuthStore;
