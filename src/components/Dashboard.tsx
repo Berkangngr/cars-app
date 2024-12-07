@@ -4,6 +4,39 @@ import Paper from '@mui/material/Paper';
 import { Button } from '@mui/material';
 import {useState, useEffect} from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+
+
+
+
+const paginationModel = { page: 0, pageSize: 10 };
+
+interface rowType {
+  id: string;             
+  userName: string;    
+  cars: string;       
+  date: Date;
+  payment: string;       
+  operation: string;
+}
+
+function Dashboard() {
+const [data, setData] = useState<rowType[]>([]);
+
+useEffect(() => {
+  (async () => {
+
+    try {
+      const response = await axios.get(`/member/Islem/ListIslemD`);
+      console.log("API'den gelen veri:", response.data);
+      setData(response.data);
+
+    } catch (error) {
+      console.log("Veri alınırken hata oluştu",error);
+      toast.error("Veriler alınırken bir sorun oluştu.");
+    }
+  })();
+}, []);
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 70 },
@@ -22,40 +55,20 @@ const columns: GridColDef[] = [
   ) },
 ];
 
-const rows = [
-  { id: 1, Müşteri: 'Altuğ Altıntaş', Araç: 'Ssangyong Korando', Tarih: new Date(2024, 10, 18), Ödeme: 15000, İşlem: 'Servis' },
-  { id: 2, Müşteri: 'Berkan Güngör', Araç: 'Mercedes C200', Tarih: new Date(2024, 10, 10), Ödeme: 20000, İşlem: 'Bakım' },
-  { id: 3, Müşteri: 'Nihat Üflerer', Araç: 'Audi A4', Tarih: new Date(2024, 10, 5), Ödeme: 17000, İşlem: 'Tamir' },
-  { id: 4, Müşteri: 'Ali Satıcı', Araç: 'Toyota Corolla', Tarih: new Date(2024, 9, 25), Ödeme: 8000, İşlem: 'Boyama' },
-  { id: 5, Müşteri: 'Ceren Yılmaz', Araç: 'Hyundai Tucson', Tarih: new Date(2024, 8, 18), Ödeme: 12000, İşlem: 'Parça Değişimi' },
-  { id: 14, Müşteri: 'Ahmet Demir', Araç: 'Hyundai Tucson', Tarih: new Date(2024, 8, 18), Ödeme: 12000, İşlem: 'Parça Değişimi' },
-  { id: 6, Müşteri: 'Zeynep Kaya', Araç: 'Hyundai Tucson', Tarih: new Date(2024, 8, 18), Ödeme: 12000, İşlem: 'Parça Değişimi' },
-  { id: 7, Müşteri: 'Baran Aksoy', Araç: 'Hyundai Tucson', Tarih: new Date(2024, 8, 18), Ödeme: 12000, İşlem: 'Parça Değişimi' },
-  { id: 8, Müşteri: 'Elif Koç', Araç: 'Hyundai Tucson', Tarih: new Date(2024, 8, 18), Ödeme: 12000, İşlem: 'Parça Değişimi' },
-  { id: 9, Müşteri: 'Mert Çelik', Araç: 'Hyundai Tucson', Tarih: new Date(2024, 8, 18), Ödeme: 12000, İşlem: 'Parça Değişimi' },
-];
-
-const paginationModel = { page: 0, pageSize: 10 };
-
-function Dashboard() {
-const [data, setData] = useState([]);
-
-useEffect(() => {
-  const fetchData = async () => {
-
-    try {
-      const response = await axios.get(`/member/Islem/ListIslemD`);
-      setData(response.data);
-
-    } catch (error) {
-      console.log("Veri alınırken hata oluştu",error)
-    }
-  };
-  fetchData();
-}, [])
-
+const rows : rowType[] = React.useMemo(() => 
+  data.map(item => ({
+  id: item.id,               
+  userName: item.userName,    
+  cars: item.cars,          
+  date: new Date(item.date),
+  payment: item.payment,       
+  operation: item.operation,     
+})),
+[data]
+);
 
   return (
+
     <Paper
       sx={{
         backgroundColor:'#efedf2',
@@ -68,7 +81,7 @@ useEffect(() => {
       }}
     >
       <DataGrid
-        rows={data}
+        rows={rows}
         columns={columns}
         initialState={{
           pagination: {

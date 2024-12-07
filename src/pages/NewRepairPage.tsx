@@ -21,7 +21,8 @@ interface FormData {
 
 
 function NewRepairPage() {
-const [userData, setUserData] = useState(null)
+const [userData, setUserData] = useState(null);
+
 const [formData,  setFormData] = useState<FormData>({
   plakaNo:"",
   aracSahibi:"",
@@ -73,11 +74,12 @@ const [formData,  setFormData] = useState<FormData>({
     const handlePlakaChange: (e:React.ChangeEvent<HTMLInputElement>) => void = async (e) => {
       const plakaNo = e.target.value;
       setFormData({ ...formData, plakaNo });
-    
-
-    if (plakaNo.length >= 6) {
+      
+      const plakaRegex= /^(0[1-9]|[1-7][0-9]|8[01])((\s?[a-zA-Z]\s?)(\d{4,5})|(\s?[a-zA-Z]{2}\s?)(\d{3,4})|(\s?[a-zA-Z]{3}\s?)(\d{2,3}))$/
+      const formattedPlaka = plakaNo.toUpperCase().replace(/\s/g, "");
+    if (plakaRegex.test(formattedPlaka)) {
       try {
-        const response = await axios.get(`/member/FirmaSahis/GetFirmaSahisList/${plakaNo}`);
+        const response = await axios.get(`/member/FirmaSahis/GetFirmaSahisList/${formattedPlaka}`);
 
         if (response.data) {
           setFormData({
