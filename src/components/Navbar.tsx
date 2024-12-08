@@ -28,6 +28,7 @@ const navigate = useNavigate();
 const fetchPost = async() => {
   try {
     const response = await axios('/member/UserSetting/Setting');
+   // member/UserSetting/Setting
     setUserData(response.data);
   } catch (error: unknown) {
   if (error instanceof AxiosError) {
