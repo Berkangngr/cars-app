@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import {useState, useEffect} from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -20,6 +21,24 @@ interface rowType {
   operation: string;
 }
 
+const CustomNoRowsOverlay = () => {
+  return(
+    <GridOverlay>
+       <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+        }}
+      >
+        <Typography variant="subtitle1">Henüz veri yok</Typography>
+      </Box>
+    </GridOverlay>
+  )
+}
+
 function Dashboard() {
 const [data, setData] = useState<rowType[]>([]);
 
@@ -29,7 +48,9 @@ useEffect(() => {
     try {
       const response = await axios.get(`/member/Islem/ListIslemD`);
       console.log("API'den gelen veri:", response.data);
-      setData(response.data);
+
+      const fetchedData = Array.isArray(response.data) ? response.data : response.data.results || [];
+      setData(fetchedData);
 
     } catch (error) {
       console.log("Veri alınırken hata oluştu",error);
@@ -55,17 +76,20 @@ const columns: GridColDef[] = [
   ) },
 ];
 
+
 const rows : rowType[] = React.useMemo(() => 
   data.map(item => ({
   id: item.id,               
   userName: item.userName,    
   cars: item.cars,          
-  date: new Date(item.date),
+  date: item.date ? new Date(item.date) : new Date(),
   payment: item.payment,       
   operation: item.operation,     
 })),
 [data]
 );
+
+
 
   return (
 
@@ -91,6 +115,9 @@ const rows : rowType[] = React.useMemo(() =>
         pageSizeOptions={[5, 10]}
         checkboxSelection
         disableRowSelectionOnClick
+        components = {{
+          NoRowsOverlay: CustomNoRowsOverlay,
+        }}
         sx={{
           border: 0,
           '& .MuiDataGrid-columnHeaders': {
