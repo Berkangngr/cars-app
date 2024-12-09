@@ -5,11 +5,10 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import logo from '../images/Logo-Photoroom.png';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Divider } from '@mui/material';
 import axios from '../config/AxiosConfig';
 import {toast} from 'react-toastify';
-import {UserType} from '../types/Types';
 import { AxiosError } from 'axios';
 
 
