@@ -18,11 +18,11 @@ interface userApiResponse {
   FirstName: string
   LastName: string
   Password: string
-    Image: null
-    ImagePath: string
-    Email: string
-    UserName: string
-    Statu: boolean
+  Image: null
+  ImagePath: string
+  Email: string
+  UserName: string
+  Statu: boolean
 }
 
 function Navbar() {
@@ -66,7 +66,7 @@ useEffect(() => {
             edge="start"
             sx={{ mr: 2 }}
         >
-        <img src={userData?.ImagePath || logo} alt="logo"
+        <img src={userData?.Image || logo} alt="logo"
             style={{width:'40px',height:'40px'}}
         />
         </IconButton>
