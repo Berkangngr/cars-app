@@ -15,8 +15,14 @@ import { AxiosError } from 'axios';
 
 
 interface userApiResponse {
-  username:string,
-  userImage:string,
+  FirstName: string
+  LastName: string
+  Password: string
+    Image: null
+    ImagePath: string
+    Email: string
+    UserName: string
+    Statu: boolean
 }
 
 function Navbar() {
@@ -26,7 +32,7 @@ const navigate = useNavigate();
 
 const fetchPost = async() => {
   try {
-    const response = await axios('/member/UserSetting/Setting');
+    const response = await axios.get('/member/UserSetting/Setting');
    // member/UserSetting/Setting
     setUserData(response.data);
   } catch (error: unknown) {
@@ -60,7 +66,7 @@ useEffect(() => {
             edge="start"
             sx={{ mr: 2 }}
         >
-        <img src={userData?.userImage || logo} alt="logo"
+        <img src={userData?.ImagePath || logo} alt="logo"
             style={{width:'40px',height:'40px'}}
         />
         </IconButton>
@@ -68,7 +74,7 @@ useEffect(() => {
         {/* Ortada başlık */}
         <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: '#333333e1', fontWeight:'bold' }}>
           {/* //Apiden bilgiyi aldıktan sonra buraya usurname gelicek. */}
-          {userData?.username}
+          {userData?.UserName}
         </Typography>
         
         {/* Logout butonu*/}
