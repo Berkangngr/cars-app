@@ -37,14 +37,17 @@ const carsBrand = [
 ];
 
 interface FormData {
-  aracSahibi: string;
-  aracPlaka: string;
-  sasiNo: string;
-  aracMarkası: string;
-  aracModel: string;
-  aracRengi: string;
-  aracYılı: string;  // Tarih değeri string olarak tutulacak
-  km:string;
+  Plaka: string;
+  Marka: string;
+  Model: string;
+  Yıl: number;
+  SasiNo: string;
+  YakitTur:string;
+  Renk:string;
+  MotorHacim:number;
+  MotorBeygir:number;
+  Km:number;
+  FirmaSahisId:[];
 }
 
 const CarsPage = () => {

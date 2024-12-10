@@ -14,6 +14,7 @@ import { AxiosError } from 'axios';
 
 
 
+
 interface userApiResponse {
   FirstName: string
   LastName: string
@@ -26,7 +27,11 @@ interface userApiResponse {
 }
 
 function Navbar() {
+ 
 const [userData, setUserData] = useState<userApiResponse | null>(null);
+
+const BASE_URL = "http://localhost:56952";
+const imageUrl = userData?.ImagePath ? `${BASE_URL}${userData.ImagePath}` : logo;
 
 const navigate = useNavigate();
 
@@ -66,7 +71,7 @@ useEffect(() => {
             edge="start"
             sx={{ mr: 2 }}
         >
-        <img src={userData?.Image || logo} alt="logo"
+        <img src={ imageUrl || logo} alt="logo"
             style={{width:'40px',height:'40px'}}
         />
         </IconButton>
