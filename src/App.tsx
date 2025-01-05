@@ -6,6 +6,7 @@ import GlobalLoadingSpinner from './components/Spinner';
 import  useAuthStore  from '../src/zustand/authStore';
 import { useEffect } from 'react';
 
+
 function App() {
   const loadTokenFromCookie = useAuthStore((state) => state.loadTokenFromCookie);
 

@@ -8,6 +8,7 @@ import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
+import HomeIcon from '@mui/icons-material/Home';
 
 function Sidebar() {
   return (
@@ -28,6 +29,11 @@ function Sidebar() {
       anchor="left"
     >
       <List>
+      <ListItem  component={Link} to="/home">
+        <HomeIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
+          <ListItemText sx={{color:'#333333e1'}} primary="Ana Sayfa" />
+        </ListItem>
+        <Divider />
         <ListItem  component={Link} to="/newRepair">
           <BuildIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
           <ListItemText sx={{color:'#333333e1'}} primary="Yeni Tamirat" />

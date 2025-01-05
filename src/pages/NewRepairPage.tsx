@@ -121,7 +121,6 @@ const [formData,  setFormData] = useState<FormData>({
 
   return (
     <>
-    <Navbar />
       <Grid container className="container" spacing={0}>
         <Grid item xs={12} className="left-side">
           <Box

@@ -10,22 +10,23 @@ import Customers from '../pages/Customers'
 import Reports from '../pages/Reports'
 import CarsPage from '../pages/CarsPage'
 import StockReport from '../pages/StockReport'
+import Layout from '../components/Layout'
 
 
 function RouterConfig() {
   return (
   
 <Routes>
-<Route  path='/home' element={<HomePage/>} />
+<Route  path='/home' element={<Layout><HomePage/></Layout>} />
 <Route  path='/' element={<LoginPage/>} />
 <Route  path='/register' element={<RegisterPage/>} />
-<Route  path='/newRepair' element={<NewRepairPage/>} />
-<Route  path='/service' element={<Service/>} />
-<Route  path='/receivables' element={<Receivables/>} />
-<Route  path='/customers' element={<Customers/>} />
-<Route  path='/report' element={<Reports/>} />
-<Route path='/cars' element={<CarsPage/>} />
-<Route path='/report/stockReport' element={<StockReport/>} />
+<Route  path='/newRepair' element={<Layout><NewRepairPage/></Layout>} />
+<Route  path='/service' element={<Layout><Service/></Layout>} />
+<Route  path='/receivables' element={<Layout><Receivables/></Layout>} />
+<Route  path='/customers' element={<Layout><Customers/></Layout>} />
+<Route  path='/report' element={<Layout><Reports/></Layout>} />
+<Route path='/cars' element={<Layout><CarsPage/></Layout>} />
+<Route path='/report/stockReport' element={<Layout><StockReport/></Layout>} />
 </Routes>
 
 
