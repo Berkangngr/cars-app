@@ -36,7 +36,6 @@ interface FormData {
   SehirId:number;
   UlkeId:number;
   Tur:string;
-  
 }
 
 interface Ülke {
@@ -86,16 +85,15 @@ function Customers() {
   const [selectedCountry, setSelectedCountry] = useState <any>(""); // Seçili ülke
   const [selectedCity, setSelectedCity] = useState <any>(""); // Seçili şehir
   const [selectedTur, setSelectedTur] = useState<any>();
-  const [btnColor, setBtnColor] = useState(false);
   const [selectedRow, setSelectedRow] = useState<any[]>([]);
+  const [isEditing,setIsEditing] = useState(false); // Modal düzenleme için mi açık?
+  const [selectedUserId, setSelectedUserId] = useState(null); // Düzenlenecek kullanıcı ıd'si
+
   //Silme işlemi stateleri
-console.log(selectedRow)
+// console.log(selectedRow)
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setOpen(false);
-    resetForm();
-  } 
+
 
     const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
     const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
@@ -132,6 +130,28 @@ console.log(selectedRow)
     })
   }
 
+  const handleClose = () => {
+    setOpen(false);
+    resetForm();
+    setFormData({
+      ID: null,
+      Adi: "",
+      Adres: "",
+      Telefon: "",
+      Email: "",
+      VergiNo: "",
+      VergiDairesi: "",
+      TC: "",
+      PostaNo: "",
+      UlkeId: 0,
+      SehirId: 0,
+      Tur: "",
+    });
+    setIsEditing(false);
+    setSelectedUserId(null);
+    // handleClose(); // Modal'ı kapatma işlemi
+  } 
+
   
   const handleInputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target;
@@ -145,12 +165,21 @@ console.log(selectedRow)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+    // setIsEditing(false);
     try {
-      const response = await axios.post("/Member/FirmaSahis/Create", formData);
-      console.log(response)
-      toast.success("Kayıt Başarılı");
+      let response;
+      if (isEditing) {
+        // console.log("Form data", formData)
+        response = await axios.post(`Member/FirmaSahis/FirmaUpdate/${selectedUserId}`,formData);
+        toast.success("Kullanıcı bilgileri başarıyla güncellendi.");
+      } else {
+        response = await axios.post("/Member/FirmaSahis/Create", formData);
+        toast.success("Kayıt Başarılı");
+      }
+      // console.log(response)
       resetForm();
+      handleClose();
+      fetchCustomers();
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "Bilinmeyen bir hata oluştu.";
       toast.error(`Hata: ${errorMessage}`);
@@ -166,8 +195,8 @@ console.log(selectedRow)
         const response = await axios.get("/Member/FirmaSahis/Create");
         setCountry(response.data.Ulkeler);
         setCity(response.data.Sehirler);
-        console.log(country)
-        console.log(city)
+        // console.log(country)
+        // console.log(city)
         
       } catch (error:any) {
         const errorMessage = error.response?.data?.message || "Bilinmeyen bir hata oluştu.";
@@ -184,10 +213,10 @@ console.log(selectedRow)
       try {
         const response = await axios.get(`/member/FirmaSahis/GetFirmaSahisList`);
         const fetchedData = Array.isArray(response.data) ? response.data : response.data.results || [];
-        console.log(fetchedData)
+        // console.log(fetchedData)
         setCustomersData(fetchedData)
       } catch (error) {
-        console.log("Veri alınırken hata oluştu", error);
+        // console.log("Veri alınırken hata oluştu", error);
         toast.error("Veriler alınırken bir sorun oluştu.");    
       }
     };
@@ -197,13 +226,14 @@ console.log(selectedRow)
 //Silme fonksiyonu
   const handleDeleteUser = async (selectedRow : any) => {
     
-    console.log(selectedRow)
+    //console.log(selectedRow)
     try {
       const response = await axios.delete(`/member/FirmaSahis/FirmaSahisPasif/${selectedRow}`);
       if (response.data.success) {
         // Müşteri başarıyla silindi. Listeyi güncelleyin
         setCustomersData(customersData.filter(customer => customer.ID !== selectedRow));
         toast.success("Müşteri başarıyla silindi.");
+        fetchCustomers();
       } else {
         console.error("Firma pasifleştirilemedi:", response.data);
         toast.error("Müşteri silinemedi. Lütfen daha sonra tekrar deneyin.");
@@ -214,6 +244,7 @@ console.log(selectedRow)
     }
   };
 
+  
   //Düzenleme fonksionu
   const handleRepairUser = async (selectedRow : any) => {
     if (!selectedRow) {
@@ -221,34 +252,45 @@ console.log(selectedRow)
       return;
     }
     try {
-      const updatedUserData = {
-        ...formData,
-        Adi: formData.Adi,
-        Adres:formData.Adres,
-        Telefon:formData.Telefon,
-        Email:formData.Email,
-        VergiNo:formData.VergiNo,
-        VergiDairesi:formData.VergiDairesi,
-        TC:formData.TC,
-        PostaNo:formData.PostaNo,
-        SehirId:formData.SehirId,
-        UlkeId:formData.UlkeId,
-        Tur:formData.Tur,
-      } 
-
-      const response = await axios.put(`/Member/FirmaSahis/Update/${selectedRow}`, updatedUserData)
-
-      if (response.data.success) {
-        toast.success("Kullanıcı bilgileri başarıyla güncellendi.");
-      } else {
-        console.error("Kullanıcı güncellenemedi:", response.data);
-        toast.error("Kullanıcı bilgileri güncellenemedi. Lütfen daha sonra tekrar deneyin.");
-      }
+      const response = await axios.get(`/Member/FirmaSahis/FirmaUpdate/${selectedRow}`)
+      // console.log("Gelen data : " , response.data);
+      
+      setFormData({
+        ID: response.data.ID || "",
+        Adi: response.data.Adi || "",
+        Adres: response.data.Adres || "",
+        Telefon: response.data.Telefon || "",
+        Email: response.data.Email || "",
+        VergiNo: response.data.VergiNo || "",
+        VergiDairesi: response.data.VergiDairesi || "",
+        TC: response.data.TC || "",
+        PostaNo: response.data.PostaNo || "",
+        UlkeId: response.data.Ülke || "",
+        SehirId: response.data.Şehir || "",
+        Tur: response.data.Tur || "",
+      });
+      setIsEditing(true);
+      setSelectedUserId(selectedRow);
+      handleOpen();
+      fetchCustomers();
     } catch (error) {
       console.error("Kullanıcı güncellenirken beklenmedik bir hata oluştu:", error);
       toast.error("Kullanıcı bilgileri güncellenemedi. Lütfen daha sonra tekrar deneyin.");
     }
   }
+
+  const fetchCustomers = async () => {
+
+    try {
+      const response = await axios.get(`/member/FirmaSahis/GetFirmaSahisList`);
+      const fetchedData = Array.isArray(response.data) ? response.data : response.data.results || [];
+      setCustomersData(fetchedData);
+    } catch (error) {
+      // console.log("Veri alınırken hata oluştu", error);
+      toast.error("Veriler alınırken bir sorun oluştu.");
+    }
+  }
+  
 
   
 //Table Yapısı
@@ -281,7 +323,7 @@ const rows = customersData.map((customer,index) => ({
 }));
 
 
-const paginationModel = { page: 0, pageSize: 5 };
+const paginationModel = { page: 0, pageSize:10};
 
   return (
     <>

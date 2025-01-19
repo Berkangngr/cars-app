@@ -11,53 +11,65 @@ import Modal from '@mui/material/Modal';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CarRepairIcon from '@mui/icons-material/CarRepair';
 
+//Genel Formdatamızın interface'i
+interface FormData {
+  Plaka: string;
+  Marka: string;
+  Model: string;
+  Yil: number | null;
+  SasiNo: string;
+  YakitTur: string;
+  Renk: string;
+  MotorHacim: number | null;
+  MotorBeygir: number | null;
+  Km: number | null;
+  // BakimKM?: number | null; // Opsiyonel olabilir
+  FirmaSahisId: number; // MüşteriİsmiId yerine bu kullanılmalı
+}
 
+//Araba marka ve modelleri
+const carsBrandData: Record<string, string[]> = {
+  Audi: ["A3", "A4", "Q5", "Q7"],
+  BMW: ["3 Series", "5 Series", "X3", "X5"],
+  Chevrolet: ["Spark", "Cruze", "Malibu", "Equinox"],
+  Citroën: ["C3", "C4", "C5 Aircross"],
+  Dacia: ["Duster", "Sandero", "Logan"],
+  Fiat: ["500", "Panda", "Tipo", "Egea"],
+  Ford: ["Focus", "Fiesta", "Mustang", "Kuga"],
+  Honda: ["Civic", "Accord", "CR-V", "Jazz"],
+  Hyundai: ["i20", "i30", "Tucson", "Kona"],
+  Kia: ["Rio", "Sportage", "Sorento", "Picanto"],
+  Mazda: ["Mazda3", "Mazda6", "CX-5", "MX-5"],
+  "Mercedes-Benz": ["A-Class", "C-Class", "E-Class", "GLC"],
+  Mini: ["Cooper", "Countryman", "Clubman"],
+  Mitsubishi: ["Lancer", "Outlander", "ASX"],
+  Nissan: ["Micra", "Qashqai", "X-Trail", "Leaf"],
+  Opel: ["Corsa", "Astra", "Insignia", "Grandland"],
+  Peugeot: ["208", "308", "508", "3008"],
+  Porsche: ["911", "Cayenne", "Macan", "Panamera"],
+  Renault: ["Clio", "Megane", "Kadjar", "Captur"],
+  Seat: ["Ibiza", "Leon", "Ateca", "Arona"],
+  Skoda: ["Fabia", "Octavia", "Superb", "Karoq"],
+  Subaru: ["Impreza", "Outback", "Forester", "XV"],
+  Suzuki: ["Swift", "Vitara", "Baleno", "Jimny"],
+  Tesla: ["Model S", "Model 3", "Model X", "Model Y"],
+  Toyota: ["Corolla", "Camry", "RAV4", "Yaris"],
+  Volkswagen: ["Polo", "Golf", "Passat", "Tiguan"],
+  Volvo: ["XC40", "XC60", "XC90", "S60"]
+};
 
-
-const carsBrand = [
-    { value: 'Audi', label: 'Audi' },
-    { value: 'BMW', label: 'BMW' },
-    { value: 'Chevrolet', label: 'Chevrolet' },
-    { value: 'Citroën', label: 'Citroën' },
-    { value: 'Dacia', label: 'Dacia' },
-    { value: 'Fiat', label: 'Fiat' },
-    { value: 'Ford', label: 'Ford' },
-    { value: 'Honda', label: 'Honda' },
-    { value: 'Hyundai', label: 'Hyundai' },
-    { value: 'Kia', label: 'Kia' },
-    { value: 'Mazda', label: 'Mazda' },
-    { value: 'Mercedes-Benz', label: 'Mercedes-Benz' },
-    { value: 'Mini', label: 'Mini' },
-    { value: 'Mitsubishi', label: 'Mitsubishi' },
-    { value: 'Nissan', label: 'Nissan' },
-    { value: 'Opel', label: 'Opel' },
-    { value: 'Peugeot', label: 'Peugeot' },
-    { value: 'Porsche', label: 'Porsche' },
-    { value: 'Renault', label: 'Renault' },
-    { value: 'Seat', label: 'Seat' },
-    { value: 'Skoda', label: 'Skoda' },
-    { value: 'Subaru', label: 'Subaru' },
-    { value: 'Suzuki', label: 'Suzuki' },
-    { value: 'Tesla', label: 'Tesla' },
-    { value: 'Toyota', label: 'Toyota' },
-    { value: 'Volkswagen', label: 'Volkswagen' },
-    { value: 'Volvo', label: 'Volvo' },
-  ];
-  
-  interface FormData {
-    Plaka: string;
-    Marka: string;
-    Model: string;
-    Yıl: number;
-    SasiNo: string;
-    YakitTur:string;
-    Renk:string;
-    MotorHacim:number;
-    MotorBeygir:number;
-    Km:number;
-    MüşteriTipi: "",
+//Gelen musteri isimlerinin interface'i 
+  interface musterıIsmı {
+    Value:string;
+    Text:string;
   }
+
+  let carsFuel: string[] = ["Benzin","Dizel"];
+
   
 
 //Modal styleları
@@ -79,57 +91,107 @@ const style = {
   overflow:'auto',
 };
 
-//Müşteri tipi
-const müsteriTipi = [
-  { value: 'bireysel', label: 'Bireysel' },
-  { value: 'kurumsal', label: 'Kurumsal' },
-];
+
 
 
 function CarsPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading]=useState(false);
-  const [carsData, setCarsData] = useState<FormData[]>([]); // Müşeri verilerinin alma
+  const [carsData, setCarsData] = useState<FormData[]>([]); // Müşteri verilerinin alma
+  const [customersId, setCustomersId] = useState<{ Value: string; Text: string }[]>([]);
+  const [selectedCustomers,setselectedCustomers] = useState <any> ("");
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
     resetForm();
-  }
+  } 
+  const [selectedCarsBrand, setSelectedCarsBrand] = useState<string>("Audi");
+  const [models, setModels] = useState<string[]>(carsBrandData["Audi"] || []);
+  const [selectedModels, setSelectedModels] = useState<string>("");
+  const [selectedCarsFuel, setSelectedCarsFuel] = useState("Benzin");
+  
+
 
   const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
   const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
 
 
+  //Araba marka ve model için fonksiyon
+  const handleChangeCarsBrand = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const brand = e.target.value as string;
+    console.log("Seçilen Marka:", brand);
+    setSelectedCarsBrand(brand);
+  
+    // Seçilen marka için modellere ulaşın
+    const brandModels = carsBrandData[brand] || [];
+    setModels(brandModels); // BURADA models state'ini güncelliyoruz
+  
+    // Markanın modelleri varsa, varsayılan olarak ilk modeli seçin
+    const selectedModel = brandModels.length > 0 ? brandModels[0] : "";
+    setSelectedModels(selectedModel);
+  
+    // Sadece marka için model varsa formData'yı güncelleyin (boş model göndermemek için)
+    if (brandModels.length > 0) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        Marka: brand,
+        Model: selectedModel,
+      }));
+    }
+  };
+  
+
+  const handleChangeModels = (e: any) => {
+    const model = e.target.value as string;
+    console.log("Seçilen Model:", model);
+    setSelectedModels(model);
+  };
+  
+
+//Araç yakıtını seçme fonksiyonu
+const handleChangeCarsFuel = (e : React.ChangeEvent<HTMLInputElement>) => {
+  const selectedFuel = e.target.value;
+  console.log("Seçilen Marka:", selectedFuel);
+  setSelectedCarsFuel(selectedFuel);
+}
+
   const [formData, setFormData] = useState<FormData>({
     Plaka: "",
-    Marka: "",
-    Model: "",
-    Yıl: 0,
+    Marka: selectedCarsBrand,
+    Model: selectedModels,
+    Yil:   null,
     SasiNo: "",
-    YakitTur:"",
+    YakitTur:selectedCarsFuel,
     Renk:"",
-    MotorHacim:0,
-    MotorBeygir:0,
-    Km:0,
-    MüşteriTipi:"",
+    MotorHacim:null,
+    MotorBeygir:null,
+    Km:null,
+    // BakimKM:null,
+    FirmaSahisId:0,
   });
 
-  const resetForm : ()=> void =() => {
+  const resetForm: () => void = () => {
+    const sonBakimDate = new Date();  // Bu, güncel tarihi alır
+    const siradakiBakimDate = new Date(sonBakimDate); // Son bakımı kopyalayalım
+    siradakiBakimDate.setFullYear(siradakiBakimDate.getFullYear() + 1); // 1 yıl ekliyoruz
     setFormData({
-    Plaka: "",
-    Marka: "",
-    Model: "",
-    Yıl: 0,
-    SasiNo: "",
-    YakitTur:"",
-    Renk:"",
-    MotorHacim:0,
-    MotorBeygir:0,
-    Km:0,
-    MüşteriTipi:"",
-    })
-  }
+      Plaka: "",
+      Marka: "",
+      Model: "",
+      Yil: null,
+      SasiNo: "",
+      YakitTur: "",
+      Renk: "",
+      MotorHacim: null,
+      MotorBeygir: null,
+      Km: null,
+      // BakimKM:null,
+      FirmaSahisId: 0, // Sıfırlama
+    });
+    setselectedCustomers(""); // Varsayılan değere döndürme
+  };
+  
 
   
   const handleInputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
@@ -140,24 +202,45 @@ function CarsPage() {
     }))
   }
 
-  //Müşteri verilerini gönderme.
+  //Müşteri verileririn çekme
+useEffect(() => {
+
+  const fetchFirmaSahisId = async () => {
+    try {
+      const response = await axios.get(`/Member/Arac/CreateArac`);
+      console.log(response.data.FirmaSahisler);
+      setCustomersId(response.data.FirmaSahisler);
+      console.log(customersId);
+    } catch (error) {
+      console.log("Hata!", error)
+      toast.error("Müşteri bilgilerini alırken bir hata ile karşılaşıldı.")
+    }
+  }
+  fetchFirmaSahisId()
+},[])
+ 
+
+  //Araç verilerini gönderme.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
+    const updatedFormData = { ...formData, Model: selectedModels };
+    console.log("Gönderilecek formData:", updatedFormData);
     try {
-      const response = await axios.post("/member/Arac/CreateArac", formData);
+      const response = await axios.post("/member/Arac/CreateArac", updatedFormData , {
+        headers: {
+          "Content-Type": "application/json", // JSON formatında veri gönderdiğinizden emin olun
+        }
+      });
       toast.success("Kayıt Başarılı");
       resetForm();
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Bilinmeyen bir hata oluştu.";
-      toast.error(`Hata: ${errorMessage}`);
-    } finally {
-      setIsLoading(false); 
+    } catch (error) {
+      console.error("Hata:", error);
+      toast.error("Kayıt sırasında bir hata oluştu.");
     }
   };
+  
 
-  //Müşteri verilerini alma.
+  //Araç verilerini alma
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -173,21 +256,34 @@ function CarsPage() {
     fetchCars();
   },[]);
 
+  //Araç silme fonksiyonu olacak
+  const handleDeleteCar = () => {
+
+  }
+
+    //Araç Düzenleme fonksiyonu olacak
+    const handleRepairCar = () => {
+
+    }
+
   
 //Table Yapısı
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 100 },
-  { field: 'Plaka', headerName: 'Plaka', width: 125 },
-  { field: 'Marka', headerName: 'Marka', width: 125 },
-  { field: 'Yıl', headerName: 'Yıl', width: 125 },
-  { field: 'SasiNo', headerName: 'Sasi No', width: 125 },
-  { field: 'YakitTur', headerName: 'Yakit Tur', width: 125 },
-  { field: 'Renk', headerName: 'Renk', width: 125 },
-  { field: 'MotorHacim', headerName: 'Motor Hacim', width: 125 },
-  { field: 'MotorBeygir', headerName: 'Motor Beygir', width: 125 },
-  { field: 'Km', headerName: 'Km', width: 125 },
-  { field: 'MüşteriTipi', headerName: 'Müşteri Tipi', width: 125 },
+  { field: 'id', headerName: 'ID', width: 1 },
+  { field: 'Plaka', headerName: 'Plaka', width: 100 },
+  { field: 'Marka', headerName: 'Marka', width: 100 },
+  { field: 'Yil', headerName: 'Yıl', width: 100 },
+  { field: 'SasiNo', headerName: 'Sasi No', width: 100 },
+  { field: 'YakitTur', headerName: 'Yakit Tur', width: 100 },
+  { field: 'Renk', headerName: 'Renk', width: 100 },
+  { field: 'MotorHacim', headerName: 'Motor Hacim', width: 100 },
+  { field: 'MotorBeygir', headerName: 'Motor Beygir', width: 100 },
+  { field: 'Km', headerName: 'Km', width: 50 },
+  { field: 'BakimKM', headerName: 'Bakım Km', width: 50 },
+  { field: 'SonBakim', headerName: 'Son Bakım Tarih', width: 100 },
+  { field: 'SiradakiBakim', headerName: 'Sıradaki Bakım Tarih', width: 100 },
+  { field: 'FirmaSahisId', headerName: 'Müşteri İsmi', width: 100 },
 ];
 
 
@@ -196,13 +292,15 @@ const rows = carsData.map((cars,index) => ({
   Plaka: cars.Plaka,
   Marka: cars.Marka,
   Model: cars.Model,
-  Yıl:cars.Yıl,
+  Yil:cars.Yil,
   SasiNo: cars.SasiNo,
   YakitTur: cars.YakitTur,
   Renk: cars.Renk,
+  MotorHacim:cars.MotorHacim,
   MotorBeygir: cars.MotorBeygir,
   Km: cars.Km,
-  MüşteriTipi:cars.MüşteriTipi,
+  // BakimKM: cars.BakimKM,
+  FirmaSahisId:cars.FirmaSahisId,
 }));
 
 
@@ -211,13 +309,25 @@ const paginationModel = { page: 0, pageSize: 5 };
   return (
     <>
       <Box
-        style={{
-          marginLeft: "10%", 
-          marginTop: "20px", 
-        }}
+       style={{
+        marginLeft: "5%", // Sola yakın ama biraz sağa kayması için
+        marginTop: "20px", // Yukarıdan bir boşluk"
+      }}
       >
-        <Button style={{marginBottom:'10px'}} variant="contained" onClick={handleOpen}>
-          Yeni Araç Ekleyin
+        <Button  style={{marginBottom:'10px'}} variant="contained" onClick={handleOpen}>
+         <CarRepairIcon style={{marginRight:'5px'}}/> Yeni Araç Ekleyin
+        </Button>
+        <Button style={{marginBottom:'10px',marginLeft:'10px'}} variant='contained' color="error"
+        onClick={() => { 
+          handleDeleteCar(); 
+    }}>
+          <DeleteIcon style={{marginRight:'5px'}} /> Satırı Silin
+        </Button>
+
+        <Button style={{marginBottom:'10px',marginLeft:'10px', backgroundColor:"#F3C623"}} variant='contained' onClick={() => {
+          handleRepairCar();
+        }}>
+          <EditIcon style={{marginRight:'5px'}} /> Satırı Düzenleyin
         </Button>
       </Box>
    
@@ -237,7 +347,7 @@ const paginationModel = { page: 0, pageSize: 5 };
           Araç Tanıtım Ekranı
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-             {/* İsim Alanı */}
+             {/* Plaka Alanı */}
              <TextField
               id="Plaka"
               name="Plaka"
@@ -247,44 +357,60 @@ const paginationModel = { page: 0, pageSize: 5 };
               sx={{ marginBottom: 2 }}
               />
 
-              {/* Adres Alanı */}
+              {/* Marka Alanı */}
+              
               <TextField
-              id="Marka"
-              name="Marka"
-              label="Marka"
-              value={formData.Marka}
-              onChange={handleInputChange}
-              sx={{ marginBottom: 2 }}
+                id="Marka"
+                name="Marka"
+                select
+                label="Marka"
+                value={selectedCarsBrand}
+                onChange={handleChangeCarsBrand}
+                sx={{ marginBottom: 2 , minWidth: '222px' }}
+              >
+                {Object.entries(carsBrandData).map(([brand, models]) => (
+                  <MenuItem key={brand} value={brand}>
+                    {brand}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+                
+              {/* Model Alanı */}
+              <TextField
+                  id="Model"
+                  name="Model"
+                  select
+                  label="Model"
+                  value={selectedModels} // Burada state bağlı olmalı
+                  onChange={handleChangeModels} // Değer değişiminde çalışır
+                  sx={{ marginBottom: 2, minWidth: '222px' }}
+                >
+                  {models.map((model, index) => (
+                    <MenuItem key={index} value={model}>
+                      {model}
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+
+          {/* Yıl alanı */}
+              <TextField
+                id="Yil"
+                name="Yil"
+                label="Yıl"
+                value={formData.Yil || ''} // Eğer formData.Yil null ise, boş bir string göster
+                onChange={(e) =>
+                  setFormData((prevState) => ({
+                    ...prevState,
+                    Yil: e.target.value ? parseInt(e.target.value, 10) : null, // Eğer değer yoksa null gönder
+                  }))
+                }
+                sx={{ marginBottom: 2 }}
               />
 
-              {/* Telefon Alanı */}
-              <TextField
-              id="Model"
-              name="Model"
-              label="Model"
-              value={formData.Model}
-              onChange={handleInputChange}
-              sx={{ marginBottom: 2 }}
-              />
 
-           
-                <TextField
-                  id="Yıl"
-                  name="Yıl"
-                  label="Yıl"
-                  type="number"
-                  value={formData.Yıl}
-                  onChange={(e) =>
-                    setFormData((prevState) => ({
-                      ...prevState,
-                      Yıl: parseInt(e.target.value, 10) || 0,
-                    }))
-                  }
-                  sx={{ marginBottom: 2 }}
-                />
-
-
-          
+              {/* Şasi No */}
               <TextField
               id="SasiNo"
               name="SasiNo"
@@ -294,15 +420,22 @@ const paginationModel = { page: 0, pageSize: 5 };
               sx={{ marginBottom: 2 }}
               />
 
-               
+               {/* Yakıt türü */}
                 <TextField
               id="YakitTur"
               name="YakitTur"
+              select
               label="Yakıt Türü"
-              value={formData.YakitTur}
-              onChange={handleInputChange}
-              sx={{ marginBottom: 2 }}
-              />
+              value={selectedCarsFuel}
+              onChange={handleChangeCarsFuel}
+              sx={{ marginBottom: 2, minWidth: '222px' }}
+              >
+                {carsFuel.map((option :any,index) =>
+                <MenuItem key={index} value={option} >
+                {option}
+                </MenuItem>
+                )}
+                </TextField>
 
           
               <TextField
@@ -319,11 +452,12 @@ const paginationModel = { page: 0, pageSize: 5 };
               id="MotorHacim"
               name="MotorHacim"
               label="Motor Hacim"
-              value={formData.MotorHacim}
+              type="number"
+              value={formData.MotorHacim || ''}
               onChange={(e) => {
                 setFormData((prevState) => ({
                   ...prevState,
-                  MotorHacim: parseInt(e.target.value,10) || 0,
+                  MotorHacim: e.target.value ? parseFloat(e.target.value) : null,
                 }))
               }}
               sx={{ marginBottom: 2 }}
@@ -334,13 +468,16 @@ const paginationModel = { page: 0, pageSize: 5 };
                   id="MotorBeygir"
                   name="MotorBeygir"
                   label="Motor Beygir"
-                  value={formData.MotorBeygir}
-                  onChange={(e) =>
+                  type="number"
+                  value={formData.MotorBeygir || ''}
+                  onChange={(e) => {
                     setFormData((prevState) => ({
                       ...prevState,
-                      MotorBeygir: parseInt(e.target.value, 10) || 0,
+                    MotorBeygir: e.target.value ? parseFloat(e.target.value) : null,
                     }))
                   }
+                  }
+                 
                   sx={{ marginBottom: 2 }}
                 />
 
@@ -349,35 +486,69 @@ const paginationModel = { page: 0, pageSize: 5 };
               id="Km"
               name="Km"
               label="Km"
-              value={formData.Km}
-              onChange={(e) =>
+              type="number"
+              value={formData.Km || ''}
+              onChange={(e) => {
+                const value = e.target.value ? parseInt(e.target.value,10) :null;
                 setFormData((prevState) => ({
                   ...prevState,
-                  Km: parseInt(e.target.value,10) || 0,
+                  Km:value,
                 }))
+              }
               }
               sx={{ marginBottom: 2 }}
             />
-  
 
-              {/* Müşteri Tipi */}
-            <TextField
-            id="MüşteriTipi"
-            name="MüşteriTipi"
-            select
-            label="Müşteri Tipi"
-            value={formData.MüşteriTipi}
-            onChange={handleInputChange}
-            sx={{ marginBottom: 2 }}
-            helperText='Lütfen müşteri tipini seçiniz!'
-            >
-              {müsteriTipi.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            
-            </TextField>
+              {/* Bakım Km
+              <TextField
+  id="BakimKm"
+  name="BakimKm"
+  label="Bakım Km"
+  type="number"
+  value={formData.BakimKM || ''}
+  onChange={(e) => {
+    const value = e.target.value ? parseInt(e.target.value, 10) : null;
+    setFormData((prevState) => ({
+      ...prevState,
+      BakimKM: value,
+    }));
+  }}
+  sx={{ marginBottom: 2 }}
+/> */}
+
+
+{/* Burada yaptığımız müşteri verileri bize string olarak geliyorlar biz onu integeera çeviriyoruz çünkü backend bizden integer bekliyor. */}
+
+              {/* Müşteri İsim */}
+              <TextField
+  id="FirmaSahisId"
+  name="FirmaSahisId"
+  select
+  label="Müşteri İsmi"
+  value={selectedCustomers}
+  onChange={(e) => {
+    const selectedValue = e.target.value;
+    console.log(selectedValue);
+
+    const numericValue = selectedValue ? parseInt(selectedValue, 10) : 0;
+
+    setselectedCustomers(selectedValue); // Seçilen müşteri ID'sini güncelleyin
+    setFormData((prevState) => ({
+      ...prevState,
+      FirmaSahisId: numericValue, // Form verisini güncelleyin
+    }));
+  }}
+  sx={{ marginBottom: 2, minWidth: '222px' }}
+  helperText="Lütfen müşteri ismini seçiniz!"
+>
+  {customersId.map((option) => (
+    <MenuItem key={option.Value} value={option.Value}>
+      {option.Text}
+    </MenuItem>
+  ))}
+</TextField>
+
+
 
 
           
