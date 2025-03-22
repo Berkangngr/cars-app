@@ -15,6 +15,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CarRepairIcon from '@mui/icons-material/CarRepair';
 
+
 //Genel Formdatamızın interface'i
 interface FormData {
   Plaka: string;
@@ -33,33 +34,33 @@ interface FormData {
 
 //Araba marka ve modelleri
 const carsBrandData: Record<string, string[]> = {
-  Audi: ["A3", "A4", "Q5", "Q7"],
-  BMW: ["3 Series", "5 Series", "X3", "X5"],
-  Chevrolet: ["Spark", "Cruze", "Malibu", "Equinox"],
-  Citroën: ["C3", "C4", "C5 Aircross"],
-  Dacia: ["Duster", "Sandero", "Logan"],
-  Fiat: ["500", "Panda", "Tipo", "Egea"],
-  Ford: ["Focus", "Fiesta", "Mustang", "Kuga"],
-  Honda: ["Civic", "Accord", "CR-V", "Jazz"],
-  Hyundai: ["i20", "i30", "Tucson", "Kona"],
-  Kia: ["Rio", "Sportage", "Sorento", "Picanto"],
-  Mazda: ["Mazda3", "Mazda6", "CX-5", "MX-5"],
-  "Mercedes-Benz": ["A-Class", "C-Class", "E-Class", "GLC"],
-  Mini: ["Cooper", "Countryman", "Clubman"],
-  Mitsubishi: ["Lancer", "Outlander", "ASX"],
-  Nissan: ["Micra", "Qashqai", "X-Trail", "Leaf"],
-  Opel: ["Corsa", "Astra", "Insignia", "Grandland"],
-  Peugeot: ["208", "308", "508", "3008"],
-  Porsche: ["911", "Cayenne", "Macan", "Panamera"],
-  Renault: ["Clio", "Megane", "Kadjar", "Captur"],
-  Seat: ["Ibiza", "Leon", "Ateca", "Arona"],
-  Skoda: ["Fabia", "Octavia", "Superb", "Karoq"],
-  Subaru: ["Impreza", "Outback", "Forester", "XV"],
-  Suzuki: ["Swift", "Vitara", "Baleno", "Jimny"],
-  Tesla: ["Model S", "Model 3", "Model X", "Model Y"],
-  Toyota: ["Corolla", "Camry", "RAV4", "Yaris"],
-  Volkswagen: ["Polo", "Golf", "Passat", "Tiguan"],
-  Volvo: ["XC40", "XC60", "XC90", "S60"]
+  AUDI: ["", "A3", "A4", "Q5", "Q7"],
+  BMW: ["", "3 SERIES", "5 SERIES", "X3", "X5"],
+  CHEVROLET: ["", "SPARK", "CRUZE", "MALIBU", "EQUINOX"],
+  CITROËN: ["", "C3", "C4", "C5 AIRCROSS"],
+  DACIA: ["", "DUSTER", "SANDERO", "LOGAN"],
+  FIAT: ["", "500", "PANDA", "TIPO", "EGEA"],
+  FORD: ["", "FOCUS", "FIESTA", "MUSTANG", "KUGA"],
+  HONDA: ["", "CIVIC", "ACCORD", "CR-V", "JAZZ"],
+  HYUNDAI: ["", "I20", "I30", "TUCSON", "KONA"],
+  KIA: ["", "RIO", "SPORTAGE", "SORENTO", "PICANTO"],
+  MAZDA: ["", "MAZDA3", "MAZDA6", "CX-5", "MX-5"],
+  "MERCEDES-BENZ": ["", "A-CLASS", "C-CLASS", "E-CLASS", "GLC"],
+  MINI: ["", "COOPER", "COUNTRYMAN", "CLUBMAN"],
+  MITSUBISHI: ["", "LANCER", "OUTLANDER", "ASX"],
+  NISSAN: ["", "MICRA", "QASHQAI", "X-TRAIL", "LEAF"],
+  OPEL: ["", "CORSA", "ASTRA", "INSIGNIA", "GRANDLAND"],
+  PEUGEOT: ["", "208", "308", "508", "3008"],
+  PORSCHE: ["", "911", "CAYENNE", "MACAN", "PANAMERA"],
+  RENAULT: ["", "CLIO", "MEGANE", "KADJAR", "CAPTUR"],
+  SEAT: ["", "IBIZA", "LEON", "ATECA", "ARONA"],
+  SKODA: ["", "FABIA", "OCTAVIA", "SUPERB", "KAROQ"],
+  SUBARU: ["", "IMPREZA", "OUTBACK", "FORESTER", "XV"],
+  SUZUKI: ["", "SWIFT", "VITARA", "BALENO", "JIMNY"],
+  TESLA: ["", "MODEL S", "MODEL 3", "MODEL X", "MODEL Y"],
+  TOYOTA: ["", "COROLLA", "CAMRY", "RAV4", "YARIS"],
+  VOLKSWAGEN: ["", "POLO", "GOLF", "PASSAT", "TIGUAN"],
+  VOLVO: ["", "XC40", "XC60", "XC90", "S60"]
 };
 
 //Gelen musteri isimlerinin interface'i 
@@ -106,8 +107,8 @@ function CarsPage() {
     setOpen(false);
     resetForm();
   } 
-  const [selectedCarsBrand, setSelectedCarsBrand] = useState<string>("Audi");
-  const [models, setModels] = useState<string[]>(carsBrandData["Audi"] || []);
+  const [selectedCarsBrand, setSelectedCarsBrand] = useState<string>("");
+  const [models, setModels] = useState<string[]>(carsBrandData[""] || []);
   const [selectedModels, setSelectedModels] = useState<string>("");
   const [selectedCarsFuel, setSelectedCarsFuel] = useState("Benzin");
   
@@ -154,6 +155,10 @@ const handleChangeCarsFuel = (e : React.ChangeEvent<HTMLInputElement>) => {
   const selectedFuel = e.target.value;
   console.log("Seçilen Marka:", selectedFuel);
   setSelectedCarsFuel(selectedFuel);
+  setFormData((prevFormData) => ({
+    ...prevFormData,
+    YakitTur: selectedFuel,
+  }));
 }
 
   const [formData, setFormData] = useState<FormData>({
@@ -172,9 +177,9 @@ const handleChangeCarsFuel = (e : React.ChangeEvent<HTMLInputElement>) => {
   });
 
   const resetForm: () => void = () => {
-    const sonBakimDate = new Date();  // Bu, güncel tarihi alır
-    const siradakiBakimDate = new Date(sonBakimDate); // Son bakımı kopyalayalım
-    siradakiBakimDate.setFullYear(siradakiBakimDate.getFullYear() + 1); // 1 yıl ekliyoruz
+    // const sonBakimDate = new Date();  // Bu, güncel tarihi alır
+    // const siradakiBakimDate = new Date(sonBakimDate); // Son bakımı kopyalayalım
+    // siradakiBakimDate.setFullYear(siradakiBakimDate.getFullYear() + 1); // 1 yıl ekliyoruz
     setFormData({
       Plaka: "",
       Marka: "",
@@ -198,9 +203,33 @@ const handleChangeCarsFuel = (e : React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]:value,
+      [name]:value.toUpperCase(),
     }))
   }
+
+  //Şasi no için fonksiyon 17 haneli olmalı
+
+  const handleInputChangeSasiNo = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const {name, value} = e.target;
+
+    if (value.length <= 17) {
+      setFormData((prevState) => ({
+
+        ...prevState,
+        [name]:value.toUpperCase(),
+      }))
+    
+    } 
+  };
+
+  // onBlur ile Sasi no hata mesajını kontrol edin
+const handleBlurSasiNo = (e: React.FocusEvent<HTMLInputElement>) => {
+  const { value } = e.target;
+
+  if (value.length !== 17) {
+    toast.error("Girdiğiniz şasi no 17 haneli olmalıdır!");
+  }
+};
 
   //Müşteri verileririn çekme
 useEffect(() => {
@@ -221,15 +250,16 @@ useEffect(() => {
  
 
   //Araç verilerini gönderme.
-  const handleSubmit = async (e: React.FormEvent) => {
+  const carsHandleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const updatedFormData = { ...formData, Model: selectedModels };
     console.log("Gönderilecek formData:", updatedFormData);
     try {
       const response = await axios.post("/member/Arac/CreateArac", updatedFormData , {
-        headers: {
-          "Content-Type": "application/json", // JSON formatında veri gönderdiğinizden emin olun
-        }
+        // headers: {
+        //   "Content-Type": "application/json", // JSON formatında veri gönderdiğinizden emin olun
+        // }
+        headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Kayıt Başarılı");
       resetForm();
@@ -341,7 +371,7 @@ const paginationModel = { page: 0, pageSize: 5 };
       >
         <Box sx={style}
          component="form"
-         onSubmit={handleSubmit}
+         onSubmit={carsHandleSubmit}
         >
           <Typography id="modal-modal-title" variant="h6" component="h2">
           Araç Tanıtım Ekranı
@@ -416,7 +446,8 @@ const paginationModel = { page: 0, pageSize: 5 };
               name="SasiNo"
               label="Sasi No"
               value={formData.SasiNo}
-              onChange={handleInputChange}
+              onChange={handleInputChangeSasiNo}
+              onBlur={handleBlurSasiNo}
               sx={{ marginBottom: 2 }}
               />
 
@@ -430,9 +461,9 @@ const paginationModel = { page: 0, pageSize: 5 };
               onChange={handleChangeCarsFuel}
               sx={{ marginBottom: 2, minWidth: '222px' }}
               >
-                {carsFuel.map((option :any,index) =>
-                <MenuItem key={index} value={option} >
-                {option}
+                {carsFuel.map((fuel,index) =>
+                <MenuItem key={index} value={fuel} >
+                {fuel}
                 </MenuItem>
                 )}
                 </TextField>

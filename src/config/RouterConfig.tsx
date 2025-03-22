@@ -4,7 +4,6 @@ import RegisterPage from '../pages/RegisterPage'
 import LoginPage from '../pages/LoginPage'
 import HomePage from '../pages/HomePage'
 import NewRepairPage from '../pages/NewRepairPage'
-import Service from '../pages/Service'
 import Receivables from '../pages/Receivables'
 import Customers from '../pages/Customers'
 import Reports from '../pages/Reports'
@@ -21,7 +20,6 @@ function RouterConfig() {
 <Route  path='/' element={<LoginPage/>} />
 <Route  path='/register' element={<RegisterPage/>} />
 <Route  path='/newRepair' element={<Layout><NewRepairPage/></Layout>} />
-<Route  path='/service' element={<Layout><Service/></Layout>} />
 <Route  path='/receivables' element={<Layout><Receivables/></Layout>} />
 <Route  path='/customers' element={<Layout><Customers/></Layout>} />
 <Route  path='/report' element={<Layout><Reports/></Layout>} />

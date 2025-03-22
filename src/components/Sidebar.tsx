@@ -10,6 +10,7 @@ import WarehouseIcon from '@mui/icons-material/Warehouse';
 import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
 import HomeIcon from '@mui/icons-material/Home';
 
+
 function Sidebar() {
   return (
     <Drawer
@@ -39,16 +40,6 @@ function Sidebar() {
           <ListItemText sx={{color:'#333333e1'}} primary="Yeni Tamirat" />
         </ListItem>
         <Divider />
-        <ListItem  component={Link} to="/service">
-        <HourglassTopIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
-          <ListItemText sx={{color:'#333333e1'}} primary="Servistekiler" />
-        </ListItem>
-        <Divider />
-        <ListItem  component={Link} to="/receivables">
-        <CurrencyLiraIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
-          <ListItemText sx={{color:'#333333e1'}} primary="Alacaklar" />
-        </ListItem>
-        <Divider />
         <ListItem  component={Link} to="/customers">
         <RecentActorsIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
           <ListItemText sx={{color:'#333333e1'}} primary="Müşteriler" />
@@ -56,6 +47,11 @@ function Sidebar() {
         <ListItem  component={Link} to="/cars">
         <TimeToLeaveIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
           <ListItemText sx={{color:'#333333e1'}} primary="Araçlar" />
+        </ListItem>
+        <Divider />
+        <ListItem  component={Link} to="/receivables">
+        <CurrencyLiraIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
+          <ListItemText sx={{color:'#333333e1'}} primary="Alacaklar" />
         </ListItem>
       </List>
       <Divider />
