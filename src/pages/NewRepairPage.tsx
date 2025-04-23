@@ -1,7 +1,10 @@
+/* eslint-disable no-empty */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Grid, useMediaQuery, IconButton, Stack } from '@mui/material';
+import { Box, Button, Grid, useMediaQuery, IconButton, Stack, Autocomplete } from '@mui/material';
 import { toast } from 'react-toastify';
 import newRepairPageService from '../services/NewRepairPageService';
 import { useFormik } from 'formik';
@@ -9,38 +12,72 @@ import { newRepairPageSchema } from '../schemas/NewRepairSchema';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { GridColDef } from '@mui/x-data-grid';
+import axios from '../config/AxiosConfig';
+import { string } from 'yup';
 
 
 
-let transactionType: string[] = ["Yağ Değişimi", "Parça Değişimi", "Bilinmiyor"];
+
+
+
+
+
+const transactionType: string[] = ["Yağ Değişimi", "Parça Değişimi", "Bilinmiyor"];
 
 function NewRepairPage() {
+  const [plakaNoList, setPlakaNoList] = useState<any[]>([]); // Get apisi ile çektiğim tüm plakaları buraya yazacağım.
+  const [processList, setProcessList] = useState<any[]>([]);
+  const [inputValue, setInputValue] = useState("");
   const [selectedTransactionType, setSelectedTransactionType] = useState("Bilinmiyor");
   const [workOrder, setWorkOrde] = useState([]);
- 
-
-  const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
+   const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
   const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
 
+
+
+ 
+
+
+
+
+// İş Emri Oluşturma Fonksiyonu
+  // İş emri oluşturma işlemi için form verilerini alır ve API'ye gönderir
   const submit = async (values: any, actions: any) => {
+    let requestData;
+
+    if (plakaNoList.length > 0 ) {
+      const selected = plakaNoList[0];
+      const currentYear = new Date().getFullYear();
+
+       requestData = {
+        FirmaSahisId: selected.a.FirmaSahisId,
+        AppUserID: selected.a.AppUserID,
+        Yil: currentYear,
+        BakimKm: values.BakimKm,
+        Tarih: new Date().toISOString(),
+        Detaylar: values.Detaylar.map((item: any) => ({
+          islemTur: item.islemTur,
+          MalzemeFiyat: item.MalzemeFiyat,
+          iscilikFiyat: item.iscilikFiyat,
+          islemAciklama: item.islemAciklama,
+          ToplamFiyat: item.ToplamFiyat,
+          FirmaSahisId: selected.a.FirmaSahisId,
+          AracId: selected.a.ID,
+          AppUserID: selected.a.AppUserID,
+        })), 
+      };
+    }
+
+
     try {
-      
-
-      const requestData = {
-        PlakaNo: values.PlakaNo,
-        SasiNo:  values.SasiNo,
-        MüsteriIsmi : values.MüsteriIsmi,
-        KayıtlıAraclar: values.KayıtlıAraclar,
-        BakımKm:values.BakımKm,
-        Detay: values.Detay,
+      if (!requestData) {
+        throw new Error("Plaka verisi yok!");
       }
-
-
-
       const response = await newRepairPageService.workOrder(requestData);
       console.log(requestData);
+      // getAllProcessData(); // İşlem verilerini güncelle
       if (response) {
-        clear();
+        actions.resetForm();
         toast.success("İş emri açıldı.");
       }
     } catch (error) {
@@ -48,24 +85,42 @@ function NewRepairPage() {
     }
   };
 
+  // Bütün işlemleri çekme fonksiyonu.
+  
+    // const getAllProcessData = async () => {
+    //   try {
+    //     const response = await axios.get("/Member/islemNew/GetIslemDetailsById%2F1t");
+    //     setProcessList(response.data);
+    //     console.log("İşlemler:", response.data);
+    //   } catch (error) {
+    //     toast.error("İşlemler alınırken hata oluştu.");
+    //     console.error("İşlemler alınırken hata:", error);
+    //   }
+    // };
+
+    // useEffect(() => {
+    //   getAllProcessData();
+    // }, []);
+    
+
+
+  
+
   const { values, handleSubmit, handleChange, errors, resetForm, setFieldValue } = useFormik({
     initialValues: {
       PlakaNo: "",
       SasiNo: "",
       MüsteriIsmi: "",
-      KayıtlıAraclar: "",
-      BakımKm: "",
-      Detay: [
-        { IslemTürü: '', MalzemeFiyat: null, IscilikFiyat: null, Açıklama: '', ToplamFiyat: 0 },
+      BakimKM: "",
+      Detaylar: [
+        { islemTur: '', MalzemeFiyat: null, iscilikFiyat: null, islemAciklama: '', ToplamFiyat: 0 },
       ],
     },
     onSubmit: submit,
     validationSchema: newRepairPageSchema
   });
 
-  const clear = () => {
-    resetForm();
-  };
+ 
 
   const [isEditable, setIsEditable] = useState(true);
 
@@ -76,37 +131,65 @@ function NewRepairPage() {
   //   setSelectedTransactionType(selectedType);
   // };
 
+
+  // Plakaya göre verileri çekme
+  useEffect(() => {
+    if (!inputValue || inputValue.length < 2) {
+      setPlakaNoList([]);
+      return;
+    }
   
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/member/arac/AracListeWithPlakaOrFirma?searchplakaorfirma=${inputValue}`);
+        console.log(response.data);
+        setPlakaNoList(response.data);
+      } catch (error) {
+        console.log("Hata!", error);
+      }
+    };
+    
+    const delayDebounce = setTimeout(fetchData, 500);
+    return () => clearTimeout(delayDebounce);
+  }, [inputValue]); 
+
+
+  
+// Hesaplama işlemi yapan fonksiyon
+// Detay dizisindeki her bir öğe için toplam fiyatı hesaplar  
 
   useEffect(() => {
-    values.Detay.forEach((_, index) => {
-      setFieldValue(`Detay[${index}].ToplamFiyat`, 
-        Number(values.Detay[index].MalzemeFiyat) + Number(values.Detay[index].IscilikFiyat)
+    values.Detaylar.forEach((_, index) => {
+      setFieldValue(`Detaylar[${index}].ToplamFiyat`, 
+        Number(values.Detaylar[index].MalzemeFiyat) + Number(values.Detaylar[index].iscilikFiyat)
       );
     });
-  }, [values.Detay]); // Detay dizisi değiştikçe otomatik hesaplama yapar
+  }, [values.Detaylar]); // Detay dizisi değiştikçe otomatik hesaplama yapar
+
+
   
 
   const handleAddInputButton = () => {
     const newDetay = {
-      IslemTürü: '',
+      islemTur: '',
       MalzemeFiyat: null,
-      IscilikFiyat: null,
-      Açıklama: '',
+      iscilikFiyat: null,
+      islemAciklama: '',
       ToplamFiyat: null
     };
-    setFieldValue('Detay', [...values.Detay, newDetay]);
+    setFieldValue('Detay', [...values.Detaylar, newDetay]);
   };
 
   const handleDeleteInputButton = (index: number) => {
-    if (values.Detay.length > 1) {
-      const newDetay = [...values.Detay];
+    if (values.Detaylar.length > 1) {
+      const newDetay = [...values.Detaylar];
       newDetay.splice(index, 1); // İlgili index'teki öğeyi kaldır
       setFieldValue("Detay", newDetay);
     } else {
       toast.warn("En az bir işlem satırı kalmalı!");
     }
   };
+
 
   //Table Yapısı
   
@@ -115,7 +198,7 @@ function NewRepairPage() {
     { field: 'PlakaNo', headerName: 'Plaka No', width: 125 },
     { field: 'SasiNo', headerName: 'Şasi No', width: 125 },
     { field: 'MüsteriIsmi', headerName: 'Müşteri Adı/Soyadı', width: 125 },
-    { field: 'KayıtlıAraclar', headerName: 'Araç', width: 125 },
+    
     { field: 'BakımKm', headerName: 'Bakım Km', width: 125 },
     { field: 'Detay.IslemTürü', headerName: 'İşlem Türü', width: 125 },
     { field: 'Detay.MalzemeFiyat', headerName: 'Malzeme Tutar', width: 125 },
@@ -138,6 +221,7 @@ function NewRepairPage() {
   //   Ülke: customer.UlkeId,
   //   Tur: customer.Tur,
   // }));
+
 
 
   return (
@@ -163,66 +247,79 @@ function NewRepairPage() {
             }}
           >
             <Grid container spacing={2}>
-              {/* Plaka */}
-              <Grid item sx={{ flexGrow: 1, minWidth: 150 }}>
-                <TextField
-                  id="PlakaNo"
-                  name="PlakaNo"
-                  value={values.PlakaNo.toUpperCase()}
-                  onChange={handleChange}
-                  helperText={errors.PlakaNo && <span style={{ color: 'red', fontSize: '10px' }}>{errors.PlakaNo}</span>}
-                  label="Plaka No"
-                  sx={{ flex: '1 1 calc(25% - 16px)' }}
+               {/* Plaka No */}
+               <Grid item xs={12} sm={6} md={3}>
+               <Autocomplete
+                  options={plakaNoList}
+                  getOptionLabel={(option) => option?.a?.Plaka ?? ''}
+                  value={plakaNoList.find(item => item?.a?.Plaka === values.PlakaNo) || null}
+                  inputValue={inputValue}
+                  onChange={(event, newValue) => {
+                    // Bir plaka seçildiğinde, formik state'ine sadece plaka numarasını kaydet
+                    setFieldValue("PlakaNo", newValue?.a?.Plaka || '');
+                    
+                    // İsterseniz diğer alanları da otomatik doldurun
+                    if (newValue) {
+                      setFieldValue("SasiNo", newValue.a?.SasiNo || '');
+                      setFieldValue("MüsteriIsmi", newValue.FirmaSahis?.Adi || '');
+                      // Diğer alanlar...
+                    }
+                  }}
+                  onInputChange={(event, newInputValue) => {
+                    setInputValue(newInputValue.toUpperCase());
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Plaka No"
+                      id="PlakaNo"
+                      name="PlakaNo"
+                      helperText={errors.PlakaNo && <span style={{ color: "red", fontSize: "10px" }}>{errors.PlakaNo}</span>}
+                      fullWidth
+                    />
+                  )}
                 />
               </Grid>
+              
 
               {/* Şasi No */}
-              <Grid item sx={{ flexGrow: 1, minWidth: 150 }}>
+              <Grid item xs={12} sm={6} md={3}>
                 <TextField
                   id="SasiNo"
                   name="SasiNo"
                   value={values.SasiNo.toUpperCase()}
                   label="Şasi No"
                   onChange={handleChange}
+                  disabled={isEditable}
                   helperText={errors.SasiNo && <span style={{ color: 'red', fontSize: '10px' }}>{errors.SasiNo}</span>}
-                  sx={{ flex: '1 1 calc(25% - 16px)' }}
+                  fullWidth
                 />
               </Grid>
 
               {/* Araç Sahibi */}
-              <Grid item sx={{ flexGrow: 1, minWidth: 150 }}>
+              <Grid item xs={12} sm={6} md={3}>
                 <TextField
                   id="MüsteriIsmi"
                   name="MüsteriIsmi"
                   value={values.MüsteriIsmi}
                   label="Araç Sahibi"
                   onChange={handleChange}
-                  // disabled={isEditable}
-                  sx={{ flex: '1 1 calc(25% - 16px)' }}
+                  disabled={isEditable}
+                  fullWidth
                 />
               </Grid>
 
-              {/* Kayıtlı Araçlar */}
-              <Grid item sx={{ flexGrow: 1, minWidth: 150 }}>
-                <TextField
-                  id="KayıtlıAraclar"
-                  name="KayıtlıAraclar"
-                  value={values.KayıtlıAraclar}
-                  label="Kayıtlı Araçlar"
-                  onChange={handleChange}
-                  sx={{ flex: '1 1 calc(25% - 16px)' }}
-                />
-              </Grid>
+             
 
               {/* Bakım Km */}
-              <Grid item sx={{ flexGrow: 1, minWidth: 150 }}>
+              <Grid item xs={12} sm={6} md={3}>
                 <TextField
-                  id="BakımKm"
-                  name="BakımKm"
-                  value={values.BakımKm}
+                  id="BakimKM"
+                  name="BakimKM"
+                  value={values.BakimKM}
                   onChange={handleChange}
                   type="number"
-                  sx={{ flex: '1 1 calc(25% - 16px)' }}
+                  fullWidth
                   label="Bakım Km"
                 />
               </Grid>
@@ -235,7 +332,7 @@ function NewRepairPage() {
             <Grid container spacing={2} alignItems="center" wrap="nowrap">
               {/* Input Alanları - Hepsi tek satıra sığacak şekilde */}
               <Stack  spacing={2} sx={{ width: "100%" }}> {/* ALT ALTA EKLEMEYİ SAĞLAR */}
-        {values.Detay.map((item, index) => (
+        {values.Detaylar.map((item, index) => (
           <Box
             key={index}
             sx={{
@@ -270,10 +367,10 @@ function NewRepairPage() {
               {/* İşlem Türü */}
               <Grid item sx={{ flexGrow: 1, minWidth: 150 }}>
                 <TextField
-                  id={`IslemTürü-${index}`}
-                  name={`Detay[${index}].IslemTürü`}
+                  id={`islemTur-${index}`}
+                  name={`Detaylar[${index}].islemTur`}
                   select
-                  value={item.IslemTürü}
+                  value={item.islemTur}
                   onChange={handleChange}
                   fullWidth
                   label="İşlem Türü"
@@ -290,7 +387,7 @@ function NewRepairPage() {
               <Grid item sx={{ flexGrow: 1, minWidth: 120 }}>
                 <TextField
                   id={`MalzemeFiyat-${index}`}
-                  name={`Detay[${index}].MalzemeFiyat`}
+                  name={`Detaylar[${index}].MalzemeFiyat`}
                   value={item.MalzemeFiyat}
                   type="number"
                   onChange={handleChange}
@@ -302,9 +399,9 @@ function NewRepairPage() {
               {/* İşçilik Tutarı */}
               <Grid item sx={{ flexGrow: 1, minWidth: 120 }}>
                 <TextField
-                  id={`IscilikFiyat-${index}`}
-                  name={`Detay[${index}].IscilikFiyat`}
-                  value={item.IscilikFiyat}
+                  id={`iscilikFiyat-${index}`}
+                  name={`Detaylar[${index}].iscilikFiyat`}
+                  value={item.iscilikFiyat}
                   type="number"
                   onChange={handleChange}
                   fullWidth
@@ -316,7 +413,7 @@ function NewRepairPage() {
               <Grid item sx={{ flexGrow: 1, minWidth: 120 }}>
                 <TextField
                   id={`ToplamFiyat-${index}`}
-                  name={`Detay[${index}].ToplamFiyat`}
+                  name={`Detaylar[${index}].ToplamFiyat`}
                   value={item.ToplamFiyat}
                   type="number"
                   fullWidth
@@ -328,9 +425,9 @@ function NewRepairPage() {
              {/* Açıklama */}
              <Grid item sx={{ flexGrow: 2, minWidth: 200 }}>
                 <TextField
-                  id={`Açıklama-${index}`}
-                  name={`Detay[${index}].Açıklama`}
-                  value={item.Açıklama}
+                  id={`islemAciklama-${index}`}
+                  name={`Detaylar[${index}].islemAciklama`}
+                  value={item.islemAciklama}
                   onChange={handleChange}
                   fullWidth
                   label="Açıklama"

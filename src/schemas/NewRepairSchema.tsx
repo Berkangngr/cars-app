@@ -9,9 +9,9 @@ export const newRepairPageSchema = yup.object().shape({
       "Geçerli bir plaka giriniz!"
     ),
 
-  SasiNo: yup.string()
-  .required("Şasi No boş olamaz!")
-  .matches(/^(?!.*[QOI])[A-HJ-NPR-Z0-9]{17}$/,
-    "Geçerli bir şasi no giriniz!"
-  ),
+  // SasiNo: yup.string()
+  // .required("Şasi No boş olamaz!")
+  // .matches(/^(?!.*[QOI])[A-HJ-NPR-Z0-9]{17}$/,
+  //   "Geçerli bir şasi no giriniz!"
+  // ),
 });

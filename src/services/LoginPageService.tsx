@@ -15,7 +15,7 @@ interface LoginResponse {
 const login = async(email: string, password: string, returnUrl: string = "/"): Promise<LoginResponse> => {
     
     try {
-        const response = await axios.post("/Account/Login", {
+        const response = await axios.post("/api/Account/Login", {
             email,
             password,
             ReturnUrl: returnUrl,

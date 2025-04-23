@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {create} from 'zustand';
 import { getCookie } from '../utils/cookies';
+import axios from '../config/AxiosConfig';
 
 interface AuthState {
     email: string;
@@ -18,6 +19,8 @@ interface AuthState {
 
 
 
+
+//Kullanıcı auth bilgileri (login logout token vs.)
 const useAuthStore = create <AuthState>((set) => ({
     email:"",
     password:"",
@@ -38,4 +41,4 @@ const useAuthStore = create <AuthState>((set) => ({
 
 
 
-export default useAuthStore;
+export  {useAuthStore};

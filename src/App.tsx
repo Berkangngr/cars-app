@@ -3,7 +3,7 @@ import './App.css'
 import RouterConfig from './config/RouterConfig'
 import 'react-toastify/dist/ReactToastify.css';
 import GlobalLoadingSpinner from './components/Spinner';
-import  useAuthStore  from '../src/zustand/authStore';
+import  {useAuthStore}  from '../src/zustand/authStore';
 import { useEffect } from 'react';
 
 

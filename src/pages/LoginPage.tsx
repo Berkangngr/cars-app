@@ -10,7 +10,7 @@ import { loginPageSchema } from '../schemas/LoginPageSchema';
 import {  useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import loginPageService from '../services/LoginPageService';
-import  useAuthStore  from '../zustand/authStore';
+import  {useAuthStore}  from '../zustand/authStore';
 import { toast } from 'react-toastify';
 import Spinner from '../components/Spinner'
 

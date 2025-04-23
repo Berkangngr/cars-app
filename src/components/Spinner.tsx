@@ -1,5 +1,5 @@
 import { CircularProgress, Box } from '@mui/material';
-import  useAuthStore   from '../zustand/authStore';
+import  {useAuthStore}   from '../zustand/authStore';
 
 const GlobalLoadingSpinner = () => {
   const isLoading = useAuthStore((state) => state.isLoading); // Global loading durumunu alıyoruz
