@@ -5,12 +5,12 @@ import gif from '../images/Under-constructıon.gif';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Navbar from '../components/Navbar';
-import { Box, Button, Container, FormControl, Grid, Hidden, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery } from '@mui/material';
+import { Box, Button, Container, FormControl, Grid, Hidden, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery, Autocomplete } from '@mui/material';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
-
+import { v4 as uuidv4 } from 'uuid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { MuiTelInput } from 'mui-tel-input'
 import axios from '../config/AxiosConfig';
 import { toast } from 'react-toastify';
 import Modal from '@mui/material/Modal';
@@ -20,13 +20,14 @@ import Paper from '@mui/material/Paper';
 
 
 
+
 const Tur = [
   {value:'Bireysel Müşteri', label:'Bireysel Müşteri'},
   {value:'Kurumsal Müşteri', label:'Kurumsal Müşteri'}
 ]
 
-interface FormData {
-  ID:number | null;
+interface   FormData {
+  ID:number;
   Adi: string;
   Adres: string;
   Telefon: string;
@@ -38,6 +39,8 @@ interface FormData {
   SehirId:number;
   UlkeId:number;
   Tur:string;
+  Ulkeler: [];
+  Sehirler: [];
 }
 
 interface Ülke {
@@ -84,13 +87,12 @@ function Customers() {
   const [customersData, setCustomersData] = useState<FormData[]>([]); // Müşeri verilerinin alma
   const [country, setCountry] = useState <any[]>([]);
   const [city, setCity] = useState <any[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState <any>(""); // Seçili ülke
-  const [selectedCity, setSelectedCity] = useState <any>(""); // Seçili şehir
   const [selectedTur, setSelectedTur] = useState<any>();
   const [selectedRow, setSelectedRow] = useState<any[]>([]);
   const [isEditing,setIsEditing] = useState(false); // Modal düzenleme için mi açık?
   const [selectedUserId, setSelectedUserId] = useState(null); // Düzenlenecek kullanıcı ıd'si
-
+  const [inputValue, setInputValue] = useState(""); // Autocomplete için input değeri
+  const [options, setOptions] = useState<any[]>([]); // Autocomplete için seçenekler
   //Silme işlemi stateleri
 // console.log(selectedRow)
   const [open, setOpen] = useState(false);
@@ -101,7 +103,7 @@ function Customers() {
     const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
 
   const [formData, setFormData] = useState<FormData>({
-    ID:null,
+    ID:null as any,
     Adi: "",
     Adres: "",
     Telefon: "",
@@ -110,14 +112,16 @@ function Customers() {
     VergiDairesi:"",
     TC:"",
     PostaNo:"",
-    SehirId:0,
-    UlkeId:0,
+    SehirId:null as any,
+    UlkeId:null as any,
     Tur:"",
+    Ulkeler: [],
+    Sehirler: [],
   });
 
   const resetForm : ()=> void =() => {
     setFormData({
-    ID:null,
+    ID:0,
     Adi: "",
     Adres: "",
     Telefon: "",
@@ -126,9 +130,11 @@ function Customers() {
     VergiDairesi:"",
     TC:"",
     PostaNo:"",
-    SehirId:0,
-    UlkeId:0,
-    Tur:""
+    SehirId:null as any,
+    UlkeId:null as any,
+    Tur:"",
+    Ulkeler: [],
+    Sehirler: [],
     })
   }
 
@@ -136,7 +142,7 @@ function Customers() {
     setOpen(false);
     resetForm();
     setFormData({
-      ID: null,
+     ID:0,
       Adi: "",
       Adres: "",
       Telefon: "",
@@ -145,13 +151,14 @@ function Customers() {
       VergiDairesi: "",
       TC: "",
       PostaNo: "",
-      UlkeId: 0,
-      SehirId: 0,
+      UlkeId: null as any,
+      SehirId: null as any,
       Tur: "",
+      Ulkeler: [],
+      Sehirler: [],
     });
     setIsEditing(false);
     setSelectedUserId(null);
-    // handleClose(); // Modal'ı kapatma işlemi
   } 
 
   
@@ -165,6 +172,7 @@ function Customers() {
 
   //Müşteri verilerini gönderme.
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("Form data", formData)
     e.preventDefault();
     setIsLoading(true);
     // setIsEditing(false);
@@ -172,10 +180,11 @@ function Customers() {
       let response;
       if (isEditing) {
         // console.log("Form data", formData)
-        response = await axios.post(`Member/FirmaSahis/FirmaUpdate/${selectedUserId}`,formData);
+        response = await axios.post(`/api/FirmaSahis/FirmaUpdate`,formData);
         toast.success("Kullanıcı bilgileri başarıyla güncellendi.");
       } else {
-        response = await axios.post("/Member/FirmaSahis/Create", formData);
+        response = await axios.post("/api/FirmaSahis/Create", formData);
+        console.log(response.data)
         toast.success("Kayıt Başarılı");
       }
       // console.log(response)
@@ -194,11 +203,11 @@ function Customers() {
   useEffect(() => {
     const fetchCountryAndCity = async() => {
       try {
-        const response = await axios.get("/Member/FirmaSahis/Create");
+        const response = await axios.get("/api/FirmaSahis/Create");
         setCountry(response.data.Ulkeler);
         setCity(response.data.Sehirler);
-        // console.log(country)
-        // console.log(city)
+         console.log(country)
+         console.log(city)
         
       } catch (error:any) {
         const errorMessage = error.response?.data?.message || "Bilinmeyen bir hata oluştu.";
@@ -213,9 +222,9 @@ function Customers() {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await axios.get(`/member/FirmaSahis/GetFirmaSahisList`);
+        const response = await axios.get(`/api/FirmaSahis/GetFirmaSahisList`);
         const fetchedData = Array.isArray(response.data) ? response.data : response.data.results || [];
-        // console.log(fetchedData)
+         console.log(fetchedData)
         setCustomersData(fetchedData)
       } catch (error) {
         // console.log("Veri alınırken hata oluştu", error);
@@ -226,14 +235,17 @@ function Customers() {
   },[]);
 
 //Silme fonksiyonu
-  const handleDeleteUser = async (selectedRow : any) => {
-    
-    //console.log(selectedRow)
+  const handleDeleteUser = async (id: number) => {
+    console.log(id)
+    const isConfirmed = confirm("Bu kullanıcıyı silmek istediğinize emin misiniz?");
+    if (!isConfirmed) return; // Kullanıcı silme işlemini iptal ettiyse çık
+
     try {
-      const response = await axios.delete(`/member/FirmaSahis/FirmaSahisPasif/${selectedRow}`);
+      const response = await axios.post(`/api/FirmaSahis/FirmaSahisPasif?id=${id}`);
+      console.log(response); 
       if (response.data.success) {
         // Müşteri başarıyla silindi. Listeyi güncelleyin
-        setCustomersData(customersData.filter(customer => customer.ID !== selectedRow));
+        setCustomersData(customersData.filter((customer) => customer.ID  !== id));
         toast.success("Müşteri başarıyla silindi.");
         fetchCustomers();
       } else {
@@ -254,11 +266,11 @@ function Customers() {
       return;
     }
     try {
-      const response = await axios.get(`/Member/FirmaSahis/FirmaUpdate/${selectedRow}`)
-      // console.log("Gelen data : " , response.data);
+      const response = await axios.get(`/api/FirmaSahis/FirmaUpdate?id=${selectedRow}`)
+       console.log("Gelen data : " , response.data);
       
       setFormData({
-        ID: response.data.ID || "",
+        ID: response.data.ID || 0,
         Adi: response.data.Adi || "",
         Adres: response.data.Adres || "",
         Telefon: response.data.Telefon || "",
@@ -267,9 +279,11 @@ function Customers() {
         VergiDairesi: response.data.VergiDairesi || "",
         TC: response.data.TC || "",
         PostaNo: response.data.PostaNo || "",
-        UlkeId: response.data.Ülke || "",
-        SehirId: response.data.Şehir || "",
+        UlkeId: response.data.UlkeId,
+        SehirId: response.data.SehirId,
         Tur: response.data.Tur || "",
+        Ulkeler: response.data.Ulkeler || [],
+        Sehirler: response.data.Sehirler || [],
       });
       setIsEditing(true);
       setSelectedUserId(selectedRow);
@@ -284,7 +298,7 @@ function Customers() {
   const fetchCustomers = async () => {
 
     try {
-      const response = await axios.get(`/member/FirmaSahis/GetFirmaSahisList`);
+      const response = await axios.get(`/api/FirmaSahis/GetFirmaSahisList`);
       const fetchedData = Array.isArray(response.data) ? response.data : response.data.results || [];
       setCustomersData(fetchedData);
     } catch (error) {
@@ -292,26 +306,86 @@ function Customers() {
       toast.error("Veriler alınırken bir sorun oluştu.");
     }
   }
+
+  // Mail kontrol etme fonksiyonu
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
+  // Autocomplete için filtreleme
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (inputValue.length >= 2) {
+        axios
+          .get(`/api/FirmaSahis/GetFirmaWithAd?Firmaad=${inputValue}`)
+          .then((response) => {
+            console.log(response); 
+            setOptions(response.data);
+            setCustomersData(response.data);
+            console.log("Autocomplete options", response.data);
+          })
+          .catch((error) => console.log(error));
+      } else {
+        setOptions([]);
+      }
+    }, 300);
+
+    if (inputValue.length === 0) {
+      setOptions([]);
+      fetchCustomers(); // Eğer input değeri boşsa tüm müşteri verilerini getir  
+    }
+  
+    return () => clearTimeout(delayDebounce);
+  }, [inputValue]);
   
 
   
 //Table Yapısı
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 50},
-  { field: 'Şahıs/Müşteri_İsmi', headerName: 'Şahıs/Müşteri İsmi', width: 125 },
-  { field: 'Adres', headerName: 'Adres', width: 125 },
-  { field: 'Telefon', headerName: 'Telefon', width: 125 },
-  { field: 'Email', headerName: 'Email', width: 125 },
-  { field: 'VergiNo', headerName: 'VergiNo', width: 125 },
-  { field: 'Tc', headerName: 'Tc', width: 125 },
-  { field: 'PostaNo', headerName: 'PostaNo', width: 125 },
-  { field: 'Şehir', headerName: 'Şehir', width: 125 },
-  { field: 'Tur', headerName: 'Müşteri Türü', width: 125 },
+  // { field: 'id', headerName: 'ID', width: 50},
+  { field: 'Şahıs/Müşteri_İsmi', headerName: 'Şahıs/Müşteri İsmi', width: 125 ,headerAlign: 'center' , align: 'center' },
+  { field: 'Adres', headerName: 'Adres', width: 125 ,headerAlign: 'center' , align: 'center' },
+  { field: 'Telefon', headerName: 'Telefon', width: 125 ,headerAlign: 'center' , align: 'center' },
+  { field: 'Email', headerName: 'Email', width: 125 ,headerAlign: 'center' , align: 'center' },
+  { field: 'VergiNo', headerName: 'VergiNo', width: 125 ,headerAlign: 'center' , align: 'center' },
+  { field: 'Tc', headerName: 'Tc', width: 125 ,headerAlign: 'center' , align: 'center' },
+  { field: 'PostaNo', headerName: 'Posta No', width: 125 ,headerAlign: 'center' , align: 'center' },
+  { field: 'Şehir', headerName: 'Şehir', width: 125,headerAlign: 'center' , align: 'center' },
+  { field: 'Tur', headerName: 'Müşteri Türü', width: 125,headerAlign: 'center' , align: 'center' },
+  {field: 'actions', headerName: 'İşlemler', width: 125, headerAlign: 'center' , align: 'center', sortable: false, renderCell: (params) => (
+    <div style={{ width:'75px', display: 'flex', justifyContent: 'space-between' }}>
+      <div>
+      <EditIcon onClick={() => handleRepairUser(params.row.ID)}
+        style={{ cursor: 'pointer', marginLeft:'10px',marginTop:'15px', color:'#F3C623', fontSize:'25px', opacity:'0.8' } }
+        ></EditIcon>
+      </div>
+      <div>
+      <DeleteIcon onClick={() => handleDeleteUser(params.row.ID)}
+      style={{ cursor: 'pointer', marginLeft:'10px',marginTop:'15px', color:'red', fontSize:'25px',opacity:'0.8' } }>
+      </DeleteIcon>
+      </div>
+    </div> )}  
 ];
+ {/* <Button style={{marginBottom:'10px',marginLeft:'10px'}} variant='contained' color="error" 
+        onClick={() => { 
+      handleDeleteUser(selectedRow); 
+    }}
+    >
+          <DeleteIcon style={{marginRight:'5px'}} /> Satırı Silin
+        </Button> 
+        
+
+        <Button style={{marginBottom:'10px',marginLeft:'10px', backgroundColor:"#F3C623"}} variant='contained' onClick={() => {
+          handleRepairUser(selectedRow);
+        }}>
+          <EditIcon style={{marginRight:'5px'}} /> Satırı Düzenleyin
+        </Button>
+        */}
 
 const rows = customersData.map((customer,index) => ({
-  id: customer.ID,
+  ID: customer.ID, // Her satıra benzersiz bir id ekliyoruz
   'Şahıs/Müşteri_İsmi': customer.Adi,
   Adres: customer.Adres,
   Telefon: customer.Telefon,
@@ -330,28 +404,43 @@ const paginationModel = { page: 0, pageSize:10};
   return (
     <>
       <Box
-        style={{
-          marginLeft: "5%", // Sola yakın ama biraz sağa kayması için
-          marginTop: "20px", // Yukarıdan bir boşluk"
+        sx={{ 
+          marginTop: "20px",
+          marginBottom: "10px",
+          display: "flex", 
+          gap: "10px", 
+          backgroundColor: "#ffffff",
+          borderRadius: "10px",
+          padding: "15px",
         }}
       >
       
         <Button style={{marginBottom:'10px'}} variant="contained" onClick={handleOpen}>
-          <GroupAddIcon style={{marginRight:'5px'}}/>Yeni Müşteri Ekleyin
+          <GroupAddIcon sx={{ marginRight:'5px' }}/>Yeni Müşteri Ekleyin
         </Button>
 
-        <Button style={{marginBottom:'10px',marginLeft:'10px'}} variant='contained' color="error"
-        onClick={() => { 
-      handleDeleteUser(selectedRow); 
-    }}>
-          <DeleteIcon style={{marginRight:'5px'}} /> Satırı Silin
-        </Button>
 
-        <Button style={{marginBottom:'10px',marginLeft:'10px', backgroundColor:"#F3C623"}} variant='contained' onClick={() => {
-          handleRepairUser(selectedRow);
-        }}>
-          <EditIcon style={{marginRight:'5px'}} /> Satırı Düzenleyin
-        </Button>
+                <Autocomplete
+                freeSolo
+                  options={options}
+                  getOptionLabel={(option) => option?.Adi || ""}
+                  isOptionEqualToValue={(option, value) => option.Adi === value.Adi}
+                  inputValue={inputValue}
+                  onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
+                  onChange={(event, newValue) => {
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      Adi: newValue?.Adi || "",
+                    }));
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Müşteri İsmi İle Ara" />
+                  )}
+                  sx={{ width: 300,  marginLeft: '10px', marginBottom: '10px' }}
+                />
+
+
+         
       </Box>
    
 <Grid>
@@ -371,15 +460,7 @@ const paginationModel = { page: 0, pageSize:10};
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
 
-             {/* Id Alanı */}
-             <TextField
-              id="ID"
-              name="ID"
-              label="ID"
-              value={formData.ID}
-              onChange={handleInputChange}
-              sx={{marginBottom: 2}}
-              />
+       
 
              {/* İsim Alanı */}
              <TextField
@@ -402,14 +483,21 @@ const paginationModel = { page: 0, pageSize:10};
               />
 
               {/* Telefon Alanı */}
-              <TextField
+
+              <MuiTelInput
               id="Telefon"
               name="Telefon"
               label="Telefon"
               value={formData.Telefon}
-              onChange={handleInputChange}
+              onChange={(value, info) => {
+                setFormData({...formData, Telefon: info?.numberValue ?? value});
+              }}
+              
               sx={{marginBottom: 2}}
+              defaultCountry="TR" // Varsayılan ülke kodu 
               />
+
+
 
               {/* Email Alanı */}
               <TextField
@@ -417,8 +505,14 @@ const paginationModel = { page: 0, pageSize:10};
               name="Email"
               label="Email"
               value={formData.Email}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                setFormData({...formData, Email: value });
+              }}
+              error={formData.Email.length > 0 && !isValidEmail(formData.Email)}
+              helperText={formData.Email.length > 0 && !isValidEmail(formData.Email) ? "Geçersiz email adresi." : ""} 
               sx={{marginBottom: 2}}
+              type='email'
               />
 
               {/* VergiNo Alanı */}
@@ -427,9 +521,19 @@ const paginationModel = { page: 0, pageSize:10};
               name="VergiNo"
               label="Vergi No"
               value={formData.VergiNo}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value) && value.length <= 10) {
+                  setFormData({...formData, VergiNo: value });
+                }
+              }}
+              error = {formData.VergiNo.length > 0 && formData.VergiNo.length !== 10}
+              helperText={formData.VergiNo.length > 0 && formData.VergiNo.length !== 10 ? "Vergi numarası 10 haneli olmalıdır." : "Kurumsal müşteri ise!"}
+              inputProps= {{
+                maxLength: 10, 
+                pattern: "[0-9]*", // Sadece sayılara izin ver
+              }} // Maksimum 10 karakter girişi için
               sx={{marginBottom: 2}}
-              helperText="Kurumsal müşteri ise!"
               />
 
                 {/* VergiDairesi Alanı */}
@@ -450,7 +554,18 @@ const paginationModel = { page: 0, pageSize:10};
               label="TC"
               value={formData.TC}
               sx={{marginBottom: 2}}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value) && value.length <= 11) {
+                  setFormData({...formData, TC: value });
+                }
+              }}
+              error={formData.TC.length > 0 && formData.TC.length !== 11}
+              helperText={formData.TC.length > 0 && formData.TC.length !== 11 ? "TC Kimlik numarası 11 haneli olmalıdır." : ""}
+              inputProps= {{ 
+                maxLength: 11, 
+                pattern: "[0-9]*", // Sadece sayılara izin ver
+              }} // Maksimum 11 karakter girişi için
               />
 
               {/* PostoNo Alanı */}
@@ -470,17 +585,16 @@ const paginationModel = { page: 0, pageSize:10};
             name="Ülke"
             select
             label="Ülke"
-            value={selectedCountry}
+            value={formData.UlkeId || ""}
             onChange={(e) => {
               const UlkeId = parseInt(e.target.value,10);
-              setSelectedCountry(UlkeId);
               setFormData({...formData, UlkeId});
             }
               }
             helperText="Lütfen ülkeyi seçiniz!"
             >
               {country.map((countryOption) => (
-                  <MenuItem key={countryOption.Value} value={countryOption.Value}>
+                  <MenuItem key={countryOption.Value} value={Number(countryOption.Value)}>
                   {countryOption.Text}
                 </MenuItem>
               ) )}
@@ -494,16 +608,15 @@ const paginationModel = { page: 0, pageSize:10};
               name="Şehir"
               select
               label="Şehir"
-              value={selectedCity}
+              value={formData.SehirId || ""}
               onChange={(e) => {
                 const SehirId = parseInt(e.target.value,10);
-                setSelectedCity(SehirId);
                 setFormData({...formData, SehirId});
               }}
               helperText="Lütfen şehri seçiniz!"
             >
               {city.map((cityOption) => (
-                <MenuItem key={cityOption.Value} value={cityOption.Value}>
+                <MenuItem key={cityOption.Value} value={Number(cityOption.Value)}>
                   {cityOption.Text}
                 </MenuItem>
               ))}
@@ -566,16 +679,40 @@ const paginationModel = { page: 0, pageSize:10};
       >
         <DataGrid
           rows={rows}
-          columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[5, 10]}
+          columns={columns.map((column) => ({
+            ...column,
+            flex: 1,
+            minWidth: 100,}
+          ))}
+          getRowId={(row) => row.ID}
+          initialState={{ 
+            pagination: { paginationModel },
+            columns: {
+              columnVisibilityModel: {}
+            }
+          }}
+          pageSizeOptions={[100]}
           checkboxSelection
           onRowSelectionModelChange={(newSelectionModel) => {
             setSelectedRow(newSelectionModel  as number[]);
           }}
+          disableColumnMenu={false}
+          columnBufferPx={columns.length} // Tüm sütunları hemen render et
           sx={{
-            width: '100%', // Genişlik %100 olacak şekilde ayarlanır
-            height: '100%', // Yükseklik %100 olacak şekilde ayarlanır
+            width: '100%',
+            height: '100%',
+            '& .MuiDataGrid-main': { // İç grid alanı için stil
+              width: '100%',
+            },
+            '& .MuiDataGrid-virtualScroller': { // Kaydırma alanı için stil
+              width: '100%',
+            },
+            '& .MuiDataGrid-footerContainer': {
+              width: '100%',
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              width: '100%',
+            }
           }}
         />
       </Paper>

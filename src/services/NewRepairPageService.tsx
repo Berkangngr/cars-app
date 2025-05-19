@@ -6,7 +6,7 @@ import axios from "../config/AxiosConfig";
 
 
 class NewRepairPageService {
-    workOrder(newOrder : {FirmaSahisId: any, AppUserID: any, Yil:number, Tarih: string, BakimKm: number,
+    workOrder(newOrder : {FirmaSahisId: any, AppUserID: any, Yil:number, Tarih: string, BakimKM: number,
         Detaylar: {
         islemTur: string;
         MalzemeFiyat: number;
@@ -17,7 +17,7 @@ class NewRepairPageService {
         AracId: any;
         FirmaSahisId: any;
       }[];}) {
-        return axios.post("/member/islemNew/islemKayit",newOrder, {
+        return axios.post("/api/islemNew/islemKayit",newOrder, {
             headers: { "Content-Type": "application/json" },
             
         })

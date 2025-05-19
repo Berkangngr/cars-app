@@ -12,7 +12,7 @@ import { UserType } from '../types/Types';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
-import  useAuthStore  from '../zustand/authStore';
+
 
 
 function RegisterPage() {
@@ -41,7 +41,7 @@ function RegisterPage() {
         toast.success("Kullanıcı kaydedildi.");
         const redirectUrl = response.redirectUrl;
         if (redirectUrl) {
-          if (redirectUrl === "/Account/Login") {
+          if (redirectUrl === "/api/Account/Login") {
             navigate("/");
           }else {
             navigate(redirectUrl);

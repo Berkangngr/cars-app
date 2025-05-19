@@ -6,7 +6,7 @@ import gif from '../images/Under-constructıon.gif';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Navbar from '../components/Navbar';
-import { Box, Button, Container, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography, useTheme } from '@mui/material';
+import { Box, Button, Container, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography, useTheme,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle, Autocomplete } from '@mui/material';
 import axios from '../config/AxiosConfig';
 import { toast } from 'react-toastify';
 import Modal from '@mui/material/Modal';
@@ -18,8 +18,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CarRepairIcon from '@mui/icons-material/CarRepair';
 
 
+
+
+
+
 //Genel Formdatamızın interface'i
 interface FormData {
+  ID: number;
   Plaka: string;
   Marka: string;
   Model: string;
@@ -32,6 +37,7 @@ interface FormData {
   Km: number | null;
   // BakimKM?: number | null; // Opsiyonel olabilir
   FirmaSahisId: number; // MüşteriİsmiId yerine bu kullanılmalı
+  FirmaAdi: string; // Müşteri ismi 
 }
 
 //Araba marka ve modelleri
@@ -97,6 +103,8 @@ const style = {
 
 
 
+
+
 function CarsPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading]=useState(false);
@@ -113,12 +121,18 @@ function CarsPage() {
   const [models, setModels] = useState<string[]>(carsBrandData[""] || []);
   const [selectedModels, setSelectedModels] = useState<string>("");
   const [selectedCarsFuel, setSelectedCarsFuel] = useState("Benzin");
+  const [selectedRow, setSelectedRow] = useState<any[]>([]); // Seçilen satır için state
+  const [selectedCarsId, setSelectedCarsId] = useState<string>(null as any);
+  const [inputValue, setInputValue] = useState<string>(""); // Autocomplete için input değeri
+  const [options, setOptions] = useState<any[]>([]); // Autocomplete için seçenekler
+  const [aracListesi, setAracListesi] = useState<any[]>([]); // Araç listesini tutmak için state
   
 
 
   const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
   const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
 
+  
 
   //Araba marka ve model için fonksiyon
   const handleChangeCarsBrand = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,6 +178,7 @@ const handleChangeCarsFuel = (e : React.ChangeEvent<HTMLInputElement>) => {
 }
 
   const [formData, setFormData] = useState<FormData>({
+    ID: null as any,
     Plaka: "",
     Marka: selectedCarsBrand,
     Model: selectedModels,
@@ -176,6 +191,7 @@ const handleChangeCarsFuel = (e : React.ChangeEvent<HTMLInputElement>) => {
     Km:null,
     // BakimKM:null,
     FirmaSahisId:0,
+    FirmaAdi:"",
   });
 
   const resetForm: () => void = () => {
@@ -183,6 +199,7 @@ const handleChangeCarsFuel = (e : React.ChangeEvent<HTMLInputElement>) => {
     // const siradakiBakimDate = new Date(sonBakimDate); // Son bakımı kopyalayalım
     // siradakiBakimDate.setFullYear(siradakiBakimDate.getFullYear() + 1); // 1 yıl ekliyoruz
     setFormData({
+      ID: null as any,
       Plaka: "",
       Marka: "",
       Model: "",
@@ -195,8 +212,12 @@ const handleChangeCarsFuel = (e : React.ChangeEvent<HTMLInputElement>) => {
       Km: null,
       // BakimKM:null,
       FirmaSahisId: 0, // Sıfırlama
+      FirmaAdi:"",
     });
     setselectedCustomers(""); // Varsayılan değere döndürme
+    setModels(carsBrandData[""] || []); // Modelleri sıfırlama
+    setSelectedCarsBrand(""); // Markayı sıfırlama
+    setSelectedCarsFuel(""); // Yakıt türünü sıfırlama
   };
   
 
@@ -233,13 +254,64 @@ const handleBlurSasiNo = (e: React.FocusEvent<HTMLInputElement>) => {
   }
 };
 
-  //Müşteri verileririn çekme
+  //Araç verilerini alma
+
+ 
+    const fetchCars = async () => {
+      try {
+        const response = await axios.get(`/api/Arac/AracList`);
+        const fetchedData = Array.isArray(response.data) ? response.data : response.data.results || [];
+        console.log("Gelen Araç Verileri:", fetchedData);
+        setCarsData(fetchedData)
+      } catch (error) {
+        console.log("Veri alınırken hata oluştu", error);
+        toast.error("Veriler alınırken bir sorun oluştu.");    
+      }
+    };
+
+    useEffect(() => {
+      fetchCars(); // Bileşen yüklendiğinde verileri alın
+    }, []);
+ 
+ 
+
+ 
+
+  //Araç verilerini gönderme.
+  const carsHandleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const updatedFormData = { ...formData, Model: selectedModels };
+    console.log("Gönderilecek formData:", updatedFormData);
+    try {
+      const response = await axios.post("/api/Arac/CreateArac", updatedFormData , {
+        headers: {
+          "Content-Type": "application/json", // JSON formatında veri gönderdiğinizden emin olun
+        }
+        // headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log(response.data);
+      toast.success("Kayıt Başarılı");
+      resetForm();
+      fetchCars(); // Verileri güncelleyin
+      handleClose(); // Modalı kapatın
+    } catch (error) {
+      console.error("Hata:", error);
+      toast.error("Kayıt sırasında bir hata oluştu.");
+    }finally{
+      setIsLoading(false);
+    }
+  };
+
+    //Müşteri verileririn çekme
 useEffect(() => {
 
   const fetchFirmaSahisId = async () => {
+    
     try {
-      const response = await axios.get(`/Member/Arac/CreateArac`);
-      console.log(response.data.FirmaSahisler);
+      const response = await axios.get(`/api/Arac/CreateArac`);
+      console.log(response);
+      console.log(response.data.FirmaSahisler[0].Text);
       setCustomersId(response.data.FirmaSahisler);
       console.log(customersId);
     } catch (error) {
@@ -249,78 +321,182 @@ useEffect(() => {
   }
   fetchFirmaSahisId()
 },[])
- 
-
-  //Araç verilerini gönderme.
-  const carsHandleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const updatedFormData = { ...formData, Model: selectedModels };
-    console.log("Gönderilecek formData:", updatedFormData);
-    try {
-      const response = await axios.post("/member/Arac/CreateArac", updatedFormData , {
-        // headers: {
-        //   "Content-Type": "application/json", // JSON formatında veri gönderdiğinizden emin olun
-        // }
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.success("Kayıt Başarılı");
-      resetForm();
-    } catch (error) {
-      console.error("Hata:", error);
-      toast.error("Kayıt sırasında bir hata oluştu.");
-    }
-  };
   
 
-  //Araç verilerini alma
 
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const response = await axios.get(`/member/Arac/AracList`);
-        const fetchedData = Array.isArray(response.data) ? response.data : response.data.results || [];
-        setCarsData(fetchedData)
-      } catch (error) {
-        console.log("Veri alınırken hata oluştu", error);
-        toast.error("Veriler alınırken bir sorun oluştu.");    
-      }
-    };
-    fetchCars();
-  },[]);
 
   //Araç silme fonksiyonu olacak
-  const handleDeleteCar = () => {
-
+  const handleDeleteCar = async (id: number) => {
+    console.log(id)
+    const isConfirmed = confirm("Araç silinecek. Devam etmek istiyor musunuz?");
+    if (!isConfirmed) {
+      return; // Kullanıcı onay vermezse işlemi iptal et
+    }
+  
+    // Silme işlemi için API çağrısı yapın
+    try {
+        const response = await axios.post(`api/Arac/AracPasif`, id, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.data.success) {
+          console.log("Araç silindi:", response.data);
+          setCarsData((prevData) => prevData.filter((car) => car.ID !== id)); // Silinen aracı listeden çıkarın
+          toast.success("Araç silindi.");
+          fetchCars(); // Verileri güncelleyin
+          
+        } else {
+          console.log("Araç silinemedi:", response.data);
+          toast.error("Araç silinemedi.");
+        }
+        
+    } catch (error) {
+      console.log("Araç silinirken hata oluştu", error);
+      toast.error("Araç silinirken bir hata oluştu.");
+      
+    }
   }
 
-    //Araç Düzenleme fonksiyonu olacak
-    const handleRepairCar = () => {
 
+    //Araç Düzenleme fonksiyonu olacak
+    const handleRepairCar = async (selectedRow: any) => {
+      console.log(selectedRow)
+      if (!selectedRow) {
+        toast.error("Lütfen bir satır seçin!");
+        return;
+      }
+      try {
+          const response = await axios.get(`/api/Arac/UpdateArac?id=${selectedRow}`);
+          console.log(JSON.stringify(response.data))
+
+          setFormData({
+            ID: response.data.ID || 0,
+            Plaka: response.data.Plaka || "",
+            Marka: response.data.Marka || "",
+            Model: response.data.Model || "",
+            Yil: response.data.Yil || 0,
+            SasiNo: response.data.SasiNo || "",
+            YakitTur: response.data.YakitTur || "",
+            Renk: response.data.Renk || "",
+            MotorHacim: response.data.MotorHacim || 0,
+            MotorBeygir: response.data.MotorBeygir || 0,
+            Km: response.data.Km || 0,
+            FirmaSahisId: response.data.FirmaSahisId || 0,
+            FirmaAdi: response.data.FirmaAdi || "",
+          });
+          setSelectedCarsBrand(response.data.Marka || ""); // Seçilen markayı state'e kaydediyoruz
+          setModels(carsBrandData[response.data.Marka] || []); // Seçilen modeli state'e kaydediyoruz
+          setSelectedModels(response.data.Model || ""); // Seçilen modeli state'e kaydediyoruz  
+          setselectedCustomers(response.data.FirmaSahisId.toString() || ""); // Seçilen müşteriyi state'e kaydediyoruz
+          
+          setSelectedCarsId(selectedRow); // Seçilen aracın ID'sini state'e kaydediyoruz
+          handleOpen();// Modalı açıyoruz
+      } catch (error) {
+        console.log("Araç bilgileri güncellenirken bir hata oluştu", error);
+        toast.error("Araç bilgileri güncellenirken bir hata oluştu.");
+      }
     }
 
+    const handleCustomerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const selectedValue = e.target.value;
+      setselectedCustomers(selectedValue);
+      setFormData((prev) => ({
+        ...prev,
+        FirmaSahisId: Number(selectedValue),
+      }));
+    };
+
+    // Müşteri ismine göre filtreleme yapma
+    // Müşteri ismine göre filtreleme yapma
+    useEffect(() => {
+      const delayDebounce = setTimeout(() => { 
+        if (inputValue.length >= 2) {
+          axios.get(`/api/Arac/AracListeWithFirmaSahisAd?FirmaSahisAd=${inputValue}`)
+          .then((response) => {
+            // Önemli: Burada her öğenin benzersiz bir ID'ye sahip olduğundan emin olmalıyız
+            const gelenVeri = response.data.map((item: any) => ({
+              // id alanı her satır için kesinlikle olmalı ve benzersiz olmalı
+              ID: item.a?.ID, // Ana ID alanı için
+              id: item.a?.ID, // DataGrid için gerekli olan id alanı
+              FirmaSahisAdi: item.FirmaSahis?.Adi ?? "",
+              Plaka: item.a?.Plaka || "",
+              Marka: item.a?.Marka || "",
+              Model: item.a?.Model || "",
+              Yil: item.a?.Yil || null,
+              SasiNo: item.a?.SasiNo || "",
+              YakitTur: item.a?.YakitTur || "",
+              Renk: item.a?.Renk || "",
+              MotorHacim: item.a?.MotorHacim || null,
+              MotorBeygir: item.a?.MotorBeygir || null,
+              Km: item.a?.Km || null,
+              FirmaAdi: item.FirmaSahis?.Adi ?? "", // FirmaAdi alanını da ekledik
+            }));
+            console.log("Gelen Araç Listesi:", gelenVeri);
+            setAracListesi(gelenVeri); // Gelen veriyi options state'ine kaydediyoruz
+            // Hatalı veri veya id eksikse hiç set etme
+            if (gelenVeri.every(item => item.id)) {
+              setCarsData(gelenVeri); // Gelen veriyi carsData state'ine kaydediyoruz
+            } else {
+              console.error("Bazı satırlarda id değeri eksik, veriler yüklenmedi.");
+              toast.error("Arama sonuçları yüklenirken bir hata oluştu.");
+            }
+          })
+          .catch((error) => {
+            console.error("Hata:", error);
+            toast.error("Arama sırasında bir hata oluştu.");
+          });
+        } else {
+          setAracListesi([]); // Eğer input değeri 2 karakterden azsa seçenekleri temizle
+        }
+    }, 300);
+
+    if (inputValue.length === 0) {
+      setAracListesi([]); // Eğer input değeri boşsa seçenekleri temizle 
+      fetchCars();
+    }
+
+    return () => clearTimeout(delayDebounce); // Temizleme fonksiyonu
+  }, [inputValue]);
   
 //Table Yapısı
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 1 },
-  { field: 'Plaka', headerName: 'Plaka', width: 100 },
-  { field: 'Marka', headerName: 'Marka', width: 100 },
-  { field: 'Yil', headerName: 'Yıl', width: 100 },
-  { field: 'SasiNo', headerName: 'Sasi No', width: 100 },
-  { field: 'YakitTur', headerName: 'Yakit Tur', width: 100 },
-  { field: 'Renk', headerName: 'Renk', width: 100 },
-  { field: 'MotorHacim', headerName: 'Motor Hacim', width: 100 },
-  { field: 'MotorBeygir', headerName: 'Motor Beygir', width: 100 },
-  { field: 'Km', headerName: 'Km', width: 50 },
-  { field: 'BakimKM', headerName: 'Bakım Km', width: 50 },
-  { field: 'SonBakim', headerName: 'Son Bakım Tarih', width: 100 },
-  { field: 'SiradakiBakim', headerName: 'Sıradaki Bakım Tarih', width: 100 },
-  { field: 'FirmaSahisId', headerName: 'Müşteri İsmi', width: 100 },
+  
+  { field: 'Plaka', headerName: 'Plaka', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'Marka', headerName: 'Marka', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'Model', headerName: 'Model', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'Yil', headerName: 'Yıl', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'SasiNo', headerName: 'Sasi No', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'YakitTur', headerName: 'Yakit Tur', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'Renk', headerName: 'Renk', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'MotorHacim', headerName: 'Motor Hacim', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'MotorBeygir', headerName: 'Motor Beygir', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'Km', headerName: 'Km', width: 50,headerAlign: 'center' , align: 'center' },
+  { field: 'BakimKM', headerName: 'Bakım Km', width: 50 ,headerAlign: 'center' , align: 'center'},
+  { field: 'SonBakim', headerName: 'Son Bakım Tarih', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'SiradakiBakim', headerName: 'Sıradaki Bakım Tarih', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'FirmaAdi', headerName: 'Müşteri İsmi', width: 100,headerAlign: 'center' , align: 'center' },
+  {field: 'actions', headerName: 'İşlemler', width: 100, headerAlign: 'center' , align: 'center', sortable: false,
+  renderCell: (params) => (
+    <div style={{ width:'75px', display: 'flex', justifyContent: 'space-between' }}>
+    <div>
+    <EditIcon onClick={() => handleRepairCar(params.row.id)}
+      style={{ cursor: 'pointer', marginLeft:'10px',marginTop:'15px', color:'#F3C623', fontSize:'25px', opacity:'0.8' } }
+      ></EditIcon>
+    </div>
+    <div>
+    <DeleteIcon onClick={() => handleDeleteCar(params.row.id)}
+    style={{ cursor: 'pointer', marginLeft:'10px',marginTop:'15px', color:'red', fontSize:'25px',opacity:'0.8' } }>
+    </DeleteIcon>
+    </div>
+  </div>
+  )}
 ];
 
 
 const rows = carsData.map((cars,index) => ({
-  id:index+1,
+  id: cars.ID,
   Plaka: cars.Plaka,
   Marka: cars.Marka,
   Model: cars.Model,
@@ -332,7 +508,7 @@ const rows = carsData.map((cars,index) => ({
   MotorBeygir: cars.MotorBeygir,
   Km: cars.Km,
   // BakimKM: cars.BakimKM,
-  FirmaSahisId:cars.FirmaSahisId,
+  FirmaAdi:cars.FirmaAdi,
 }));
 
 
@@ -341,26 +517,39 @@ const paginationModel = { page: 0, pageSize: 5 };
   return (
     <>
       <Box
-       style={{
-        marginLeft: "5%", // Sola yakın ama biraz sağa kayması için
-        marginTop: "20px", // Yukarıdan bir boşluk"
+       sx={{ 
+        marginTop: "20px",
+        marginBottom: "10px",
+        display: "flex", 
+        gap: "10px", 
+        backgroundColor: "#ffffff",
+        borderRadius: "10px",
+        padding: "15px",
       }}
       >
         <Button  style={{marginBottom:'10px'}} variant="contained" onClick={handleOpen}>
-         <CarRepairIcon style={{marginRight:'5px'}}/> Yeni Araç Ekleyin
-        </Button>
-        <Button style={{marginBottom:'10px',marginLeft:'10px'}} variant='contained' color="error"
-        onClick={() => { 
-          handleDeleteCar(); 
-    }}>
-          <DeleteIcon style={{marginRight:'5px'}} /> Satırı Silin
+         <CarRepairIcon sx={{ marginRight:'5px'}}/> Yeni Araç Ekleyin
         </Button>
 
-        <Button style={{marginBottom:'10px',marginLeft:'10px', backgroundColor:"#F3C623"}} variant='contained' onClick={() => {
-          handleRepairCar();
-        }}>
-          <EditIcon style={{marginRight:'5px'}} /> Satırı Düzenleyin
-        </Button>
+        <Autocomplete
+        freeSolo
+                          options={options}
+                          getOptionLabel={(option) => option?.Adi || ""}
+                          isOptionEqualToValue={(option, value) => option.Adi === value.Adi}
+                          inputValue={inputValue}
+                          onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
+                          onChange={(event, newValue) => {
+                            setFormData((prevState) => ({
+                              ...prevState,
+                              Adi: newValue?.Adi || "",
+                            }));
+                          }}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Müşteri İsmi İle Ara" id='' />
+                          )}
+                          sx={{ width: 300,  marginLeft: '10px', marginBottom: '10px' }}
+                        />
+        
       </Box>
    
 <Grid>
@@ -559,18 +748,7 @@ const paginationModel = { page: 0, pageSize: 5 };
   select
   label="Müşteri İsmi"
   value={selectedCustomers}
-  onChange={(e) => {
-    const selectedValue = e.target.value;
-    console.log(selectedValue);
-
-    const numericValue = selectedValue ? parseInt(selectedValue, 10) : 0;
-
-    setselectedCustomers(selectedValue); // Seçilen müşteri ID'sini güncelleyin
-    setFormData((prevState) => ({
-      ...prevState,
-      FirmaSahisId: numericValue, // Form verisini güncelleyin
-    }));
-  }}
+  onChange={handleCustomerChange}
   sx={{ marginBottom: 2, minWidth: '222px' }}
   helperText="Lütfen müşteri ismini seçiniz!"
 >
@@ -618,14 +796,41 @@ const paginationModel = { page: 0, pageSize: 5 };
           >
             <DataGrid
               rows={rows}
-              columns={columns}
-              initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-              pageSizeOptions={[5, 10]}
+              getRowId={(row) => row.id}
+              columns={columns.map((column) => ({
+                ...column,
+                flex: 1, // Her sütunun eşit genişlikte olmasını sağlar
+                minWidth: 100, // Minimum genişlik
+              }))}  
+              initialState={{ 
+            pagination: { paginationModel },
+            columns: {
+              columnVisibilityModel: {}
+            }
+          }}
+              pageSizeOptions={[100]}
               checkboxSelection
+              onRowSelectionModelChange={(newSelectionModel) => {
+            setSelectedRow(newSelectionModel as number[]);
+          }}
+          disableColumnMenu={false}
+          columnBufferPx={columns.length}
               sx={{
-                width: '100%',
-                height: '100%',
-              }}
+            width: '100%',
+            height: '100%',
+            '& .MuiDataGrid-main': { // İç grid alanı için stil
+              width: '100%',
+            },
+            '& .MuiDataGrid-virtualScroller': { // Kaydırma alanı için stil
+              width: '100%',
+            },
+            '& .MuiDataGrid-footerContainer': {
+              width: '100%',
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              width: '100%',
+            }
+          }}
             />
           </Paper>
         </Box>

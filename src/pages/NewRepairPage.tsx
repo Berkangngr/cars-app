@@ -53,7 +53,7 @@ function NewRepairPage() {
         FirmaSahisId: selected.a.FirmaSahisId,
         AppUserID: selected.a.AppUserID,
         Yil: currentYear,
-        BakimKm: values.BakimKm,
+        BakimKM: values.BakimKM,
         Tarih: new Date().toISOString(),
         Detaylar: values.Detaylar.map((item: any) => ({
           islemTur: item.islemTur,
@@ -102,6 +102,8 @@ function NewRepairPage() {
     //   getAllProcessData();
     // }, []);
     
+ 
+
 
 
   
@@ -141,7 +143,7 @@ function NewRepairPage() {
   
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/member/arac/AracListeWithPlakaOrFirma?searchplakaorfirma=${inputValue}`);
+        const response = await axios.get(`/api/Arac/AracListeWithPlakaOrFirma?searchplakaorfirma=${inputValue}`);
         console.log(response.data);
         setPlakaNoList(response.data);
       } catch (error) {
@@ -167,6 +169,8 @@ function NewRepairPage() {
   }, [values.Detaylar]); // Detay dizisi değiştikçe otomatik hesaplama yapar
 
 
+
+
   
 
   const handleAddInputButton = () => {
@@ -177,14 +181,14 @@ function NewRepairPage() {
       islemAciklama: '',
       ToplamFiyat: null
     };
-    setFieldValue('Detay', [...values.Detaylar, newDetay]);
+    setFieldValue('Detaylar', [...values.Detaylar, newDetay]);
   };
 
   const handleDeleteInputButton = (index: number) => {
     if (values.Detaylar.length > 1) {
       const newDetay = [...values.Detaylar];
       newDetay.splice(index, 1); // İlgili index'teki öğeyi kaldır
-      setFieldValue("Detay", newDetay);
+      setFieldValue("Detaylar", newDetay);
     } else {
       toast.warn("En az bir işlem satırı kalmalı!");
     }
