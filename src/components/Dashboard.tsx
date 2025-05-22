@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -14,6 +15,7 @@ import CarRepairIcon from '@mui/icons-material/CarRepair';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import axios from '../config/AxiosConfig';
 import Modal from '@mui/material/Modal';
+import { text } from 'stream/consumers';
 
 
 
@@ -36,7 +38,7 @@ interface FormData {
   BakimKM: number;
   Plaka: string;
   ToplamFiyat: number;
-  Status: boolean;
+  Statu: null;
   MalzemeFiyat: number;
   IscilikFiyat: number;
   islemAciklama: string;
@@ -101,7 +103,7 @@ const [selectedRow, setSelectedRow] = useState<any[]>([]);
  const [selectedModels, setSelectedModels] = useState<string>("");
 const [options, setOptions] = useState<any[]>([]); // Autocomplete için seçenekler
 const [inputValue, setInputValue] = useState(""); // Autocomplete için input değeri
-const [status, setStatus] = useState(false); // Durum kontrolü
+const [statu, setStatu] = useState(1); // Durum kontrolü
 const [open, setOpen] = useState(false);
 const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -119,7 +121,7 @@ const [proccessFormData, setProcessFormData] = useState<FormData>({
   BakimKM: 0,
   Plaka: "",
   ToplamFiyat: 0,
-  Status: false,
+  Statu: null as any,
   MalzemeFiyat: 0,
   IscilikFiyat: 0,
   islemAciklama: "",
@@ -170,7 +172,8 @@ const resetForm = () => {
     BakimKM: 0,
     Plaka: "",
     ToplamFiyat: 0,
-    Status: false,
+    Statu: null as any,
+    AracId: 0,
     MalzemeFiyat: 0,
     IscilikFiyat: 0,
     islemAciklama: "",
@@ -179,7 +182,11 @@ const resetForm = () => {
 }
 
 const handleDoneProcess = async (id: number) => {
-  // Doldurulacak
+  setStatu(4);
+  const isConfirmed = confirm("İşlem tamamlanacak. Devam etmek istiyor musunuz?");
+  if (!isConfirmed) {
+    return; // Kullanıcı onay vermezse işlemi iptal et
+  }
 }
 
  //İşlem silme fonksiyonu olacak
@@ -232,7 +239,7 @@ const handleEditProcess = async (id: number) => {
       BakimKM: data.BakimKM,
       Plaka: data.Plaka,
       ToplamFiyat: data.ToplamFiyat,
-      Status: data.Status,
+      Statu: data.Statu,
       MalzemeFiyat: data.MalzemeFiyat,
       IscilikFiyat: data.IscilikFiyat,
       islemAciklama: data.islemAciklama,
@@ -241,6 +248,7 @@ const handleEditProcess = async (id: number) => {
     });
     
     setSelectedRow([data.islemdetayid]);
+    
     handleOpen();
   } catch (error) {
     console.error("Veri çekme hatası:", error);
@@ -263,7 +271,7 @@ const processHandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       AracId: proccessFormData.AracId
     };
     console.log("Güncellenen veri:", updateData);
-    // PUT isteği ile güncelleme yapıyoruz
+    
     const response = await axios.post(
       `/api/islemNew/UpdateIslemD/${proccessFormData.ID}`,
       updateData,
@@ -289,9 +297,9 @@ const processHandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 
 
 const columns: GridColDef[] = [
-  // { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'Müşteri', headerName: 'Müşteri İsmi', width: 125, headerAlign: 'center', align: 'center' },
-  { field: 'Araç', headerName: 'Araç', width: 125, headerAlign: 'center' , align: 'center' },
+  
+  { field: 'Müşteri', headerName: 'Müşteri İsmi', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
+  { field: 'Araç', headerName: 'Araç', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
 //   { field: 'Tarih', headerName: 'Tarih', type: 'string', width: 125, 
 //     valueFormatter: (params : any) => {
 //       const val = params.value;
@@ -305,15 +313,66 @@ const columns: GridColDef[] = [
 //   });
 //   },
 // },
-  {field: 'Tarih', headerName: 'Tarih', type: 'string', width: 125,headerAlign: 'center' , align: 'center'},
-  // { field: 'Ödeme', headerName: 'Ödeme', type: 'number', width: 125, headerAlign: 'left', align: 'left' },
-  { field: 'islemTur', headerName: 'İşlem Türü', width: 125, headerAlign: 'center' , align: 'center' },
-  { field: 'islem', headerName: 'İşlem', width: 125, headerAlign: 'center' , align: 'center' },
-  { field: 'KM', headerName: 'KM', type: 'number', width: 125, headerAlign: 'center', align: 'center' },
-  { field: 'Plaka', headerName: 'Plaka', width: 125, headerAlign: 'center' , align: 'center' },
-  {field: 'ToplamFiyat', headerName: 'Toplam Fiyat', type: 'number', width: 125, headerAlign: 'center', align: 'center' },
-  {field: 'Status', headerName: 'Durum', width: 125, headerAlign: 'center' , align: 'center' },
-  {field: 'actions', headerName: 'İşlemler', width: 175, headerAlign:'center', align: 'center', sortable: false, renderCell: (params) => (
+  {field: 'Tarih', headerName: 'Tarih', type: 'string', minWidth: 125, maxWidth:200, flex:1,headerAlign: 'center' , align: 'left'},
+  { field: 'islemTur', headerName: 'İşlem Türü', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
+  { field: 'islem', headerName: 'İşlem', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
+  { field: 'KM', headerName: 'KM', type: 'number', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
+  { field: 'Plaka', headerName: 'Plaka', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
+  {field: 'ToplamFiyat', headerName: 'Toplam Fiyat', type: 'number', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
+  {field: 'Statu', headerName: 'Durum', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center',
+     renderCell: (params) => {
+    const statu = params.value; // params.row.Statu yerine params.value kullanın
+    let backgroundColor = '';
+    let statusText = '';
+    let textColor = '';
+    let fontSize = '';
+    let fontWeight = '';
+    let padding = '';
+    let borderRadius = '';
+
+    switch (statu) {
+      case 1:
+        backgroundColor = '#fbdbd0';
+        textColor = '#8c552e';
+        fontSize = '16px';
+        fontWeight = 'bold';
+        statusText = 'Devam Ediyor';
+        padding = '8px';
+        borderRadius = '4px';
+        break;
+      case 4:
+        backgroundColor = '#74fbdd';
+        textColor = '#0e7957';
+        fontSize = '16px';
+        statusText = 'İşlem Tamamlandı';
+        padding = '8px';
+        borderRadius = '4px';
+        break;
+      default:
+        backgroundColor = '#e0e0e0'; // Varsayılan renk
+        statusText = 'Bilinmiyor';
+        padding = '8px';
+        borderRadius = '4px';
+        
+    }
+
+    return (
+      <div
+        style={{
+          backgroundColor,
+          color: textColor,
+          padding: '4px 12px',
+          borderRadius: '12px',
+          display: 'inline-block', 
+          whiteSpace: 'nowrap', 
+          fontWeight: statu === 1 ? 'bold' : 'normal',
+        }}
+      >
+        {statusText}
+      </div>
+    );
+  },},
+  {field: 'actions', headerName: 'İşlemler', minWidth: 100, maxWidth:200, flex:1, headerAlign:'center', align: 'left', sortable: false, renderCell: (params) => (
     <div style={{ width:'75px', display: 'flex', justifyContent: 'space-between' }}>
 
       {/* <div>
@@ -322,17 +381,23 @@ const columns: GridColDef[] = [
         ></CarRepairIcon>
       </div> */}
             <div>
-      <DoneAllIcon onClick={() => handleDoneProcess(params.row.ID)}
+      <DoneAllIcon
+      titleAccess='İşlemi Tamamla'
+      onClick={() => handleDoneProcess(params.row.ID)}
       style={{ cursor: 'pointer', marginLeft:'15px',marginTop:'15px', color:'green', fontSize:'25px',opacity:'0.8' } }>
       </DoneAllIcon>
       </div>
       <div>
-      <EditIcon onClick={() => handleEditProcess(params.row.ID)}
+      <EditIcon
+      titleAccess='İşlemi Düzenle'
+      onClick={() => handleEditProcess(params.row.ID)}
         style={{ cursor: 'pointer', marginLeft:'15px',marginTop:'15px', color:'#F3C623', fontSize:'25px', opacity:'0.8' } }
         ></EditIcon>
       </div>
       <div>
-      <DeleteIcon onClick={() => handleDeleteProcess(params.row.ID)}
+      <DeleteIcon
+      titleAccess='İşlemi Sil'
+      onClick={() => handleDeleteProcess(params.row.ID)}
       style={{ cursor: 'pointer', marginLeft:'15px',marginTop:'15px', color:'red', fontSize:'25px',opacity:'0.8' } }>
       </DeleteIcon>
       </div>
@@ -349,11 +414,11 @@ const rows = processData.map((data, index) => ({
   Tarih: data.Tarih,
   islemTur: data.islemTur,
   islem : data.islemAciklama,
-  Durum: data.Status,
+  Statu: data.Statu,
   KM: data.BakimKM,
   Plaka: data.Plaka,
   ToplamFiyat: data.ToplamFiyat,
-  Status: data.Status,
+  
 }));
 
  
@@ -526,10 +591,11 @@ const paginationModel = { page: 0, pageSize:10};
       width: '100%',
     }}>
       <Paper
-        sx={{height: 'calc(100vh - 200px)', width: '100%', overflow: 'hidden'}}
+        sx={{height: 'calc(100vh - 200px)', width: '100%', overflow: 'auto'}}
       >
         <DataGrid
           rows={rows}
+          getRowHeight={() => 'auto'}
           columns={columns.map((column) => ({
             ...column,
             flex: 1, // Tüm sütunların esnek genişlikte olmasını sağlar
@@ -551,7 +617,16 @@ const paginationModel = { page: 0, pageSize:10};
           columnBufferPx={columns.length} // Tüm sütunları hemen render et
           sx={{
             width: '100%',
-            height: '100%',
+            height: 'calc(100vh - 200px)',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+
+            '& .MuiDataGrid-cell': {
+            padding: '8px', // Hücre içi boşluk
+            display: 'flex',
+              alignItems: 'center', // Dikeyde ortala
+              },
             '& .MuiDataGrid-main': { // İç grid alanı için stil
               width: '100%',
             },
