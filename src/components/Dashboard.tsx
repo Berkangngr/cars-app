@@ -44,6 +44,8 @@ interface FormData {
   islemAciklama: string;
   islemdetayid: number;
   AracId: number;
+  AracMarka:string;
+  AracModel:string;
 }
 
 // Güncelleme için beklenen veri yapısı
@@ -112,8 +114,8 @@ const handleOpen = () => setOpen(true);
   }
 const [processData, setProcessData] = useState<FormData[]>([]); // İŞLEM VERİLERİ
 
-const [proccessFormData, setProcessFormData] = useState<FormData>({
-  ID: null as any,
+const [processFormData, setProcessFormData] = useState<FormData>({
+  ID: 0,
   Adi: "",
   Araç: "",
   Tarih: "",
@@ -126,7 +128,9 @@ const [proccessFormData, setProcessFormData] = useState<FormData>({
   IscilikFiyat: 0,
   islemAciklama: "",
   islemdetayid: 0,
-  AracId: 0
+  AracId: 0,
+    AracMarka:"",
+  AracModel:"",
 });
 
 
@@ -164,7 +168,7 @@ const [proccessFormData, setProcessFormData] = useState<FormData>({
 
 const resetForm = () => {
   setProcessFormData({
-    ID: null as any,
+    ID:0,
     Adi: "",
     Araç: "",
     Tarih: "",
@@ -177,16 +181,30 @@ const resetForm = () => {
     MalzemeFiyat: 0,
     IscilikFiyat: 0,
     islemAciklama: "",
-    islemdetayid: 0
+    islemdetayid: 0,
+    AracMarka:"",
+    AracModel:"",
   })
 }
 
 const handleDoneProcess = async (id: number) => {
-  setStatu(4);
-  const isConfirmed = confirm("İşlem tamamlanacak. Devam etmek istiyor musunuz?");
+    const isConfirmed = confirm("İşlem tamamlanacak. Devam etmek istiyor musunuz?");
   if (!isConfirmed) {
     return; // Kullanıcı onay vermezse işlemi iptal et
   }
+  try {
+    const response = await axios.post(`/api/islemNew/OkislemD`, id, {
+      headers: {
+        "Content-Type" : "application/json",
+      },
+    })
+    toast.success("İşlem Tamamlandı");
+    fetchProcess();
+  } catch (error) {
+    toast.error("İşlem güncellenirken bir hata oluştu.");
+  }
+  
+
 }
 
  //İşlem silme fonksiyonu olacak
@@ -225,13 +243,14 @@ const handleDoneProcess = async (id: number) => {
   //İşlem düzenleme fonksiyonu olacak
   // İşlem düzenleme fonksiyonu - DÜZGÜN HALİ
 const handleEditProcess = async (id: number) => {
+  
   try {
     // GET isteği ile veriyi çekiyoruz
     const response = await axios.get(`/api/islemNew/GetIslemDetailsById?islemId=${id}`);
     const data = response.data;
     console.log("Güncellemek için Gelen veri:", data);
     setProcessFormData({
-      ID: data.islemdetayid,
+      ID: data.ID,
       Adi: data.Adi,
       Araç: data.Araç,
       Tarih: data.Tarih,
@@ -243,13 +262,18 @@ const handleEditProcess = async (id: number) => {
       MalzemeFiyat: data.MalzemeFiyat,
       IscilikFiyat: data.IscilikFiyat,
       islemAciklama: data.islemAciklama,
-      islemdetayid: data.islemdetayid,
-      AracId: data.AracId
+       islemdetayid: data.ID,
+      AracId: data.AracId,
+      AracMarka:data.AracMarka,
+      AracModel:data.AracModel,
     });
     
-    setSelectedRow([data.islemdetayid]);
+    setSelectedRow([data.ID]);
     
-    handleOpen();
+        setTimeout(() => {
+      handleOpen();
+    }, 100);
+
   } catch (error) {
     console.error("Veri çekme hatası:", error);
     toast.error("İşlem bilgileri alınamadı!");
@@ -258,22 +282,23 @@ const handleEditProcess = async (id: number) => {
 
 // Form submit işlemi - DÜZGÜN HALİ
 const processHandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  console.log("FormData ID:", processFormData.ID);
   event.preventDefault();
   try {
     const updateData = {
-      ID: proccessFormData.ID,
-      MalzemeFiyat: proccessFormData.MalzemeFiyat,
-      IscilikFiyat: proccessFormData.IscilikFiyat,
-      ToplamFiyat: proccessFormData.ToplamFiyat,
-      islemAciklama: proccessFormData.islemAciklama,
-      BakimKM: proccessFormData.BakimKM,
-      islemTur: proccessFormData.islemTur,
-      AracId: proccessFormData.AracId
+      ID: processFormData.ID,
+      MalzemeFiyat: processFormData.MalzemeFiyat,
+      IscilikFiyat: processFormData.IscilikFiyat,
+      ToplamFiyat: processFormData.ToplamFiyat,
+      islemAciklama: processFormData.islemAciklama,
+      BakimKM: processFormData.BakimKM,
+      islemTur: processFormData.islemTur,
+      AracId: processFormData.AracId
     };
     console.log("Güncellenen veri:", updateData);
     
     const response = await axios.post(
-      `/api/islemNew/UpdateIslemD/${proccessFormData.ID}`,
+      `/api/islemNew/UpdateIslemD`,
       updateData,
       {
         headers: {
@@ -295,25 +320,31 @@ const processHandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
   }
 };
 
+//Güncellemede toplam fiyatı hesaplama
+const handlePriceChange = (field: 'MalzemeFiyat' | 'IscilikFiyat', value: number) => {
+  const newFormData = {
+    ...processFormData,
+    [field]: value,
+    ToplamFiyat: processFormData.MalzemeFiyat + processFormData.IscilikFiyat
+  };
+  
+  // Eğer değişen alan zaten yeni değerle güncellenmişse:
+  if (field === 'MalzemeFiyat') {
+    newFormData.ToplamFiyat = value + processFormData.IscilikFiyat;
+  } else {
+    newFormData.ToplamFiyat = processFormData.MalzemeFiyat + value;
+  }
+
+  setProcessFormData(newFormData);
+};
+
 
 const columns: GridColDef[] = [
   
   { field: 'Müşteri', headerName: 'Müşteri İsmi', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
-  { field: 'Araç', headerName: 'Araç', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
-//   { field: 'Tarih', headerName: 'Tarih', type: 'string', width: 125, 
-//     valueFormatter: (params : any) => {
-//       const val = params.value;
-//       if (!val) return 'Tarih Yok';
-//     const date = new Date(val);
-//     if (isNaN(date.getTime())) return 'Geçersiz Tarih';
-//     return  date.toLocaleDateString('tr-TR', {
-//       year: 'numeric',
-//       month: '2-digit',
-//       day: '2-digit',
-//   });
-//   },
-// },
-  {field: 'Tarih', headerName: 'Tarih', type: 'string', minWidth: 125, maxWidth:200, flex:1,headerAlign: 'center' , align: 'left'},
+  { field: 'Marka', headerName: 'Marka', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
+  { field: 'Model', headerName: 'Model', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
+  {field: 'Tarih', headerName: 'Tarih', type: 'string', minWidth: 125, maxWidth:200, flex:1,headerAlign: 'center' , align: 'center'},
   { field: 'islemTur', headerName: 'İşlem Türü', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
   { field: 'islem', headerName: 'İşlem', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
   { field: 'KM', headerName: 'KM', type: 'number', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
@@ -340,11 +371,21 @@ const columns: GridColDef[] = [
         padding = '8px';
         borderRadius = '4px';
         break;
+      case 2:
+        backgroundColor = '#fdffab';
+        textColor = '#8c552e';
+        fontSize = '16px';
+        fontWeight = 'bold';
+        statusText = 'Güncellendi';
+        padding = '8px';
+        borderRadius = '4px';
+        break;
       case 4:
         backgroundColor = '#74fbdd';
         textColor = '#0e7957';
         fontSize = '16px';
-        statusText = 'İşlem Tamamlandı';
+        fontWeight = 'bold';
+        statusText = 'Tamamlandı';
         padding = '8px';
         borderRadius = '4px';
         break;
@@ -384,21 +425,21 @@ const columns: GridColDef[] = [
       <DoneAllIcon
       titleAccess='İşlemi Tamamla'
       onClick={() => handleDoneProcess(params.row.ID)}
-      style={{ cursor: 'pointer', marginLeft:'15px',marginTop:'15px', color:'green', fontSize:'25px',opacity:'0.8' } }>
+      style={{ cursor: 'pointer', marginLeft:'10px',marginTop:'15px', color:'green', fontSize:'25px',opacity:'0.8' } }>
       </DoneAllIcon>
       </div>
       <div>
       <EditIcon
       titleAccess='İşlemi Düzenle'
       onClick={() => handleEditProcess(params.row.ID)}
-        style={{ cursor: 'pointer', marginLeft:'15px',marginTop:'15px', color:'#F3C623', fontSize:'25px', opacity:'0.8' } }
+        style={{ cursor: 'pointer', marginLeft:'10px',marginTop:'15px', color:'#F3C623', fontSize:'25px', opacity:'0.8' } }
         ></EditIcon>
       </div>
       <div>
       <DeleteIcon
       titleAccess='İşlemi Sil'
       onClick={() => handleDeleteProcess(params.row.ID)}
-      style={{ cursor: 'pointer', marginLeft:'15px',marginTop:'15px', color:'red', fontSize:'25px',opacity:'0.8' } }>
+      style={{ cursor: 'pointer', marginLeft:'10px',marginTop:'15px', color:'red', fontSize:'25px',opacity:'0.8' } }>
       </DeleteIcon>
       </div>
     </div> )}
@@ -410,7 +451,8 @@ const rows = processData.map((data, index) => ({
   ID: data.islemdetayid,
   id: data.islemdetayid,
   Müşteri: data.Adi,
-  Araç: data.Araç,
+  Marka: data.AracMarka,
+  Model: data.AracModel,
   Tarih: data.Tarih,
   islemTur: data.islemTur,
   islem : data.islemAciklama,
@@ -470,6 +512,7 @@ const paginationModel = { page: 0, pageSize:10};
               <Modal
                 open={open}
                 onClose={handleClose}
+                
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
                 >
@@ -485,13 +528,8 @@ const paginationModel = { page: 0, pageSize:10};
       <TextField
         label="Malzeme Fiyatı"
         type="number"
-        value={proccessFormData.MalzemeFiyat}
-        onChange={(e) =>
-          setProcessFormData({
-            ...proccessFormData,
-            MalzemeFiyat: Number(e.target.value),
-          })
-        }
+        value={processFormData.MalzemeFiyat}
+        onChange={(e) => handlePriceChange('MalzemeFiyat', Number(e.target.value))}
         fullWidth
         margin="normal"
       />
@@ -499,23 +537,18 @@ const paginationModel = { page: 0, pageSize:10};
       <TextField
         label="İşçilik Fiyatı"
         type="number"
-        value={proccessFormData.IscilikFiyat}
-        onChange={(e) =>
-          setProcessFormData({
-            ...proccessFormData,
-            IscilikFiyat: Number(e.target.value),
-          })
-        }
+        value={processFormData.IscilikFiyat}
+        onChange={(e) => handlePriceChange('IscilikFiyat', Number(e.target.value))}
         fullWidth
         margin="normal"
       />
 
       <TextField
         label="İşlem Açıklaması"
-        value={proccessFormData.islemAciklama}
+        value={processFormData.islemAciklama}
         onChange={(e) =>
           setProcessFormData({
-            ...proccessFormData,
+            ...processFormData,
             islemAciklama: e.target.value,
           })
         }
@@ -525,10 +558,10 @@ const paginationModel = { page: 0, pageSize:10};
 
       <TextField
         label="İşlem Türü"
-        value={proccessFormData.islemTur}
+        value={processFormData.islemTur}
         onChange={(e) =>
           setProcessFormData({
-            ...proccessFormData,
+            ...processFormData,
             islemTur: e.target.value,
           })
         }
@@ -538,10 +571,10 @@ const paginationModel = { page: 0, pageSize:10};
       <TextField
         label="Bakım KM"
         type="number"
-        value={proccessFormData.BakimKM}
+        value={processFormData.BakimKM}
         onChange={(e) =>
           setProcessFormData({
-            ...proccessFormData,
+            ...processFormData,
             BakimKM: Number(e.target.value),
           })
         }
@@ -551,15 +584,19 @@ const paginationModel = { page: 0, pageSize:10};
       <TextField
         label="Toplam Fiyat"
         type="number"
-        value={proccessFormData.ToplamFiyat}
-        onChange={(e) =>
-          setProcessFormData({
-            ...proccessFormData,
-            ToplamFiyat: Number(e.target.value),
-          })
-        }
+        value={processFormData.ToplamFiyat}
+        InputProps={{
+    readOnly: true,
+  }}
+
         fullWidth
         margin="normal"
+        sx={{
+    "& .MuiInputBase-input": {
+      fontWeight: "bold",
+      
+    }
+  }}
       />
 
       
@@ -601,7 +638,7 @@ const paginationModel = { page: 0, pageSize:10};
             flex: 1, // Tüm sütunların esnek genişlikte olmasını sağlar
             minWidth: 100, // Minimum genişlik ayarı
           }))}
-          getRowId={(row) => row.ID}
+          getRowId={(row) => row.islemdetayid || row.ID}
           initialState={{ 
             pagination: { paginationModel },
             columns: {

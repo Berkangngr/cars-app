@@ -4,17 +4,27 @@ import { Reminder } from "../../types/Reminder";
 import { Box, Typography, Paper, Button } from '@mui/material';
 import { ReminderForm } from "./ReminderForm";
 import { ReminderList } from "./ReminderList";
+import axios from "../../config/AxiosConfig";
+import { columnGroupsStateInitializer } from "@mui/x-data-grid/internals";
 
 
 export const ReminderApp = () => {
     const [reminders, setReminders] = useState<Reminder[]>([]);
     const [openForm, setOpenForm] = useState(false);
 
-    const addReminder = (newReminder: Reminder) => {
-        setReminders([...reminders, {
-            ...newReminder,
-            id: Date.now().toString(),
-        }]);
+    const addReminder = async (newReminder: Reminder) =>  {
+        console.log("New Reminder: g", newReminder)
+        try {
+        const response = await axios.post(`/api/Animsatici/CreateAminsat`,newReminder,      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+        setReminders([...reminders, response.data]);
+        } catch (error) {
+            console.log("Reminder eklenirken hata oluştu:", error);
+        }
+        
     };
 
      const deleteReminder = (id: string) => {
