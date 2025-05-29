@@ -9,7 +9,7 @@ import axios from "../config/AxiosConfig";
 
 export const changePassword = async (oldPassword : any, newPassword : any) => {
 try {
-    const response = await axios.post("/ChangePassword", { //Bu api hatalı doğrusunu bulup yaz
+    const response = await axios.post("/api/UserSetting/ChangePassword", { //Bu api hatalı doğrusunu bulup yaz
         OldPassword: oldPassword,
         newPassword: newPassword,
     });

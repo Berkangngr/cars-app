@@ -27,22 +27,22 @@ export const ReminderList = ({ reminders, onDelete }: ReminderListProps) => {
           <ListItemText
             primary={
               <Box display="flex" alignItems="center" gap={1}>
-                <Typography fontWeight="bold">{reminder.title}</Typography>
+                <Typography  fontWeight="bold">{reminder.Title}</Typography>
                 <Chip 
-                  label={reminder.priority} 
+                  label={reminder.Priority} 
                   size="small"
                   color={
-                    reminder.priority === 'high' ? 'error' :
-                    reminder.priority === 'medium' ? 'warning' : 'success'
+                    reminder.Priority === 'high' ? 'error' :
+                    reminder.Priority === 'medium' ? 'warning' : 'success'
                   }
                 />
               </Box>
             }
             secondary={
               <>
-                <Typography>{reminder.description}</Typography>
+                <Typography>{reminder.Description}</Typography>
                 <Typography variant="caption">
-                  {new Date(reminder.dueDate).toLocaleString('tr-TR', {
+                  {new Date(reminder.DueDate).toLocaleString('tr-TR', {
                     day: '2-digit',
                     month: 'long',
                     year: 'numeric',

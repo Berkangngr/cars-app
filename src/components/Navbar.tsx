@@ -17,6 +17,7 @@ import {useFormik} from 'formik';
 import { newPasswordSchema } from '../schemas/NewPassword';
 import { changePassword } from '../services/ChangePasswordService';
 
+
 //Modal styleı
 const styleModal = {
   position: 'absolute',
@@ -41,6 +42,8 @@ interface userApiResponse {
   UserName: string
   Statu: boolean
 }
+
+
 
 //Dropdown menu style
 const StyledMenu = styled((props: MenuProps) => (
@@ -133,6 +136,20 @@ const handleClick = (event: React.MouseEvent<HTMLElement>) => {
 const handleClose = () => {
   setAnchorEl(null);
 };
+
+//Logout fonksiyonu
+
+const handleLogOut = async () => {
+  try {
+    const response = await axios.post('/api/UserSetting/LogOut');
+    localStorage.removeItem('authToken')
+    toast.info("Başarı ile çıkış yapıldı!")
+    navigate("/");
+  } catch (error) {
+    console.log("Çıkış yaparken bir sorun oluştu:", error);
+  }
+  
+}
 
 //Admin ekranındaki şifreyi değiştirme
 
@@ -297,11 +314,7 @@ validationSchema: newPasswordSchema,
         {/* Logout butonu*/}
         <div>
             <IconButton
-            onClick={() => {
-              toast.info('Başarıyla çıkış yapıldı!');
-              localStorage.removeItem('authToken');
-              navigate('/');
-            }}
+            onClick={handleLogOut}
                 aria-label='Logout'
                 sx={{color: '#333333e1', fontWeight:'bold'}}
             >

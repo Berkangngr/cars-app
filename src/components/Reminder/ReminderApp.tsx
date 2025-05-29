@@ -6,6 +6,8 @@ import { ReminderForm } from "./ReminderForm";
 import { ReminderList } from "./ReminderList";
 import axios from "../../config/AxiosConfig";
 import { columnGroupsStateInitializer } from "@mui/x-data-grid/internals";
+import { toast } from "react-toastify";
+
 
 
 export const ReminderApp = () => {
@@ -13,20 +15,37 @@ export const ReminderApp = () => {
     const [openForm, setOpenForm] = useState(false);
 
     const addReminder = async (newReminder: Reminder) =>  {
-        console.log("New Reminder: g", newReminder)
+         console.log(newReminder)
+        
         try {
-        const response = await axios.post(`/api/Animsatici/CreateAminsat`,newReminder,      {
+        const reminderTosend = { // Burada post atarken attığımız anın tarihini de oluşturuyoruz.
+            ...newReminder,
+            CreatedAt : new Date().toISOString(),
+            DueDate : newReminder.DueDate.toISOString(),
+            Completed : newReminder.Completed || false
+        };
+         console.log("Sending Reminder: ", reminderTosend);
+        const response = await axios.post('/api/Animsatici/CreateAnimsat',reminderTosend, {
+           
         headers: {
           'Content-Type': 'application/json'
         }
       });
-        setReminders([...reminders, response.data]);
-        } catch (error) {
-            console.log("Reminder eklenirken hata oluştu:", error);
+        toast.success("Randevu başarı ile eklendi.")
+        //setReminders([...reminders, response.data]);
+        resetForm()
+        } catch(error) {
+            console.error("Reminder eklenirken hata oluştu:", error);
         }
         
     };
 
+    //Reset form
+    const resetForm = () => {
+        setReminders([]);
+    }
+
+  
      const deleteReminder = (id: string) => {
         console.log('Silinecek ID:', id); // DEBUG
         setReminders(prev => {
@@ -36,16 +55,16 @@ export const ReminderApp = () => {
         });
     };
 
-    useEffect(() => {
-        const savedReminders = localStorage.getItem('reminders');
-        if (savedReminders) {
-            setReminders(JSON.parse(savedReminders));
-        }
-    }, []);
+    // useEffect(() => {
+    //     const savedReminders = localStorage.getItem('reminders');
+    //     if (savedReminders) {
+    //         setReminders(JSON.parse(savedReminders));
+    //     }
+    // }, []);
 
-    useEffect(() => {
-        localStorage.setItem('reminders', JSON.stringify(reminders));
-    }, [reminders]);
+    // useEffect(() => {
+    //     localStorage.setItem('reminders', JSON.stringify(reminders));
+    // }, [reminders]);
 
  
 

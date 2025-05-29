@@ -1,13 +1,15 @@
 export interface Reminder {
-     id: string;
-    Title: string;
-    Description: string;
-    Completed: boolean;
+    id: string;
+    Title: string;  //RF
+    Description: string; //RF
+    Completed: boolean; //RF
     CreatedAt: Date;
-     DueDate: Date; // Hatırlatıcı için son tarih
-    Priority: 'low' | 'medium' | 'high';
+     DueDate: Date; // Hatırlatıcı için son tarih RF
+    Priority: 'low' | 'medium' | 'high'; //RF
     
 }
 
 
+
+//Reminder form'a description eklendi on submit ile gönderiliyor
 

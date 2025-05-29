@@ -473,9 +473,9 @@ const columns: GridColDef[] = [
   { field: 'MotorHacim', headerName: 'Motor Hacim', width: 100,headerAlign: 'center' , align: 'center' },
   { field: 'MotorBeygir', headerName: 'Motor Beygir', width: 100,headerAlign: 'center' , align: 'center' },
   { field: 'Km', headerName: 'Km', width: 50,headerAlign: 'center' , align: 'center' },
-  { field: 'BakimKM', headerName: 'Bakım Km', width: 50 ,headerAlign: 'center' , align: 'center'},
-  { field: 'SonBakim', headerName: 'Son Bakım Tarih', width: 100,headerAlign: 'center' , align: 'center' },
-  { field: 'SiradakiBakim', headerName: 'Sıradaki Bakım Tarih', width: 100,headerAlign: 'center' , align: 'center' },
+  // { field: 'BakimKM', headerName: 'Bakım Km', width: 50 ,headerAlign: 'center' , align: 'center'},
+  // { field: 'SonBakim', headerName: 'Son Bakım Tarih', width: 100,headerAlign: 'center' , align: 'center' },
+  // { field: 'SiradakiBakim', headerName: 'Sıradaki Bakım Tarih', width: 100,headerAlign: 'center' , align: 'center' },
   { field: 'FirmaAdi', headerName: 'Müşteri İsmi', width: 100,headerAlign: 'center' , align: 'center' },
   {field: 'actions', headerName: 'İşlemler', width: 100, headerAlign: 'center' , align: 'center', sortable: false,
   renderCell: (params) => (

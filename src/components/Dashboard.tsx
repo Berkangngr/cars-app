@@ -344,7 +344,7 @@ const columns: GridColDef[] = [
   { field: 'Müşteri', headerName: 'Müşteri İsmi', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
   { field: 'Marka', headerName: 'Marka', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
   { field: 'Model', headerName: 'Model', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
-  {field: 'Tarih', headerName: 'Tarih', type: 'string', minWidth: 125, maxWidth:200, flex:1,headerAlign: 'center' , align: 'center'},
+  {field: 'Tarih', headerName: 'Tarih', type: 'string', minWidth: 100, maxWidth:200, flex:1,headerAlign: 'center' , align: 'center'},
   { field: 'islemTur', headerName: 'İşlem Türü', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
   { field: 'islem', headerName: 'İşlem', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
   { field: 'KM', headerName: 'KM', type: 'number', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
@@ -406,7 +406,8 @@ const columns: GridColDef[] = [
           borderRadius: '12px',
           display: 'inline-block', 
           whiteSpace: 'nowrap', 
-          fontWeight: statu === 1 ? 'bold' : 'normal',
+          // fontWeight: statu === 1 ? 'bold' : 'normal',
+
         }}
       >
         {statusText}
