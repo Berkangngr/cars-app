@@ -10,9 +10,14 @@ import { toast } from "react-toastify";
 
 
 
+
 export const ReminderApp = () => {
     const [reminders, setReminders] = useState<Reminder[]>([]);
     const [openForm, setOpenForm] = useState(false);
+
+
+
+
 
     const addReminder = async (newReminder: Reminder) =>  {
          console.log(newReminder)
@@ -20,51 +25,77 @@ export const ReminderApp = () => {
         try {
         const reminderTosend = { // Burada post atarken attığımız anın tarihini de oluşturuyoruz.
             ...newReminder,
-            CreatedAt : new Date().toISOString(),
-            DueDate : newReminder.DueDate.toISOString(),
+            CreatedAt : new Date().toISOString().split('T')[0],
+            DueDate : newReminder.DueDate.toISOString().split('T')[0],
             Completed : newReminder.Completed || false
         };
          console.log("Sending Reminder: ", reminderTosend);
-        const response = await axios.post('/api/Animsatici/CreateAnimsat',reminderTosend, {
+        const response = await axios.post('/api/Animsatici/CreateAnimsat/',reminderTosend, {
            
         headers: {
           'Content-Type': 'application/json'
         }
       });
         toast.success("Randevu başarı ile eklendi.")
-        //setReminders([...reminders, response.data]);
-        resetForm()
+        fetchGetReminders()
+       
         } catch(error) {
             console.error("Reminder eklenirken hata oluştu:", error);
         }
         
     };
 
-    //Reset form
-    const resetForm = () => {
-        setReminders([]);
-    }
+        const fetchGetReminders = async () => {
+            try {
+                const currentDate = new Date().toISOString().split('T')[0]; // Bulunduğumuz tarihi verir
+                console.log(currentDate);
+                const response = await axios.get(`/api/Animsatici/GetAnimsatici?animTarih=${currentDate}`)
+                setReminders(response.data);
+                console.log("API'den gelen ham veri:", response.data); // Ham veriyi loglayın
+                console.log("İlk reminder ID'si:", response.data[0]?.ID); // ID kontrolü
+            } catch (error) {
+                console.log("Reminderları çekerken hata oluştu:", error);
+            }
+        };
+
+          useEffect(() => {
+        fetchGetReminders();
+        
+    
+    // Gün boyunca otomatik yenileme (opsiyonel)
+        const interval = setInterval(fetchGetReminders, 3600000); // Her saat başı
+        return () => clearInterval(interval);
+         }, []);
+
+
 
   
-     const deleteReminder = (id: string) => {
-        console.log('Silinecek ID:', id); // DEBUG
-        setReminders(prev => {
-            const newReminders = prev.filter(r => r.id !== id);
-            console.log('Yeni liste:', newReminders); // DEBUG
-            return newReminders;
-        });
-    };
+    //  const deleteReminder = (id: string) => {
+    //     console.log('Silinecek ID:', id); // DEBUG
+    //     setReminders(prev => {
+    //         const newReminders = prev.filter(r => r.id !== id);
+    //         console.log('Yeni liste:', newReminders); // DEBUG
+    //         return newReminders;
+    //     });
+    // };
 
-    // useEffect(() => {
-    //     const savedReminders = localStorage.getItem('reminders');
-    //     if (savedReminders) {
-    //         setReminders(JSON.parse(savedReminders));
-    //     }
-    // }, []);
+ 
+    const deleteReminder = async (ID: string) => {
+        console.log("Silinecek verinin idsi:", ID)
+        const isConfirmed = confirm("Bu randevu bilgisini silmek istediğinize emin misiniz?");
+        if (!isConfirmed) return;
 
-    // useEffect(() => {
-    //     localStorage.setItem('reminders', JSON.stringify(reminders));
-    // }, [reminders]);
+        try {
+             const response = await axios.post(`/api/Animsatici/AnimPasif?id=${ID}`);
+             fetchGetReminders();
+             toast.success("Randevu başarı ile silindi.")
+        } catch (error) {
+           console.log("Randevu bilgisi kayıt ederken bir hata oluştu:",error);
+        }
+       
+    }
+
+
 
  
 

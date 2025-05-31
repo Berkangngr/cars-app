@@ -4,7 +4,7 @@ import { Reminder } from "../../types/Reminder";
 
 interface ReminderListProps {
   reminders: Reminder[];
-  onDelete: (id: string) => void;
+  onDelete: (ID: string) => void;
 }
 
 export const ReminderList = ({ reminders, onDelete }: ReminderListProps) => {
@@ -12,11 +12,11 @@ export const ReminderList = ({ reminders, onDelete }: ReminderListProps) => {
     <List>
       {reminders.map((reminder) => (
         <ListItem 
-          key={reminder.id}
+          key={reminder.ID}
           secondaryAction={
             <IconButton 
               edge="end" 
-              onClick={() => onDelete(reminder.id)} // onDelete burada kullanılıyor
+              onClick={() => onDelete(reminder.ID)} // onDelete burada kullanılıyor
               color="error"
               aria-label="delete"
             >
@@ -46,8 +46,6 @@ export const ReminderList = ({ reminders, onDelete }: ReminderListProps) => {
                     day: '2-digit',
                     month: 'long',
                     year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
                   })}
                 </Typography>
               </>

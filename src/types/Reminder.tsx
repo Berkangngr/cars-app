@@ -1,5 +1,5 @@
 export interface Reminder {
-    id: string;
+    ID: string;
     Title: string;  //RF
     Description: string; //RF
     Completed: boolean; //RF
