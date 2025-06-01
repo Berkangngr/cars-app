@@ -63,7 +63,6 @@ function HomePage() {
           overflow: 'auto'
         }}>
           <Typography variant="h5" sx={{ textAlign: 'center', mb: 2 }}>
-            Diğer Uygulama
           </Typography>
          <ReminderApp />
         
