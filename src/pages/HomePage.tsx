@@ -28,7 +28,7 @@ function HomePage() {
       {/* ÜST KISIM - TABLO */}
       <Paper elevation={3} sx={{ 
         flex: '0 0 auto', 
-        height: '55%', 
+        height: '75%', 
         overflow: 'auto',
         mb: 1 
       }}>
@@ -56,14 +56,15 @@ function HomePage() {
 
         
         <Paper elevation={3} sx={{ 
-          flex: 1, 
-          p: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'auto'
+           flex: 1, 
+          //  p: 2,
+           display: 'flex',
+           flexDirection: 'column',
+           overflow: 'auto'
         }}>
-          <Typography variant="h5" sx={{ textAlign: 'center', mb: 2 }}>
-          </Typography>
+          {/* <Typography variant="h5" sx={{ textAlign: 'center', mb: 2 }}>
+          </Typography> */}
+
          <ReminderApp />
         
         </Paper>

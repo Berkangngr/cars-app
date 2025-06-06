@@ -46,6 +46,7 @@ interface FormData {
   AracId: number;
   AracMarka:string;
   AracModel:string;
+  IslemId:number;
 }
 
 // Güncelleme için beklenen veri yapısı
@@ -79,6 +80,11 @@ const style = {
   overflow:'auto',
 };
 
+interface OptionType {
+  Adi: string;
+  id: number;
+}
+
 
 // const CustomNoRowsOverlay = () => {
 //   return(
@@ -102,9 +108,6 @@ function Dashboard() {
   const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
   const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
 const [selectedRow, setSelectedRow] = useState<any[]>([]);
- const [selectedModels, setSelectedModels] = useState<string>("");
-const [options, setOptions] = useState<any[]>([]); // Autocomplete için seçenekler
-const [inputValue, setInputValue] = useState(""); // Autocomplete için input değeri
 const [statu, setStatu] = useState(1); // Durum kontrolü
 const [open, setOpen] = useState(false);
 const handleOpen = () => setOpen(true);
@@ -112,6 +115,8 @@ const handleOpen = () => setOpen(true);
     setOpen(false);
     resetForm();
   }
+const [filteredData, setFilteredData] = useState<FormData[]>([]); // Filtrelenmiş tablo verisi
+const [inputValue, setInputValue] = useState(""); // Autocomplete için input değeri
 const [processData, setProcessData] = useState<FormData[]>([]); // İŞLEM VERİLERİ
 
 const [processFormData, setProcessFormData] = useState<FormData>({
@@ -129,8 +134,9 @@ const [processFormData, setProcessFormData] = useState<FormData>({
   islemAciklama: "",
   islemdetayid: 0,
   AracId: 0,
-    AracMarka:"",
+  AracMarka:"",
   AracModel:"",
+  IslemId:0
 });
 
 
@@ -138,32 +144,30 @@ const [processFormData, setProcessFormData] = useState<FormData>({
 
 
 
+const fetchProcess = async () => {
+  try {
+    const response = await axios.get(`/api/islemNew/GetIslemlerNew`);
+    const inComingData = response.data;
 
-  const fetchProcess = async () => {
-    try {
-        const response = await axios.get(`/api/islemNew/GetIslemlerNew`);
-        const inComingData = response.data;
-
-        if (Array.isArray(inComingData)) {
-          setProcessData(inComingData);
-          setOptions(inComingData);
-          console.log(inComingData);
-  
-        }else {
-          console.log("Veri bir array değil:", inComingData);
-        }
-    } catch (error) {
-      console.log("Hata:", error);
-      toast.error("Veri alınırken bir hata oluştu.");
+    if (Array.isArray(inComingData)) {
+      setProcessData(inComingData);
+      setFilteredData(inComingData); // Bu satır önemli!
+      console.log(inComingData);
+    } else {
+      console.log("Veri bir array değil:", inComingData);
     }
+  } catch (error) {
+    console.log("Hata:", error);
+    toast.error("Veri alınırken bir hata oluştu.");
   }
+}
 
   useEffect(() => {
     fetchProcess();
   }, []); 
  
 
-
+const options: OptionType[] = processData.map(item => ({ Adi: item.Adi, id: item.ID }));
 
 
 const resetForm = () => {
@@ -184,6 +188,7 @@ const resetForm = () => {
     islemdetayid: 0,
     AracMarka:"",
     AracModel:"",
+    IslemId:0
   })
 }
 
@@ -241,12 +246,11 @@ const handleDoneProcess = async (id: number) => {
   }
 
   //İşlem düzenleme fonksiyonu olacak
-  // İşlem düzenleme fonksiyonu - DÜZGÜN HALİ
 const handleEditProcess = async (id: number) => {
-  
+  console.log("Seçilen id:" , id)
   try {
     // GET isteği ile veriyi çekiyoruz
-    const response = await axios.get(`/api/islemNew/GetIslemDetailsById?islemId=${id}`);
+    const response = await axios.get(`/api/islemNew/GetIslemDetailsById?islemDetayId=${id}`);
     const data = response.data;
     console.log("Güncellemek için Gelen veri:", data);
     setProcessFormData({
@@ -266,10 +270,11 @@ const handleEditProcess = async (id: number) => {
       AracId: data.AracId,
       AracMarka:data.AracMarka,
       AracModel:data.AracModel,
+      IslemId:data.IslemId
     });
     
     setSelectedRow([data.ID]);
-    
+    fetchProcess()
         setTimeout(() => {
       handleOpen();
     }, 100);
@@ -350,7 +355,7 @@ const columns: GridColDef[] = [
   { field: 'KM', headerName: 'KM', type: 'number', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
   { field: 'Plaka', headerName: 'Plaka', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
   {field: 'ToplamFiyat', headerName: 'Toplam Fiyat', type: 'number', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
-  {field: 'Statu', headerName: 'Durum', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center',
+  {field: 'Statu', headerName: 'Durum', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center',
      renderCell: (params) => {
     const statu = params.value; // params.row.Statu yerine params.value kullanın
     let backgroundColor = '';
@@ -414,14 +419,9 @@ const columns: GridColDef[] = [
       </div>
     );
   },},
-  {field: 'actions', headerName: 'İşlemler', minWidth: 100, maxWidth:200, flex:1, headerAlign:'center', align: 'left', sortable: false, renderCell: (params) => (
-    <div style={{ width:'75px', display: 'flex', justifyContent: 'space-between' }}>
+  {field: 'actions', headerName: 'İşlemler', minWidth: 100, maxWidth:200, flex:1, headerAlign:'center', align: 'left', sortable: false,renderCell: (params) => (
+    <div style={{ width:'75px', display: 'flex', justifyContent: 'space-between'}}>
 
-      {/* <div>
-      <CarRepairIcon onClick={() => handleRepairProcess(params.row.ID)}
-        style={{ cursor: 'pointer', marginLeft:'15px',marginTop:'15px', color:'#F3C623', fontSize:'25px', opacity:'0.8' } }
-        ></CarRepairIcon>
-      </div> */}
             <div>
       <DoneAllIcon
       titleAccess='İşlemi Tamamla'
@@ -440,7 +440,7 @@ const columns: GridColDef[] = [
       <DeleteIcon
       titleAccess='İşlemi Sil'
       onClick={() => handleDeleteProcess(params.row.ID)}
-      style={{ cursor: 'pointer', marginLeft:'10px',marginTop:'15px', color:'red', fontSize:'25px',opacity:'0.8' } }>
+      style={{ cursor: 'pointer',  marginLeft:'10px',marginTop:'15px', color:'red', fontSize:'25px',opacity:'0.8' } }>
       </DeleteIcon>
       </div>
     </div> )}
@@ -448,7 +448,7 @@ const columns: GridColDef[] = [
 
 
 
-const rows = processData.map((data, index) => ({
+const rows = filteredData.map((data, index) => ({
   ID: data.islemdetayid,
   id: data.islemdetayid,
   Müşteri: data.Adi,
@@ -473,39 +473,43 @@ const paginationModel = { page: 0, pageSize:10};
 
 <div>
 
-     <Box
-            sx={{ 
-              marginTop: "20px",
-              marginBottom: "10px",
-              display: "flex", 
-              gap: "10px", 
-              backgroundColor: "#ffffff",
-              borderRadius: "10px",
-              padding: "15px",
-            }}
-          >
-
-            <Autocomplete
-                            freeSolo
-                              options={options}
-                              getOptionLabel={(option) => option?.Adi || ""}
-                              isOptionEqualToValue={(option, value) => option.Adi === value.Adi}
-                              inputValue={inputValue}
-                              onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
-                              // onChange={(event, newValue) => {
-                              //   setFormData((prevState) => ({
-                              //     ...prevState,
-                              //     Adi: newValue?.Adi || "",
-                              //   }));
-                              // }}
-                              renderInput={(params) => (
-                                <TextField {...params} label="Müşteri İsmi İle Ara" />
-                              )}
-                              sx={{ width: 300,  marginLeft: '10px', marginBottom: '10px' }}
-                            />
-
-
-          </Box>
+     <Grid container spacing={2} sx={{ marginTop: "4px", marginBottom: "15px", marginLeft:"5px" }}>
+  <Grid item xs={12} md={6} lg={4}> {/* Responsive genişlik */}
+    <Autocomplete
+      freeSolo
+      options={options.filter(option => 
+     option.Adi.toLowerCase().includes(inputValue.toLowerCase())
+      )}
+      getOptionLabel={(option) => {
+        if (typeof option === 'string') {
+          return option;
+        }
+        return option?.Adi || "";
+      }}
+      inputValue={inputValue}
+      onInputChange={(event, newValue) => {
+        setInputValue(newValue);
+        if (newValue.trim() === "") {
+          setFilteredData(processData);
+        } else {
+          const filtered = processData.filter(item => 
+            item.Adi.toLowerCase().includes(newValue.toLowerCase())
+          );
+          setFilteredData(filtered);
+        }
+      }}
+      renderInput={(params) => (
+        <TextField 
+          {...params} 
+          label="Müşteri İsmi İle Ara" 
+          fullWidth
+        />
+        
+      )}
+    />
+    
+  </Grid>
+</Grid>
 
           {/* MODAL */}
           <Grid>
@@ -661,7 +665,7 @@ const paginationModel = { page: 0, pageSize:10};
             textOverflow: 'ellipsis',
 
             '& .MuiDataGrid-cell': {
-            padding: '8px', // Hücre içi boşluk
+            padding: '4px', // Hücre içi boşluk
             display: 'flex',
               alignItems: 'center', // Dikeyde ortala
               },

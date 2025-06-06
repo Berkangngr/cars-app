@@ -512,7 +512,7 @@ const rows = carsData.map((cars,index) => ({
 }));
 
 
-const paginationModel = { page: 0, pageSize: 5 };
+const paginationModel = { page: 0, pageSize: 100 };
 
   return (
     <>

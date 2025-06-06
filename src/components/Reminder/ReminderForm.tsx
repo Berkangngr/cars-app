@@ -18,7 +18,7 @@ interface ReminderFormProps {
 export const ReminderForm = ({open , onClose, onSubmit}: ReminderFormProps) => {
     const [reminder, setReminder] = useState<Partial<Reminder>>({
         Title: '',
-        DueDate: new Date(),
+       DueDate: new Date(),
         Priority:'medium',
         Completed: false,
         Description: '',

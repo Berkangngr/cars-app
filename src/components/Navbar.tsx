@@ -158,7 +158,8 @@ const submit = async (values: any, actions: any) => {
   try {
     const response = await changePassword(values.oldPassword, values.newPassword);
     if (response.success) {
-      window.location.href = response.redirectUrl;
+      navigate("/");
+      // window.location.href = response.redirectUrl;
     } else {
     if (response.NewPassword) {
       actions.setFieldError("newPassword", response.NewPassword)

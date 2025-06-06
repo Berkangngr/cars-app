@@ -49,10 +49,10 @@ function Sidebar() {
           <ListItemText sx={{color:'#333333e1'}} primary="Araçlar" />
         </ListItem>
         <Divider />
-        <ListItem  component={Link} to="/receivables">
+        {/* <ListItem  component={Link} to="/receivables">
         <CurrencyLiraIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
           <ListItemText sx={{color:'#333333e1'}} primary="Alacaklar" />
-        </ListItem>
+        </ListItem> */}
       </List>
       <Divider />
       
