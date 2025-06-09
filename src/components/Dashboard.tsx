@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { Autocomplete, Box, Button, Grid, TextField, Typography, useMediaQuery } from '@mui/material';
+import { Autocomplete, Box, Button, Grid, TextField, Typography, useMediaQuery, Card, CardContent, Dialog} from '@mui/material';
 import {useState, useEffect} from 'react';
 import { toast } from 'react-toastify';
 import EditIcon from '@mui/icons-material/Edit';
@@ -15,6 +15,7 @@ import CarRepairIcon from '@mui/icons-material/CarRepair';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import axios from '../config/AxiosConfig';
 import Modal from '@mui/material/Modal';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutlined';
 import { text } from 'stream/consumers';
 
 
@@ -105,16 +106,19 @@ interface OptionType {
 // }
 
 function Dashboard() {
-  const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
-  const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
+const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
+const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
 const [selectedRow, setSelectedRow] = useState<any[]>([]);
 const [statu, setStatu] = useState(1); // Durum kontrolü
 const [open, setOpen] = useState(false);
 const handleOpen = () => setOpen(true);
-  const handleClose = () => {
+const handleClose = () => {
     setOpen(false);
     resetForm();
   }
+const [printDetailOpen, setPrintDetailOpen] = useState(false);
+const handleOpenDetail = () => setPrintDetailOpen(true);
+const handleCloseDetail = () => setPrintDetailOpen(false);
 const [filteredData, setFilteredData] = useState<FormData[]>([]); // Filtrelenmiş tablo verisi
 const [inputValue, setInputValue] = useState(""); // Autocomplete için input değeri
 const [processData, setProcessData] = useState<FormData[]>([]); // İŞLEM VERİLERİ
@@ -343,6 +347,43 @@ const handlePriceChange = (field: 'MalzemeFiyat' | 'IscilikFiyat', value: number
   setProcessFormData(newFormData);
 };
 
+// İşlem detayı fonksiyonu
+const handleİnfoProcess = async (id: number) => {
+
+  try {
+  const response = await axios.get(`/api/islemNew/GetIslemDetailsById?islemDetayId=${id}`);
+  const data = response.data;
+  console.log(data)
+   setProcessFormData({
+      ID: data.ID,
+      Adi: data.Adi,
+      Araç: data.Araç,
+      Tarih: data.Tarih,
+      islemTur: data.islemTur,
+      BakimKM: data.BakimKM,
+      Plaka: data.Plaka,
+      ToplamFiyat: data.ToplamFiyat,
+      Statu: data.Statu,
+      MalzemeFiyat: data.MalzemeFiyat,
+      IscilikFiyat: data.IscilikFiyat,
+      islemAciklama: data.islemAciklama,
+       islemdetayid: data.ID,
+      AracId: data.AracId,
+      AracMarka:data.AracMarka,
+      AracModel:data.AracModel,
+      IslemId:data.IslemId
+    });
+    
+    setSelectedRow([data.ID]);
+        setTimeout(() => {
+      handleOpenDetail();
+    }, 100);
+
+  } catch (error) {
+    console.log("Veri çekilirken hata oluştu:", error);
+  }
+ 
+}
 
 const columns: GridColDef[] = [
   
@@ -419,28 +460,34 @@ const columns: GridColDef[] = [
       </div>
     );
   },},
-  {field: 'actions', headerName: 'İşlemler', minWidth: 100, maxWidth:200, flex:1, headerAlign:'center', align: 'left', sortable: false,renderCell: (params) => (
-    <div style={{ width:'75px', display: 'flex', justifyContent: 'space-between'}}>
-
+  {field: 'actions', headerName: 'İşlemler', minWidth: 240, maxWidth:300, flex:1, headerAlign:'center', align: 'left', sortable: false,renderCell: (params) => (
+    <div style={{ width:'300px', display: 'flex', justifyContent: 'space-between'}}>
+          <div>
+            <InfoOutlineIcon
+            titleAccess= 'İşlem Detayı'
+            onClick={() => handleİnfoProcess(params.row.ID)}
+            style={{cursor: 'pointer',marginTop:'15px', color:'yellow', fontSize:'20px',opacity:'0.8'}}
+            />
+          </div>
             <div>
       <DoneAllIcon
       titleAccess='İşlemi Tamamla'
       onClick={() => handleDoneProcess(params.row.ID)}
-      style={{ cursor: 'pointer', marginLeft:'10px',marginTop:'15px', color:'green', fontSize:'25px',opacity:'0.8' } }>
+      style={{ cursor: 'pointer', marginLeft:'5px',marginTop:'15px', color:'green', fontSize:'20px',opacity:'0.8' } }>
       </DoneAllIcon>
       </div>
       <div>
       <EditIcon
       titleAccess='İşlemi Düzenle'
       onClick={() => handleEditProcess(params.row.ID)}
-        style={{ cursor: 'pointer', marginLeft:'10px',marginTop:'15px', color:'#F3C623', fontSize:'25px', opacity:'0.8' } }
+        style={{ cursor: 'pointer', marginLeft:'5px',marginTop:'15px', color:'#F3C623', fontSize:'20px', opacity:'0.8' } }
         ></EditIcon>
       </div>
       <div>
       <DeleteIcon
       titleAccess='İşlemi Sil'
       onClick={() => handleDeleteProcess(params.row.ID)}
-      style={{ cursor: 'pointer',  marginLeft:'10px',marginTop:'15px', color:'red', fontSize:'25px',opacity:'0.8' } }>
+      style={{ cursor: 'pointer',  marginLeft:'5px',marginTop:'15px', color:'red', fontSize:'20px',opacity:'0.8' } }>
       </DeleteIcon>
       </div>
     </div> )}
@@ -620,6 +667,46 @@ const paginationModel = { page: 0, pageSize:10};
             </Grid>
           </Grid>
 
+          {/* CARD */}
+        <Grid>
+              <Dialog open={printDetailOpen} onClose={handleCloseDetail}>
+              <Card
+              sx={{ width: 500, margin: 'auto', mt: 4, boxShadow: 3, padding: 2 }}>
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          İşlem Detayları
+        </Typography>
+
+        <Box mb={1}>
+          <Typography variant="subtitle2" color="text.secondary">Sayın</Typography>
+          <Typography variant="body1">{processFormData.Adi}</Typography>
+        </Box>
+
+        <Box mb={1}>
+          <Typography variant="subtitle2" color="text.secondary">Araç Plaka</Typography>
+          <Typography variant="body1">{processFormData.Plaka}</Typography>
+        </Box>
+
+       <Box mb={1}>
+          <Typography variant="subtitle2" color="text.secondary">İşlem Türü</Typography>
+          <Typography variant="body1">{processFormData.islemTur}</Typography>
+        </Box>
+
+        <Box mb={1}>
+          <Typography variant="subtitle2" color="text.secondary">Yapılacak işlem</Typography>
+          <Typography variant="body1">{processFormData.islemAciklama}</Typography>
+        </Box>
+
+        <Box mb={1}>
+          <Typography variant="subtitle2" color="text.secondary">Ödenecek Toplam Tutar</Typography>
+          <Typography variant="body1">{processFormData.ToplamFiyat}</Typography>
+        </Box>
+
+      </CardContent>
+    </Card>
+  </Dialog>
+            </Grid>
+
 {/* TABLE */}
 
 <Grid container spacing={2} sx={{ height: '100%', width: '100%' }}>
@@ -692,3 +779,6 @@ const paginationModel = { page: 0, pageSize:10};
 }
 
 export default Dashboard;
+
+
+
