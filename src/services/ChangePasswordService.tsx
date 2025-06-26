@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AxiosResponse } from "axios";
 import axios from "../config/AxiosConfig";
+import { toast } from "react-toastify";
 
 
 
@@ -13,7 +14,12 @@ try {
         OldPassword: oldPassword,
         newPassword: newPassword,
     });
-
+    if (response.data.success === false) {
+      toast.error(response.data.message)  
+    }else {
+        toast.success("Şifre başarı ile değiştirildi.")
+    }
+    
  return response.data;
 } catch (error) {
     console.error("İstek hatası:", error);

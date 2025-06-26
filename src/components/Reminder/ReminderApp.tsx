@@ -7,6 +7,10 @@ import { ReminderList } from "./ReminderList";
 import axios from "../../config/AxiosConfig";
 import { columnGroupsStateInitializer } from "@mui/x-data-grid/internals";
 import { toast } from "react-toastify";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs, { Dayjs } from 'dayjs';
 
 
 
@@ -14,13 +18,15 @@ import { toast } from "react-toastify";
 export const ReminderApp = () => {
     const [reminders, setReminders] = useState<Reminder[]>([]);
     const [openForm, setOpenForm] = useState(false);
+   const [selectedDate, setSelectedDate] = React.useState<Dayjs | null>(null);
+
+    
 
 
 
 
 
     const addReminder = async (newReminder: Reminder) =>  {
-         console.log(newReminder)
         
         try {
         const reminderTosend = { // Burada post atarken attığımız anın tarihini de oluşturuyoruz.
@@ -62,22 +68,16 @@ export const ReminderApp = () => {
         fetchGetReminders();
         
     
-    // Gün boyunca otomatik yenileme (opsiyonel)
+    // Gün boyunca otomatik yenileme
         const interval = setInterval(fetchGetReminders, 3600000); // Her saat başı
         return () => clearInterval(interval);
          }, []);
 
+         //Reset Form
 
 
-  
-    //  const deleteReminder = (id: string) => {
-    //     console.log('Silinecek ID:', id); // DEBUG
-    //     setReminders(prev => {
-    //         const newReminders = prev.filter(r => r.id !== id);
-    //         console.log('Yeni liste:', newReminders); // DEBUG
-    //         return newReminders;
-    //     });
-    // };
+
+
 
  
     const deleteReminder = async (ID: string) => {
@@ -95,6 +95,34 @@ export const ReminderApp = () => {
        
     }
 
+    // Tarihe göre anımsatıcıları çekmek
+
+React.useEffect(() => {
+  // Eğer tarih seçilmemişse API'ye istek atmasın
+  if (!selectedDate) {
+    console.log("Henüz tarih seçilmedi");
+    return;
+  }
+
+  const selectedDateStr = selectedDate.format('YYYY-MM-DD');
+  console.log("Seçilen Tarih:", selectedDateStr);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('/api/Animsatici/GetAnimsatici', {
+  params: { animTarih: selectedDateStr }
+});
+      setReminders(response.data);
+      console.log("API'den gelen ham veri:", response.data);
+    } catch (error) {
+      console.error("Reminderları çekerken hata oluştu:", error);
+    }
+  };
+
+  fetchData();
+}, [selectedDate]);
+
+
 
 
  
@@ -104,14 +132,31 @@ export const ReminderApp = () => {
             <Typography variant="h4" gutterBottom>
                 Anımsatıcılar
             </Typography>
+            <div style={{display:'flex'}}>
+
+                <div style={{justifyContent:'space-between'}}>
             <Button 
                 variant="contained" 
                 onClick={() => setOpenForm(true)}
-                sx={{ mb: 3 }}
+                sx={{ mb: 3, padding: 2 }}
             >
                 Yeni Anımsatıcı Ekle
             </Button>
+            </div>
 
+            <div style={{justifyContent:'space-between'}}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                    label="Tarih Seçin"
+                    value={selectedDate}
+                    onChange={(newValue, _context) => {
+                        setSelectedDate(newValue as Dayjs | null);
+                    }}
+                    sx={{mb: 3, marginLeft: 5}}
+                    />
+                 </LocalizationProvider>
+             </div>
+            </div>
             {/* FORM'a onDelete prop'unu SİLİYORUZ */}
             <ReminderForm
                 open={openForm}

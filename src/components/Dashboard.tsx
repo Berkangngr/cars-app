@@ -11,13 +11,17 @@ import {useState, useEffect} from 'react';
 import { toast } from 'react-toastify';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CarRepairIcon from '@mui/icons-material/CarRepair';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import axios from '../config/AxiosConfig';
 import Modal from '@mui/material/Modal';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutlined';
-import { text } from 'stream/consumers';
-
+import { useReactToPrint } from "react-to-print";
+import { useRef } from "react";
+import {Document, Page} from 'react-pdf';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import PrintIcon from '@mui/icons-material/Print';
+import SaveIcon from '@mui/icons-material/Save';
 
 
 
@@ -48,6 +52,7 @@ interface FormData {
   AracMarka:string;
   AracModel:string;
   IslemId:number;
+  islemYilNo:string;
 }
 
 // Güncelleme için beklenen veri yapısı
@@ -122,7 +127,8 @@ const handleCloseDetail = () => setPrintDetailOpen(false);
 const [filteredData, setFilteredData] = useState<FormData[]>([]); // Filtrelenmiş tablo verisi
 const [inputValue, setInputValue] = useState(""); // Autocomplete için input değeri
 const [processData, setProcessData] = useState<FormData[]>([]); // İŞLEM VERİLERİ
-
+const [numPages, setNumPages] = useState<number>();
+const [pageNumber, setPageNumber] = useState<number>(1);
 const [processFormData, setProcessFormData] = useState<FormData>({
   ID: 0,
   Adi: "",
@@ -140,7 +146,8 @@ const [processFormData, setProcessFormData] = useState<FormData>({
   AracId: 0,
   AracMarka:"",
   AracModel:"",
-  IslemId:0
+  IslemId:0,
+  islemYilNo:""
 });
 
 
@@ -192,7 +199,8 @@ const resetForm = () => {
     islemdetayid: 0,
     AracMarka:"",
     AracModel:"",
-    IslemId:0
+    IslemId:0,
+    islemYilNo:""
   })
 }
 
@@ -274,7 +282,8 @@ const handleEditProcess = async (id: number) => {
       AracId: data.AracId,
       AracMarka:data.AracMarka,
       AracModel:data.AracModel,
-      IslemId:data.IslemId
+      IslemId:data.IslemId,
+      islemYilNo:data.islemYilNo
     });
     
     setSelectedRow([data.ID]);
@@ -371,7 +380,8 @@ const handleİnfoProcess = async (id: number) => {
       AracId: data.AracId,
       AracMarka:data.AracMarka,
       AracModel:data.AracModel,
-      IslemId:data.IslemId
+      IslemId:data.IslemId,
+      islemYilNo:data.islemYilNo
     });
     
     setSelectedRow([data.ID]);
@@ -385,8 +395,58 @@ const handleİnfoProcess = async (id: number) => {
  
 }
 
+// Yazdırma Fonksiyonları
+const contentRef = useRef<HTMLDivElement>(null);
+const reactToPrintFn = useReactToPrint({ contentRef });
+
+//Pdf indirme fonksiyonu
+const saveAsPDF = async () => {
+  if (!contentRef.current) {
+    alert('İçerik henüz yüklenmedi, lütfen tekrar deneyin.');
+    return;
+  }
+  
+  try {
+    const canvas = await html2canvas(contentRef.current, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true
+    });
+    
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    const imgWidth = 210;
+    const pageHeight = 295;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    
+    let position = 0;
+    
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+    
+    pdf.save(`islem-detaylari-${processFormData.Plaka || 'dokuman'}.pdf`);
+  } catch (error) {
+    console.error('PDF oluşturma hatası:', error);
+    alert('PDF oluşturulurken bir hata oluştu.');
+  }
+};
+
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+    setNumPages(numPages);
+  }
 const columns: GridColDef[] = [
   
+  {field:'islemYilNo', headerName: 'İşlem Kodu', minWidth:100, maxWidth:200, flex:1, headerAlign:'center', align:'center'},
   { field: 'Müşteri', headerName: 'Müşteri İsmi', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
   { field: 'Marka', headerName: 'Marka', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
   { field: 'Model', headerName: 'Model', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
@@ -466,7 +526,7 @@ const columns: GridColDef[] = [
             <InfoOutlineIcon
             titleAccess= 'İşlem Detayı'
             onClick={() => handleİnfoProcess(params.row.ID)}
-            style={{cursor: 'pointer',marginTop:'15px', color:'yellow', fontSize:'20px',opacity:'0.8'}}
+            style={{cursor: 'pointer',marginTop:'15px', color:'#c54c82', fontSize:'20px',opacity:'0.8'}}
             />
           </div>
             <div>
@@ -496,6 +556,7 @@ const columns: GridColDef[] = [
 
 
 const rows = filteredData.map((data, index) => ({
+  islemYilNo: data.islemYilNo,
   ID: data.islemdetayid,
   id: data.islemdetayid,
   Müşteri: data.Adi,
@@ -667,45 +728,79 @@ const paginationModel = { page: 0, pageSize:10};
             </Grid>
           </Grid>
 
-          {/* CARD */}
+          {/* Detay Card */}
         <Grid>
-              <Dialog open={printDetailOpen} onClose={handleCloseDetail}>
-              <Card
-              sx={{ width: 500, margin: 'auto', mt: 4, boxShadow: 3, padding: 2 }}>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          İşlem Detayları
-        </Typography>
+  <Dialog open={printDetailOpen} onClose={handleCloseDetail}>
+    <Card sx={{ width: 500, margin: 'auto',  boxShadow: 3, padding: 8 }}>
+      
+      {/* Buton grubu */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 4, p:2 }}>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={reactToPrintFn}
+          startIcon={<PrintIcon />}
+          sx={{marginRight: 2}}
+        >
+          Yazdır
+        </Button>
+        
+        <Button 
+          variant="contained" 
+          color="warning" 
+          onClick={saveAsPDF} // veya downloadPDF, downloadPDFWithFetch
+          startIcon={<SaveIcon />}
+          sx={{marginLeft: 2}}
+        >
+          PDF Kaydet
+        </Button>
+      </Box>
+      
+      <div ref={contentRef}>
+        <CardContent
+        sx={{p:2}}
+        >
+          
 
-        <Box mb={1}>
-          <Typography variant="subtitle2" color="text.secondary">Sayın</Typography>
-          <Typography variant="body1">{processFormData.Adi}</Typography>
-        </Box>
+          {/* Form verileri */}
+          <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 2}}>
+            İşlem Detayları
+          </Typography>
+          
+          <Box sx={{mb: 4}}>
+            <Typography sx={{mb:2}} variant="subtitle2" color="text.secondary">Sayın</Typography>
+            <Typography variant="body1">{processFormData.Adi}</Typography>
+            <hr />
+          </Box>
 
-        <Box mb={1}>
-          <Typography variant="subtitle2" color="text.secondary">Araç Plaka</Typography>
-          <Typography variant="body1">{processFormData.Plaka}</Typography>
-        </Box>
+          <Box sx={{mb: 4}}>
+            <Typography sx={{mb:2}} variant="subtitle2" color="text.secondary">Araç Plaka</Typography>
+            <Typography variant="body1">{processFormData.Plaka}</Typography>
+            <hr />
+          </Box>
 
-       <Box mb={1}>
-          <Typography variant="subtitle2" color="text.secondary">İşlem Türü</Typography>
-          <Typography variant="body1">{processFormData.islemTur}</Typography>
-        </Box>
+          <Box sx={{mb: 4}}>
+            <Typography sx={{mb:2}} variant="subtitle2" color="text.secondary">İşlem Türü</Typography>
+            <Typography variant="body1">{processFormData.islemTur}</Typography>
+            <hr />
+          </Box>
 
-        <Box mb={1}>
-          <Typography variant="subtitle2" color="text.secondary">Yapılacak işlem</Typography>
-          <Typography variant="body1">{processFormData.islemAciklama}</Typography>
-        </Box>
+          <Box sx={{mb: 4}}>
+            <Typography sx={{mb:2}} variant="subtitle2" color="text.secondary">Yapılacak işlem</Typography>
+            <Typography variant="body1">{processFormData.islemAciklama}</Typography>
+            <hr />
+          </Box>
 
-        <Box mb={1}>
-          <Typography variant="subtitle2" color="text.secondary">Ödenecek Toplam Tutar</Typography>
-          <Typography variant="body1">{processFormData.ToplamFiyat}</Typography>
-        </Box>
-
-      </CardContent>
+          <Box sx={{mb: 4}}>
+            <Typography sx={{mb:2}} variant="subtitle2" color="text.secondary">Ödenecek Toplam Tutar</Typography>
+            <Typography variant="body1">{processFormData.ToplamFiyat}</Typography>
+            <hr />
+          </Box>
+        </CardContent>
+      </div>
     </Card>
   </Dialog>
-            </Grid>
+</Grid>
 
 {/* TABLE */}
 

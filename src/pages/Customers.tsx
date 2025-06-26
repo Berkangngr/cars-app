@@ -181,16 +181,25 @@ function Customers() {
       if (isEditing) {
         // console.log("Form data", formData)
         response = await axios.post(`/api/FirmaSahis/FirmaUpdate`,formData);
-        toast.success("Kullanıcı bilgileri başarıyla güncellendi.");
+          if (response.data.success === true) {
+          toast.success("Kullanıcı bilgileri başarıyla güncellendi.");
+        } else {
+          toast.error(response.data.message)
+        }  
       } else {
         response = await axios.post("/api/FirmaSahis/Create", formData);
+        if (response.data.success === true) {
         console.log(response.data)
         toast.success("Kayıt Başarılı");
+        resetForm();
+        handleClose();
+        fetchCustomers();
+        } else {
+           toast.error(response.data.message)
+        }
       }
       // console.log(response)
-      resetForm();
-      handleClose();
-      fetchCustomers();
+
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "Bilinmeyen bir hata oluştu.";
       toast.error(`Hata: ${errorMessage}`);

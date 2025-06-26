@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { DateTimePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { tr } from 'date-fns/locale/tr';
 import { useState } from 'react';
 import { Reminder } from '../../types/Reminder';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+
 
 
 interface ReminderFormProps {
@@ -27,8 +28,20 @@ export const ReminderForm = ({open , onClose, onSubmit}: ReminderFormProps) => {
      const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(reminder as Reminder);
+    resetForm();
     onClose();
   };
+
+  const resetForm = () => {
+  setReminder({
+    Title: '',
+    Description: '',
+    DueDate: new Date(),
+    Priority: 'medium',
+    Completed: false,
+  });
+};
+
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={tr}>
@@ -51,15 +64,24 @@ export const ReminderForm = ({open , onClose, onSubmit}: ReminderFormProps) => {
               onChange={(e) => setReminder({...reminder, Description: e.target.value})}
             />
 
-            <DateTimePicker
-              label="Tarih & Saat"
-              value={reminder.DueDate}
-              onChange={(newValue) => {
-                if (newValue !== null) {
-                  setReminder({ ...reminder, DueDate: newValue });
-                }
-              }}
-            />
+                 
+
+                                <DatePicker
+                label="Tarih Seçin"
+                value={reminder.DueDate ?? null}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    const dateOnly = newValue instanceof Date ? newValue : new Date(newValue.toDate());
+                    setReminder({ ...reminder, DueDate: dateOnly });
+                  }
+                }}
+                format="dd/MM/yyyy"
+                slots={{ textField: TextField }}
+                enableAccessibleFieldDOMStructure={false}
+                slotProps={{ textField: { required: true } }}
+              />
+
+
 
             <FormControl fullWidth>
               <InputLabel id="priority-label">Öncelik</InputLabel>
