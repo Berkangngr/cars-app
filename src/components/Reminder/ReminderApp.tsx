@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useCallback, useEffect, useState } from "react";
+import { Button, Paper, Typography } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { Dayjs } from 'dayjs';
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import axios from "../../config/AxiosConfig";
 import { Reminder } from "../../types/Reminder";
-import { Box, Typography, Paper, Button } from '@mui/material';
 import { ReminderForm } from "./ReminderForm";
 import { ReminderList } from "./ReminderList";
-import axios from "../../config/AxiosConfig";
-import { columnGroupsStateInitializer } from "@mui/x-data-grid/internals";
-import { toast } from "react-toastify";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs, { Dayjs } from 'dayjs';
 
 
 
@@ -36,7 +35,7 @@ export const ReminderApp = () => {
             Completed : newReminder.Completed || false
         };
          console.log("Sending Reminder: ", reminderTosend);
-        const response = await axios.post('/api/Animsatici/CreateAnimsat/',reminderTosend, {
+         await axios.post('/api/Animsatici/CreateAnimsat/',reminderTosend, {
            
         headers: {
           'Content-Type': 'application/json'
@@ -51,27 +50,49 @@ export const ReminderApp = () => {
         
     };
 
-        const fetchGetReminders = async () => {
-            try {
-                const currentDate = new Date().toISOString().split('T')[0]; // Bulunduğumuz tarihi verir
-                console.log(currentDate);
-                const response = await axios.get(`/api/Animsatici/GetAnimsatici?animTarih=${currentDate}`)
-                setReminders(response.data);
-                console.log("API'den gelen ham veri:", response.data); // Ham veriyi loglayın
-                console.log("İlk reminder ID'si:", response.data[0]?.ID); // ID kontrolü
-            } catch (error) {
-                console.log("Reminderları çekerken hata oluştu:", error);
+    const fetchGetReminders = async () => {
+        try {
+            let targetDate;
+            if (selectedDate) {
+                targetDate = selectedDate.format('YYYY-MM-DD');
+                console.log("Seçilen tarih:", targetDate);
+            } else {
+                targetDate = new Date().toISOString().split('T')[0];
+                console.log("Bugünün tarihi:", targetDate);
+            }
+
+            const response = await axios.get(`/api/Animsatici/GetAnimsatici?animTarih=${targetDate}`)
+            setReminders(response.data);
+            console.log("Apiden gelen veri:", response.data);
+            if (response.data.length > 0) {
+                console.log("ilk reminder id'si:", response.data[0]?.ID);
+            } else {
+                console.log("Bu tarihte anımsatıcı bulunamadı");
+            }
+        } catch (error) {
+            console.error("Reminderları çekerken hata oluştu:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchGetReminders();
+
+        //Selected yoksa tetiklenecek olan olan gün boyu yenileme
+        
+        let interval: any;
+        if (!selectedDate) {
+            interval = setInterval(fetchGetReminders, 3600000);
+        }
+
+        return () => {
+            if (interval) {
+                clearInterval(interval);
             }
         };
+    }, [selectedDate]);
 
-          useEffect(() => {
-        fetchGetReminders();
-        
-    
-    // Gün boyunca otomatik yenileme
-        const interval = setInterval(fetchGetReminders, 3600000); // Her saat başı
-        return () => clearInterval(interval);
-         }, []);
+ 
+     
 
          //Reset Form
 
@@ -86,7 +107,7 @@ export const ReminderApp = () => {
         if (!isConfirmed) return;
 
         try {
-             const response = await axios.post(`/api/Animsatici/AnimPasif?id=${ID}`);
+              await axios.post(`/api/Animsatici/AnimPasif?id=${ID}`);
              fetchGetReminders();
              toast.success("Randevu başarı ile silindi.")
         } catch (error) {
@@ -95,32 +116,7 @@ export const ReminderApp = () => {
        
     }
 
-    // Tarihe göre anımsatıcıları çekmek
-
-React.useEffect(() => {
-  // Eğer tarih seçilmemişse API'ye istek atmasın
-  if (!selectedDate) {
-    console.log("Henüz tarih seçilmedi");
-    return;
-  }
-
-  const selectedDateStr = selectedDate.format('YYYY-MM-DD');
-  console.log("Seçilen Tarih:", selectedDateStr);
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get('/api/Animsatici/GetAnimsatici', {
-  params: { animTarih: selectedDateStr }
-});
-      setReminders(response.data);
-      console.log("API'den gelen ham veri:", response.data);
-    } catch (error) {
-      console.error("Reminderları çekerken hata oluştu:", error);
-    }
-  };
-
-  fetchData();
-}, [selectedDate]);
+   
 
 
 

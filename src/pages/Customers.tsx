@@ -1,21 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from 'react'
-import gif from '../images/Under-constructıon.gif';
-import { useNavigate } from 'react-router-dom';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import Navbar from '../components/Navbar';
-import { Box, Button, Container, FormControl, Grid, Hidden, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery, Autocomplete } from '@mui/material';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import { v4 as uuidv4 } from 'uuid';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { MuiTelInput } from 'mui-tel-input'
-import axios from '../config/AxiosConfig';
-import { toast } from 'react-toastify';
+import EditIcon from '@mui/icons-material/Edit';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import { Autocomplete, Box, Button, Grid, MenuItem, TextField, Typography, useMediaQuery } from '@mui/material';
 import Modal from '@mui/material/Modal';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { MuiTelInput } from 'mui-tel-input';
+import React, { useEffect, useState } from 'react';
+//import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from '../config/AxiosConfig';
 
 
 
@@ -43,20 +39,20 @@ interface   FormData {
   Sehirler: [];
 }
 
-interface Ülke {
-  Value: string;
-  Text: string;
-}
+// interface Ülke {
+//   Value: string;
+//   Text: string;
+// }
 
-interface Şehir {
-  Value: string;
-  Text: string;
-}
+// interface Şehir {
+//   Value: string;
+//   Text: string;
+// }
 
-interface ApiResponseCountryandCity {
-  Ulkeler: Ülke[];
-  Sehirler: Şehir[];
-}
+// interface ApiResponseCountryandCity {
+//   Ulkeler: Ülke[];
+//   Sehirler: Şehir[];
+// }
 
 
 //Modal styleları
@@ -82,15 +78,15 @@ const style = {
 
 
 function Customers() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [isLoading, setIsLoading]=useState(false);
   const [customersData, setCustomersData] = useState<FormData[]>([]); // Müşeri verilerinin alma
   const [country, setCountry] = useState <any[]>([]);
   const [city, setCity] = useState <any[]>([]);
-  const [selectedTur, setSelectedTur] = useState<any>();
-  const [selectedRow, setSelectedRow] = useState<any[]>([]);
+  const [, setSelectedTur] = useState<any>();
+  const [, setSelectedRow] = useState<any[]>([]);
   const [isEditing,setIsEditing] = useState(false); // Modal düzenleme için mi açık?
-  const [selectedUserId, setSelectedUserId] = useState(null); // Düzenlenecek kullanıcı ıd'si
+  const [, setSelectedUserId] = useState(null); // Düzenlenecek kullanıcı ıd'si
   const [inputValue, setInputValue] = useState(""); // Autocomplete için input değeri
   const [options, setOptions] = useState<any[]>([]); // Autocomplete için seçenekler
   //Silme işlemi stateleri
@@ -393,7 +389,7 @@ const columns: GridColDef[] = [
         </Button>
         */}
 
-const rows = customersData.map((customer,index) => ({
+const rows = customersData.map((customer) => ({
   ID: customer.ID, // Her satıra benzersiz bir id ekliyoruz
   'Şahıs/Müşteri_İsmi': customer.Adi,
   Adres: customer.Adres,
@@ -435,8 +431,8 @@ const paginationModel = { page: 0, pageSize:10};
                   getOptionLabel={(option) => option?.Adi || ""}
                   isOptionEqualToValue={(option, value) => option.Adi === value.Adi}
                   inputValue={inputValue}
-                  onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
-                  onChange={(event, newValue) => {
+                  onInputChange={(_event, newInputValue) => setInputValue(newInputValue)}
+                  onChange={(_event, newValue) => {
                     setFormData((prevState) => ({
                       ...prevState,
                       Adi: newValue?.Adi || "",

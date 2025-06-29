@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import LoginImage from '../images/LoginPageİmage-Photoroom.png';
-import { Grid, Box, TextField, Button, InputAdornment } from '@mui/material';
-import '../css/LoginPage.css';
-import Person2Icon from '@mui/icons-material/Person2';
 import LockIcon from '@mui/icons-material/Lock';
-import { useFormik } from 'formik';
-import { loginPageSchema } from '../schemas/LoginPageSchema';
-import {  useNavigate } from 'react-router-dom';
+import Person2Icon from '@mui/icons-material/Person2';
+import { Box, Button, Grid, InputAdornment, TextField } from '@mui/material';
 import Link from '@mui/material/Link';
-import loginPageService from '../services/LoginPageService';
-import  {useAuthStore}  from '../zustand/authStore';
+import { useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import Spinner from '../components/Spinner'
+import Spinner from '../components/Spinner';
+import '../css/LoginPage.css';
+import LoginImage from '../images/LoginPageİmage-Photoroom.png';
+import { loginPageSchema } from '../schemas/LoginPageSchema';
+import loginPageService from '../services/LoginPageService';
+import { useAuthStore } from '../zustand/authStore';
 
 
 function LoginPage() {
@@ -63,7 +63,7 @@ function LoginPage() {
    }
   };
 
-  const {values, handleSubmit, handleChange, errors , resetForm} = useFormik({
+  const {values, handleSubmit, handleChange, errors } = useFormik({
     initialValues: {
       email: "",
      password:"",

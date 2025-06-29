@@ -1,7 +1,6 @@
-import React from 'react'
-import gif from '../images/Under-constructıon.gif';
-import { useNavigate } from 'react-router-dom';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { useNavigate } from 'react-router-dom';
+import gif from '../images/Under-constructıon.gif';
 
 function StockReport() {
   const navigate = useNavigate();

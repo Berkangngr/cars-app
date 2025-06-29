@@ -1,19 +1,18 @@
 /* eslint-disable no-empty */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import React, { useEffect, useState } from 'react';
-import { Box, Button, Grid, useMediaQuery, IconButton, Stack, Autocomplete } from '@mui/material';
-import { toast } from 'react-toastify';
-import newRepairPageService from '../services/NewRepairPageService';
-import { useFormik } from 'formik';
-import { newRepairPageSchema } from '../schemas/NewRepairSchema';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { GridColDef } from '@mui/x-data-grid';
+import { Autocomplete, Box, Button, Grid, IconButton, Stack } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+//import { GridColDef } from '@mui/x-data-grid';
+import { useFormik } from 'formik';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
-import { string } from 'yup';
+import { newRepairPageSchema } from '../schemas/NewRepairSchema';
+import newRepairPageService from '../services/NewRepairPageService';
 
 
 
@@ -26,12 +25,12 @@ const transactionType: string[] = ["Yağ Değişimi", "Parça Değişimi", "Bili
 
 function NewRepairPage() {
   const [plakaNoList, setPlakaNoList] = useState<any[]>([]); // Get apisi ile çektiğim tüm plakaları buraya yazacağım.
-  const [processList, setProcessList] = useState<any[]>([]);
+  //const [processList, setProcessList] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [selectedTransactionType, setSelectedTransactionType] = useState("Bilinmiyor");
-  const [workOrder, setWorkOrde] = useState([]);
-   const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
-  const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
+ // const [selectedTransactionType, setSelectedTransactionType] = useState("Bilinmiyor");
+  //const [workOrder, setWorkOrder] = useState([]);
+   //const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
+  //const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
 
 
 
@@ -124,7 +123,7 @@ function NewRepairPage() {
 
  
 
-  const [isEditable, setIsEditable] = useState(true);
+  const [isEditable, ] = useState(true);
 
   // İşlem Türü Seçme Fonksiyonu
   // const handleChangeTransactionType = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,19 +196,19 @@ function NewRepairPage() {
 
   //Table Yapısı
   
-  const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 50},
-    { field: 'PlakaNo', headerName: 'Plaka No', width: 125 },
-    { field: 'SasiNo', headerName: 'Şasi No', width: 125 },
-    { field: 'MüsteriIsmi', headerName: 'Müşteri Adı/Soyadı', width: 125 },
+  // const columns: GridColDef[] = [
+  //   { field: 'id', headerName: 'ID', width: 50},
+  //   { field: 'PlakaNo', headerName: 'Plaka No', width: 125 },
+  //   { field: 'SasiNo', headerName: 'Şasi No', width: 125 },
+  //   { field: 'MüsteriIsmi', headerName: 'Müşteri Adı/Soyadı', width: 125 },
     
-    { field: 'BakımKm', headerName: 'Bakım Km', width: 125 },
-    { field: 'Detay.IslemTürü', headerName: 'İşlem Türü', width: 125 },
-    { field: 'Detay.MalzemeFiyat', headerName: 'Malzeme Tutar', width: 125 },
-    { field: 'Detay.IscilikFiyat', headerName: 'işçilik Tutar', width: 125 },
-    { field: 'Detay.ToplamFiyat', headerName: 'Toplam Tutar', width: 125 },
-    { field: 'Detay.Açıklama', headerName: 'Açıklama', width: 125 },
-  ];
+  //   { field: 'BakımKm', headerName: 'Bakım Km', width: 125 },
+  //   { field: 'Detay.IslemTürü', headerName: 'İşlem Türü', width: 125 },
+  //   { field: 'Detay.MalzemeFiyat', headerName: 'Malzeme Tutar', width: 125 },
+  //   { field: 'Detay.IscilikFiyat', headerName: 'işçilik Tutar', width: 125 },
+  //   { field: 'Detay.ToplamFiyat', headerName: 'Toplam Tutar', width: 125 },
+  //   { field: 'Detay.Açıklama', headerName: 'Açıklama', width: 125 },
+  // ];
 
   
   // const rows = workOrder.map((customer,index) => ({
@@ -258,7 +257,7 @@ function NewRepairPage() {
                   getOptionLabel={(option) => option?.a?.Plaka ?? ''}
                   value={plakaNoList.find(item => item?.a?.Plaka === values.PlakaNo) || null}
                   inputValue={inputValue}
-                  onChange={(event, newValue) => {
+                  onChange={(_event, newValue) => {
                     // Bir plaka seçildiğinde, formik state'ine sadece plaka numarasını kaydet
                     setFieldValue("PlakaNo", newValue?.a?.Plaka || '');
                     
@@ -269,7 +268,7 @@ function NewRepairPage() {
                       // Diğer alanlar...
                     }
                   }}
-                  onInputChange={(event, newInputValue) => {
+                  onInputChange={(_event, newInputValue) => {
                     setInputValue(newInputValue.toUpperCase());
                   }}
                   renderInput={(params) => (

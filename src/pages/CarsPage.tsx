@@ -1,21 +1,18 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from 'react'
-import gif from '../images/Under-constructıon.gif';
-import { useNavigate } from 'react-router-dom';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import Navbar from '../components/Navbar';
-import { Box, Button, Container, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography, useTheme,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle, Autocomplete } from '@mui/material';
-import axios from '../config/AxiosConfig';
-import { toast } from 'react-toastify';
+import CarRepairIcon from '@mui/icons-material/CarRepair';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import { Autocomplete, Box, Button, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import Modal from '@mui/material/Modal';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CarRepairIcon from '@mui/icons-material/CarRepair';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import React, { useEffect, useState } from 'react';
+//import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from '../config/AxiosConfig';
 
 
 
@@ -72,10 +69,10 @@ const carsBrandData: Record<string, string[]> = {
 };
 
 //Gelen musteri isimlerinin interface'i 
-  interface musterıIsmı {
-    Value:string;
-    Text:string;
-  }
+  // interface musterıIsmı {
+  //   Value:string;
+  //   Text:string;
+  // }
 
   const carsFuel: string[] = ["Benzin","Dizel"];
 
@@ -106,7 +103,7 @@ const style = {
 
 
 function CarsPage() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [isLoading, setIsLoading]=useState(false);
   const [carsData, setCarsData] = useState<FormData[]>([]); // Müşteri verilerinin alma
   const [customersId, setCustomersId] = useState<{ Value: string; Text: string }[]>([]);
@@ -121,11 +118,11 @@ function CarsPage() {
   const [models, setModels] = useState<string[]>(carsBrandData[""] || []);
   const [selectedModels, setSelectedModels] = useState<string>("");
   const [selectedCarsFuel, setSelectedCarsFuel] = useState("Benzin");
-  const [selectedRow, setSelectedRow] = useState<any[]>([]); // Seçilen satır için state
-  const [selectedCarsId, setSelectedCarsId] = useState<string>(null as any);
+  const [, setSelectedRow] = useState<any[]>([]); // Seçilen satır için state
+  const [, setSelectedCarsId] = useState<string>(null as any);
   const [inputValue, setInputValue] = useState<string>(""); // Autocomplete için input değeri
-  const [options, setOptions] = useState<any[]>([]); // Autocomplete için seçenekler
-  const [aracListesi, setAracListesi] = useState<any[]>([]); // Araç listesini tutmak için state
+  const [options, ] = useState<any[]>([]); // Autocomplete için seçenekler
+  const [, setAracListesi] = useState<any[]>([]); // Araç listesini tutmak için state
   
 
 
@@ -435,7 +432,7 @@ useEffect(() => {
             console.log("Gelen Araç Listesi:", gelenVeri);
             setAracListesi(gelenVeri); // Gelen veriyi options state'ine kaydediyoruz
             // Hatalı veri veya id eksikse hiç set etme
-            if (gelenVeri.every(item => item.id)) {
+            if (gelenVeri.every((item: { id: any; }) => item.id)) {
               setCarsData(gelenVeri); // Gelen veriyi carsData state'ine kaydediyoruz
             } else {
               console.error("Bazı satırlarda id değeri eksik, veriler yüklenmedi.");
@@ -495,7 +492,7 @@ const columns: GridColDef[] = [
 ];
 
 
-const rows = carsData.map((cars,index) => ({
+const rows = carsData.map((cars) => ({
   id: cars.ID,
   Plaka: cars.Plaka,
   Marka: cars.Marka,
@@ -537,8 +534,8 @@ const paginationModel = { page: 0, pageSize: 100 };
                           getOptionLabel={(option) => option?.Adi || ""}
                           isOptionEqualToValue={(option, value) => option.Adi === value.Adi}
                           inputValue={inputValue}
-                          onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
-                          onChange={(event, newValue) => {
+                          onInputChange={(_event, newInputValue) => setInputValue(newInputValue)}
+                          onChange={(_event, newValue) => {
                             setFormData((prevState) => ({
                               ...prevState,
                               Adi: newValue?.Adi || "",
@@ -589,7 +586,7 @@ const paginationModel = { page: 0, pageSize: 100 };
                 onChange={handleChangeCarsBrand}
                 sx={{ marginBottom: 2 , minWidth: '222px' }}
               >
-                {Object.entries(carsBrandData).map(([brand, models]) => (
+                {Object.entries(carsBrandData).map(([brand]) => (
                   <MenuItem key={brand} value={brand}>
                     {brand}
                   </MenuItem>

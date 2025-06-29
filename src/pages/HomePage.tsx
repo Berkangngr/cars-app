@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */import React, { useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */import { Box, Paper } from '@mui/material';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Dashboard from '../components/Dashboard';
-import { TodoApp } from '../components/Todo/TodoApp';
-import { Box, Paper, Typography } from '@mui/material';
 import { ReminderApp } from '../components/Reminder/ReminderApp';
+import { TodoApp } from '../components/Todo/TodoApp';
 
 function HomePage() {
   const navigate = useNavigate();

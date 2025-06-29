@@ -3,25 +3,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import * as React from 'react';
-import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
-import Paper from '@mui/material/Paper';
-import { Autocomplete, Box, Button, Grid, TextField, Typography, useMediaQuery, Card, CardContent, Dialog} from '@mui/material';
-import {useState, useEffect} from 'react';
-import { toast } from 'react-toastify';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
-import axios from '../config/AxiosConfig';
-import Modal from '@mui/material/Modal';
+import EditIcon from '@mui/icons-material/Edit';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutlined';
-import { useReactToPrint } from "react-to-print";
-import { useRef } from "react";
-import {Document, Page} from 'react-pdf';
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
 import PrintIcon from '@mui/icons-material/Print';
 import SaveIcon from '@mui/icons-material/Save';
+import { Autocomplete, Box, Button, Card, CardContent, Dialog, Grid, TextField, Typography, useMediaQuery } from '@mui/material';
+import Modal from '@mui/material/Modal';
+import Paper from '@mui/material/Paper';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useReactToPrint } from "react-to-print";
+import { toast } from 'react-toastify';
+import axios from '../config/AxiosConfig';
 
 
 
@@ -30,7 +28,7 @@ import SaveIcon from '@mui/icons-material/Save';
 
 
 
-const paginationModel = { page: 0, pageSize: 10 };
+//const paginationModel = { page: 0, pageSize: 10 };
 
 
 
@@ -56,16 +54,16 @@ interface FormData {
 }
 
 // Güncelleme için beklenen veri yapısı
-interface UpdateData {
-  ID: number;
-  MalzemeFiyat: number;
-  IscilikFiyat: number;
-  ToplamFiyat: number;
-  islemAciklama: string;
-  BakimKM: number;
-  islemTur: string;
-  AracId: number;
-}
+// interface UpdateData {
+//   ID: number;
+//   MalzemeFiyat: number;
+//   IscilikFiyat: number;
+//   ToplamFiyat: number;
+//   islemAciklama: string;
+//   BakimKM: number;
+//   islemTur: string;
+//   AracId: number;
+// }
 
 //Modal style
 const style = {
@@ -113,8 +111,8 @@ interface OptionType {
 function Dashboard() {
 const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
 const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
-const [selectedRow, setSelectedRow] = useState<any[]>([]);
-const [statu, setStatu] = useState(1); // Durum kontrolü
+const [, setSelectedRow] = useState<any[]>([]);
+//const [statu, setStatu] = useState(1); // Durum kontrolü
 const [open, setOpen] = useState(false);
 const handleOpen = () => setOpen(true);
 const handleClose = () => {
@@ -127,8 +125,8 @@ const handleCloseDetail = () => setPrintDetailOpen(false);
 const [filteredData, setFilteredData] = useState<FormData[]>([]); // Filtrelenmiş tablo verisi
 const [inputValue, setInputValue] = useState(""); // Autocomplete için input değeri
 const [processData, setProcessData] = useState<FormData[]>([]); // İŞLEM VERİLERİ
-const [numPages, setNumPages] = useState<number>();
-const [pageNumber, setPageNumber] = useState<number>(1);
+//const [, setNumPages] = useState<number>();
+//const [pageNumber, setPageNumber] = useState<number>(1);
 const [processFormData, setProcessFormData] = useState<FormData>({
   ID: 0,
   Adi: "",
@@ -210,7 +208,7 @@ const handleDoneProcess = async (id: number) => {
     return; // Kullanıcı onay vermezse işlemi iptal et
   }
   try {
-    const response = await axios.post(`/api/islemNew/OkislemD`, id, {
+     await axios.post(`/api/islemNew/OkislemD`, id, {
       headers: {
         "Content-Type" : "application/json",
       },
@@ -441,9 +439,9 @@ const saveAsPDF = async () => {
 };
 
 
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-    setNumPages(numPages);
-  }
+  // function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+  //   setNumPages(numPages);
+  // }
 const columns: GridColDef[] = [
   
   {field:'islemYilNo', headerName: 'İşlem Kodu', minWidth:100, maxWidth:200, flex:1, headerAlign:'center', align:'center'},
@@ -508,10 +506,13 @@ const columns: GridColDef[] = [
         style={{
           backgroundColor,
           color: textColor,
-          padding: '4px 12px',
-          borderRadius: '12px',
+          padding,
+          borderRadius,
           display: 'inline-block', 
-          whiteSpace: 'nowrap', 
+          whiteSpace: 'nowrap',
+          fontSize,
+          fontWeight,
+          
           // fontWeight: statu === 1 ? 'bold' : 'normal',
 
         }}
@@ -555,7 +556,7 @@ const columns: GridColDef[] = [
 
 
 
-const rows = filteredData.map((data, index) => ({
+const rows = filteredData.map((data) => ({
   islemYilNo: data.islemYilNo,
   ID: data.islemdetayid,
   id: data.islemdetayid,
@@ -595,7 +596,7 @@ const paginationModel = { page: 0, pageSize:10};
         return option?.Adi || "";
       }}
       inputValue={inputValue}
-      onInputChange={(event, newValue) => {
+      onInputChange={(_event, newValue) => {
         setInputValue(newValue);
         if (newValue.trim() === "") {
           setFilteredData(processData);

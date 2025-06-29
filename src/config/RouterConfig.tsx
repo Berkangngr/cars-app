@@ -1,15 +1,14 @@
-import React from 'react'
-import { Routes , Route} from 'react-router-dom'
-import RegisterPage from '../pages/RegisterPage'
-import LoginPage from '../pages/LoginPage'
+import { Route, Routes } from 'react-router-dom'
+import Layout from '../components/Layout'
+import CarsPage from '../pages/CarsPage'
+import Customers from '../pages/Customers'
 import HomePage from '../pages/HomePage'
+import LoginPage from '../pages/LoginPage'
 import NewRepairPage from '../pages/NewRepairPage'
 import Receivables from '../pages/Receivables'
-import Customers from '../pages/Customers'
+import RegisterPage from '../pages/RegisterPage'
 import Reports from '../pages/Reports'
-import CarsPage from '../pages/CarsPage'
 import StockReport from '../pages/StockReport'
-import Layout from '../components/Layout'
 
 
 function RouterConfig() {

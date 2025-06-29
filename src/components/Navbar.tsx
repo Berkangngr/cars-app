@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import LogoutIcon from '@mui/icons-material/Logout';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import { alpha, Box, Button, Divider, Menu, MenuItem, MenuProps, styled, TextField } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
+import IconButton from '@mui/material/IconButton';
+import Modal from '@mui/material/Modal';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import LogoutIcon from '@mui/icons-material/Logout';
-import logo from '../images/Logo-Photoroom.png';
+import { useFormik } from 'formik';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { alpha, Box, Button, Divider, makeStyles, Menu, MenuItem, MenuProps, styled, TextField } from '@mui/material';
+import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
-import {toast} from 'react-toastify';
-import { AxiosError } from 'axios';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import VpnKeyIcon from '@mui/icons-material/VpnKey';
-import Modal from '@mui/material/Modal';
-import {useFormik} from 'formik';
+import logo from '../images/Logo-Photoroom.png';
 import { newPasswordSchema } from '../schemas/NewPassword';
 import { changePassword } from '../services/ChangePasswordService';
 
@@ -98,7 +97,7 @@ const StyledMenu = styled((props: MenuProps) => (
 
 function Navbar() {
  
-const [userData, setUserData] = useState<userApiResponse | null>(null);
+const [userData, ] = useState<userApiResponse | null>(null);
 const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 const [openModal, setOpenModal] = useState(false);
 const handleOpenModal = () => setOpenModal(true);
@@ -107,8 +106,8 @@ const handleCloseModal = () => setOpenModal(false)
 const BASE_URL = "http://localhost:56952";
 const imageUrl = userData?.ImagePath ? `${BASE_URL}${userData.ImagePath}` : logo;
 const navigate = useNavigate();
-const [oldPassword, setOldPassword] = useState("");
-const [newPassword, setNewPassword] = useState("");
+// const [oldPassword, setOldPassword] = useState("");
+// const [newPassword, setNewPassword] = useState("");
 
 
 // const fetchPost = async() => {
@@ -141,7 +140,7 @@ const handleClose = () => {
 
 const handleLogOut = async () => {
   try {
-    const response = await axios.post('/api/UserSetting/LogOut');
+     await axios.post('/api/UserSetting/LogOut');
     localStorage.removeItem('authToken')
     toast.info("Başarı ile çıkış yapıldı!")
     navigate("/");
@@ -174,7 +173,7 @@ const submit = async (values: any, actions: any) => {
 
 }
 
-const { values, handleSubmit, handleChange, errors, resetForm, setFieldValue } = useFormik({
+const { values, handleSubmit, handleChange, errors } = useFormik({
 initialValues: {
   oldPassword: "",
   newPassword: "",

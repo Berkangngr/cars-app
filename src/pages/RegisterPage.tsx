@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from 'react';
-import { Grid, Box, TextField, Button, InputAdornment, Avatar } from '@mui/material';
-import '../css/RegisterPage.css';
-import Person2Icon from '@mui/icons-material/Person2';
+import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import LockIcon from '@mui/icons-material/Lock';
+import Person2Icon from '@mui/icons-material/Person2';
+import { Avatar, Box, Button, Grid, InputAdornment, TextField } from '@mui/material';
 import { useFormik } from 'formik';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import '../css/RegisterPage.css';
 import { registerPageSchemas } from '../schemas/RegisterPageSchema';
 import registerPageService from '../services/RegisterPageService';
-import { UserType } from '../types/Types';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 
 
 
@@ -19,7 +18,7 @@ function RegisterPage() {
   const navigate = useNavigate();
   const [logo, setLogo] = useState<string | null>(null);
 
-  const submit = async (values: any, actions: any) => {
+  const submit = async (values: any) => {
     try {
       // FormData nesnesini oluştur ve tüm alanları ekle
       

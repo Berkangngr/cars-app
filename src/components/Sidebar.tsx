@@ -1,14 +1,11 @@
-import React from 'react';
-import { Drawer, List, ListItem, ListItemText, Divider, ListSubheader } from '@mui/material';
-import { Link } from 'react-router-dom';
-import BuildIcon from '@mui/icons-material/Build';
-import HourglassTopIcon from '@mui/icons-material/HourglassTop';
-import CurrencyLiraIcon from '@mui/icons-material/CurrencyLira';
-import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import WarehouseIcon from '@mui/icons-material/Warehouse';
-import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
+import BuildIcon from '@mui/icons-material/Build';
 import HomeIcon from '@mui/icons-material/Home';
+import RecentActorsIcon from '@mui/icons-material/RecentActors';
+import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
+import WarehouseIcon from '@mui/icons-material/Warehouse';
+import { Divider, Drawer, List, ListItem, ListItemText, ListSubheader } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 
 function Sidebar() {
