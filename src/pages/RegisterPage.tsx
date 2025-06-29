@@ -185,7 +185,7 @@ function RegisterPage() {
             </Button>
           </Box>
           {/* Kayıt Ol Butonu */}
-          <Button type='submit' variant="contained" color="success">Sign in</Button>
+          <Button type='submit' variant="contained" color="success">KAYIT OL</Button>
         </Box>
       </Grid>
     </Grid>

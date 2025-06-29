@@ -12,10 +12,7 @@ import Cookies from "js-cookie";
 
 // Axios instance oluştur
 const api = axios.create({
-  baseURL: import.meta.env.MODE === "development"
-  ? "http://localhost:56952"
-  : "https://api.aracimhakkinda.com",
- // API URL'si
+  baseURL: process.env.NODE_ENV === "development" ? "http://localhost:56952" : "https://api.aracimhakkinda.com", // API URL'si
   withCredentials: true, // Cookie gönderimi için
 });
 
