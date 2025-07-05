@@ -176,9 +176,14 @@ function Customers() {
       let response;
       if (isEditing) {
         // console.log("Form data", formData)
-        response = await axios.post(`/api/FirmaSahis/FirmaUpdate`,formData);
+        response = await axios.post(`/api/FirmaSahis/FirmaUpdate`,formData,{
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
           if (response.data.success === true) {
           toast.success("Kullanıcı bilgileri başarıyla güncellendi.");
+          fetchCustomers()
         } else {
           toast.error(response.data.message)
         }  
