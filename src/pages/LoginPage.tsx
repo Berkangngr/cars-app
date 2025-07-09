@@ -13,6 +13,7 @@ import LoginImage from '../images/LoginPageİmage-Photoroom.png';
 import { loginPageSchema } from '../schemas/LoginPageSchema';
 import loginPageService from '../services/LoginPageService';
 import { useAuthStore } from '../zustand/authStore';
+import { setGlobalLoading } from '../utils/globalLoading';
 
 
 function LoginPage() {
@@ -29,7 +30,7 @@ function LoginPage() {
     // Buradan servise istek atacağımız için try catch içerisine alalım ki servisin ayakta olmadığı durumlarda patlamayalım, 
     // servisi başka bir klasöre açıp oradan çağırıcaz ki daha düzenli olsn kodumuz. services/LoginPageService içerisinde.
 
-    setLoading(true);
+    setGlobalLoading(true);
 
    try {
     
@@ -59,7 +60,7 @@ function LoginPage() {
     clearAuth();
     console.log("API Bağlantı Hatası",error);
    } finally {
-    setLoading(false)
+    setGlobalLoading(false)
    }
   };
 

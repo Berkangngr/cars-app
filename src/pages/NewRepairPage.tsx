@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
 import { newRepairPageSchema } from '../schemas/NewRepairSchema';
 import newRepairPageService from '../services/NewRepairPageService';
+import { setGlobalLoading } from '../utils/globalLoading';
 
 
 
@@ -67,7 +68,7 @@ function NewRepairPage() {
       };
     }
 
-
+    setGlobalLoading(true)
     try {
       if (!requestData) {
         throw new Error("Plaka verisi yok!");
@@ -81,6 +82,8 @@ function NewRepairPage() {
       }
     } catch (error) {
       toast.error("İş emri kaydedilirken hata oluştu.");
+    }finally{
+      setGlobalLoading(false)
     }
   };
 

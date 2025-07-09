@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import '../css/RegisterPage.css';
 import { registerPageSchemas } from '../schemas/RegisterPageSchema';
 import registerPageService from '../services/RegisterPageService';
+import { setGlobalLoading } from '../utils/globalLoading';
 
 
 
@@ -19,6 +20,7 @@ function RegisterPage() {
   const [logo, setLogo] = useState<string | null>(null);
 
   const submit = async (values: any) => {
+    setGlobalLoading(true)
     try {
       // FormData nesnesini oluştur ve tüm alanları ekle
       
@@ -50,6 +52,8 @@ function RegisterPage() {
       }
     } catch (error) {
       toast.error("Kullanıcı kaydedilirken hata oluştu.");
+    }finally{
+      setGlobalLoading(false)
     }
   };
 

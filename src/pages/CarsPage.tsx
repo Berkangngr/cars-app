@@ -13,6 +13,8 @@ import React, { useEffect, useState } from 'react';
 //import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
+import {useAuthStore} from '../zustand/authStore'
+import { setGlobalLoading } from '../utils/globalLoading';
 
 
 
@@ -255,7 +257,9 @@ const handleBlurSasiNo = (e: React.FocusEvent<HTMLInputElement>) => {
 
  
     const fetchCars = async () => {
+      
       try {
+        setGlobalLoading(true)
         const response = await axios.get(`/api/Arac/AracList`);
         const fetchedData = Array.isArray(response.data) ? response.data : response.data.results || [];
         console.log("Gelen Araç Verileri:", fetchedData);
@@ -263,6 +267,8 @@ const handleBlurSasiNo = (e: React.FocusEvent<HTMLInputElement>) => {
       } catch (error) {
         console.log("Veri alınırken hata oluştu", error);
         toast.error("Veriler alınırken bir sorun oluştu.");    
+      }finally {
+        setGlobalLoading(false)
       }
     };
 
@@ -277,26 +283,32 @@ const handleBlurSasiNo = (e: React.FocusEvent<HTMLInputElement>) => {
   //Araç verilerini gönderme.
   const carsHandleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setGlobalLoading(true);
     const updatedFormData = { ...formData, Model: selectedModels };
     console.log("Gönderilecek formData:", updatedFormData);
+
     try {
-      const response = await axios.post("/api/Arac/CreateArac", updatedFormData , {
+
+      const isUpdate = updatedFormData.ID && updatedFormData.ID > 0;
+
+      const endPoint = isUpdate ? "/api/Arac/UpdateArac" : "/api/Arac/CreateArac";
+
+      const response = await axios.post(endPoint, updatedFormData , {
         headers: {
           "Content-Type": "application/json", // JSON formatında veri gönderdiğinizden emin olun
         }
         // headers: { "Content-Type": "multipart/form-data" },
       });
       console.log(response.data);
-      toast.success("Kayıt Başarılı");
+      toast.success(isUpdate ? "Araç başarıyla güncellendi." : "Kayıt başarılı.");
       resetForm();
       fetchCars(); // Verileri güncelleyin
       handleClose(); // Modalı kapatın
     } catch (error) {
       console.error("Hata:", error);
-      toast.error("Kayıt sırasında bir hata oluştu.");
+      toast.error("İşlem sırasında bir hata oluştu.");
     }finally{
-      setIsLoading(false);
+      setGlobalLoading(false);
     }
   };
 
@@ -366,7 +378,6 @@ useEffect(() => {
       try {
           const response = await axios.get(`/api/Arac/UpdateArac?id=${selectedRow}`);
           console.log(JSON.stringify(response.data))
-
           setFormData({
             ID: response.data.ID || 0,
             Plaka: response.data.Plaka || "",
@@ -386,14 +397,16 @@ useEffect(() => {
           setModels(carsBrandData[response.data.Marka] || []); // Seçilen modeli state'e kaydediyoruz
           setSelectedModels(response.data.Model || ""); // Seçilen modeli state'e kaydediyoruz  
           setselectedCustomers(response.data.FirmaSahisId.toString() || ""); // Seçilen müşteriyi state'e kaydediyoruz
-          
           setSelectedCarsId(selectedRow); // Seçilen aracın ID'sini state'e kaydediyoruz
           handleOpen();// Modalı açıyoruz
+          
       } catch (error) {
         console.log("Araç bilgileri güncellenirken bir hata oluştu", error);
         toast.error("Araç bilgileri güncellenirken bir hata oluştu.");
       }
     }
+
+  
 
     const handleCustomerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const selectedValue = e.target.value;

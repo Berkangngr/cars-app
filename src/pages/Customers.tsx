@@ -12,6 +12,7 @@ import React, { useEffect, useState } from 'react';
 //import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
+import { setGlobalLoading } from '../utils/globalLoading';
 
 
 
@@ -170,7 +171,7 @@ function Customers() {
   const handleSubmit = async (e: React.FormEvent) => {
     console.log("Form data", formData)
     e.preventDefault();
-    setIsLoading(true);
+    setGlobalLoading(true);
     // setIsEditing(false);
     try {
       let response;
@@ -205,7 +206,7 @@ function Customers() {
       const errorMessage = error.response?.data?.message || "Bilinmeyen bir hata oluştu.";
       toast.error(`Hata: ${errorMessage}`);
     } finally {
-      setIsLoading(false); 
+      setGlobalLoading(false); 
     }
   };
 
@@ -231,6 +232,7 @@ function Customers() {
   //Müşteri verilerini alma.
   useEffect(() => {
     const fetchCustomers = async () => {
+      setGlobalLoading(true)
       try {
         const response = await axios.get(`/api/FirmaSahis/GetFirmaSahisList`);
         const fetchedData = Array.isArray(response.data) ? response.data : response.data.results || [];
@@ -239,6 +241,8 @@ function Customers() {
       } catch (error) {
         // console.log("Veri alınırken hata oluştu", error);
         toast.error("Veriler alınırken bir sorun oluştu.");    
+      }finally{
+        setGlobalLoading(false)
       }
     };
    fetchCustomers();

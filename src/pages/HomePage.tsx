@@ -6,6 +6,7 @@ import Dashboard from '../components/Dashboard';
 import { ReminderApp } from '../components/Reminder/ReminderApp';
 import { TodoApp } from '../components/Todo/TodoApp';
 
+
 function HomePage() {
   const navigate = useNavigate();
   const isAuthenticated = true; // Burada gerçek oturum kontrolünü yapmalısınız
@@ -44,8 +45,9 @@ function HomePage() {
       }}>
         {/* SOL BÖLÜM - TODO APP */}
         <Paper elevation={3} sx={{ 
-          flex: 1, 
-          p: 2,
+          flex: 1,
+          display:'flex',
+          flexDirection:'column', 
           overflow: 'auto'
         }}>
           <Box sx={{ textAlign: 'center', mb: 2 }}>

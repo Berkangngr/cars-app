@@ -20,6 +20,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from "react-to-print";
 import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
+import { setGlobalLoading } from '../utils/globalLoading';
 
 
 
@@ -154,6 +155,7 @@ const [processFormData, setProcessFormData] = useState<FormData>({
 
 
 const fetchProcess = async () => {
+  setGlobalLoading(true)
   try {
     const response = await axios.get(`/api/islemNew/GetIslemlerNew`);
     const inComingData = response.data;

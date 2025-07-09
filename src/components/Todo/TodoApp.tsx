@@ -3,6 +3,7 @@ import {Todo} from '../../types/Todo';
 import {useEffect, useState} from 'react';
 import { AddTodo } from './AddTodo';
 import { TodoList } from './TodoList';
+import { Typography } from '@mui/material';
 
 
 export const TodoApp = () => {
@@ -42,8 +43,10 @@ export const TodoApp = () => {
     },[todos]);
 
     return (
-        <div style={{ padding: '20px', maxWidth: '100%' }}>
-            <h1>Todo App</h1>
+        <div style={{ padding: '10px', maxWidth: '100%' }}>
+             <Typography variant="h4" gutterBottom>
+                Günlük Notlar
+            </Typography>
             <AddTodo onAdd={addTodo} />
             <TodoList
             todos={todos}

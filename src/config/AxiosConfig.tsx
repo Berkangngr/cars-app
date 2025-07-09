@@ -1,11 +1,3 @@
-// import axios from "axios";
-
-//  const axiosInstance = axios.create({
-//     baseURL: 'http://localhost:56952', // Buraya base urlimiz gelicek.
-//   });
-
-//   export default axiosInstance;
-
 
 import axios from "axios";
 import Cookies from "js-cookie";
