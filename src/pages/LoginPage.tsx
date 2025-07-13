@@ -20,7 +20,7 @@ function LoginPage() {
 //  Giriş başarılı olursa bu ekrana gönder.
   const navigate = useNavigate();
   const setToken = useAuthStore((state) => state.setToken);
-  const setLoading = useAuthStore((state) => state.setLoading);
+  //const setLoading = useAuthStore((state) => state.setLoading);
   const setEmail = useAuthStore((state) => state.setEmail);
   const setPassword = useAuthStore((state) => state.setPassword);
   const clearAuth = useAuthStore((state) => state.clearAuth);

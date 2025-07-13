@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from '@mui/material';
+import { Box } from '@mui/material';
 import { useAuthStore } from '../zustand/authStore';
 import carsLoading from '../images/SVG-Car-Drift-Loader-unscreen.gif'
 

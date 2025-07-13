@@ -80,7 +80,7 @@ const style = {
 
 function Customers() {
   // const navigate = useNavigate();
-  const [isLoading, setIsLoading]=useState(false);
+  const [isLoading, ]=useState(false);
   const [customersData, setCustomersData] = useState<FormData[]>([]); // Müşeri verilerinin alma
   const [country, setCountry] = useState <any[]>([]);
   const [city, setCity] = useState <any[]>([]);
@@ -185,6 +185,7 @@ function Customers() {
           if (response.data.success === true) {
           toast.success("Kullanıcı bilgileri başarıyla güncellendi.");
           fetchCustomers()
+          handleClose()
         } else {
           toast.error(response.data.message)
         }  
@@ -303,6 +304,7 @@ function Customers() {
       setSelectedUserId(selectedRow);
       handleOpen();
       fetchCustomers();
+    
     } catch (error) {
       console.error("Kullanıcı güncellenirken beklenmedik bir hata oluştu:", error);
       toast.error("Kullanıcı bilgileri güncellenemedi. Lütfen daha sonra tekrar deneyin.");

@@ -13,7 +13,6 @@ import React, { useEffect, useState } from 'react';
 //import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
-import {useAuthStore} from '../zustand/authStore'
 import { setGlobalLoading } from '../utils/globalLoading';
 
 
@@ -106,7 +105,7 @@ const style = {
 
 function CarsPage() {
   // const navigate = useNavigate();
-  const [isLoading, setIsLoading]=useState(false);
+  const [isLoading,]=useState(false);
   const [carsData, setCarsData] = useState<FormData[]>([]); // Müşteri verilerinin alma
   const [customersId, setCustomersId] = useState<{ Value: string; Text: string }[]>([]);
   const [selectedCustomers,setselectedCustomers] = useState <any> ("");
