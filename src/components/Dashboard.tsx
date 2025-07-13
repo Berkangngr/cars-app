@@ -29,6 +29,7 @@ import { setGlobalLoading } from '../utils/globalLoading';
 
 
 
+
 //const paginationModel = { page: 0, pageSize: 10 };
 
 
@@ -170,6 +171,8 @@ const fetchProcess = async () => {
   } catch (error) {
     console.log("Hata:", error);
     toast.error("Veri alınırken bir hata oluştu.");
+  }finally {
+    setGlobalLoading(false)
   }
 }
 
