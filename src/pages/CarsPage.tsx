@@ -657,7 +657,7 @@ const paginationModel = { page: 0, pageSize: 100 };
               name="YakitTur"
               select
               label="Yakıt Türü"
-              value={selectedCarsFuel}
+              value={formData.YakitTur}
               onChange={handleChangeCarsFuel}
               sx={{ marginBottom: 2, minWidth: '222px' }}
               >

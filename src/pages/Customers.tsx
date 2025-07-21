@@ -173,7 +173,8 @@ function Customers() {
     e.preventDefault();
     setGlobalLoading(true);
     // setIsEditing(false);
-    try {
+    if (formData.UlkeId !== null && formData.SehirId !== null) {
+            try {
       let response;
       if (isEditing) {
         // console.log("Form data", formData)
@@ -208,6 +209,10 @@ function Customers() {
       toast.error(`Hata: ${errorMessage}`);
     } finally {
       setGlobalLoading(false); 
+    }
+    } else {
+      toast.error("Ülke ve Şehir seçiniz.")
+      setGlobalLoading(false)
     }
   };
 

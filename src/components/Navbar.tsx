@@ -8,13 +8,14 @@ import Modal from '@mui/material/Modal';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { useFormik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
 import logo from '../images/Logo-Photoroom.png';
 import { newPasswordSchema } from '../schemas/NewPassword';
 import { changePassword } from '../services/ChangePasswordService';
+import { AxiosError } from 'axios';
 
 
 //Modal styleı
@@ -97,7 +98,7 @@ const StyledMenu = styled((props: MenuProps) => (
 
 function Navbar() {
  
-const [userData, ] = useState<userApiResponse | null>(null);
+const [userData, setUserData] = useState<userApiResponse | null>(null);
 const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 const [openModal, setOpenModal] = useState(false);
 const handleOpenModal = () => setOpenModal(true);
@@ -106,27 +107,26 @@ const handleCloseModal = () => setOpenModal(false)
 const BASE_URL = "http://localhost:56952";
 const imageUrl = userData?.ImagePath ? `${BASE_URL}${userData.ImagePath}` : logo;
 const navigate = useNavigate();
-// const [oldPassword, setOldPassword] = useState("");
-// const [newPassword, setNewPassword] = useState("");
 
 
-// const fetchPost = async() => {
-//   try {
-//     const response = await axios.get('/member/UserSetting/Setting');
-//    // member/UserSetting/Setting
-//     setUserData(response.data);
-//   } catch (error: unknown) {
-//   if (error instanceof AxiosError) {
-//     console.log(error.response?.data?.message || 'Kullanıcı Bilgisi alınamadı!');
-//   } else {
-//     toast.error('Bilinmeyen bir hata oluştu!')
-//   }  
-//   }
-// }
 
-// useEffect(() => {
-//   fetchPost();
-// },[])
+const fetchPost = async() => {
+  try {
+     const response = await axios.get('/api/UserSetting/Setting');
+   // member/UserSetting/Setting
+    setUserData(response.data)
+  } catch (error: unknown) {
+  if (error instanceof AxiosError) {
+    console.log(error.response?.data?.message || 'Kullanıcı Bilgisi alınamadı!');
+  } else {
+    toast.error('Bilinmeyen bir hata oluştu!')
+  }  
+  }
+}
+
+useEffect(() => {
+  fetchPost();
+},[])
 
 const open = Boolean(anchorEl);
 const handleClick = (event: React.MouseEvent<HTMLElement>) => {

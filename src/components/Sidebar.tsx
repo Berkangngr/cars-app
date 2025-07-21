@@ -6,6 +6,7 @@ import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import { Divider, Drawer, List, ListItem, ListItemText, ListSubheader } from '@mui/material';
 import { Link } from 'react-router-dom';
+//import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
 
 function Sidebar() {
@@ -27,6 +28,10 @@ function Sidebar() {
       anchor="left"
     >
       <List>
+       {/* <ListItem sx={{ float:'right'}}> 
+      <SwapHorizIcon sx={{color:'#333333e1', padding:'5px'}} />
+      </ListItem> */}
+      <Divider />
       <ListItem  component={Link} to="/home">
         <HomeIcon sx={{color:'#333333e1' , marginRight:'10px'}}/>
           <ListItemText sx={{color:'#333333e1'}} primary="Ana Sayfa" />
