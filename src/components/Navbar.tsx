@@ -11,7 +11,7 @@ import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios, { API_URL } from '../config/AxiosConfig';
+import axios from '../config/AxiosConfig';
 import logo from '../images/Logo-Photoroom.png';
 import { newPasswordSchema } from '../schemas/NewPassword';
 import { changePassword } from '../services/ChangePasswordService';
@@ -105,13 +105,15 @@ const handleOpenModal = () => setOpenModal(true);
 const handleCloseModal = () => setOpenModal(false)
 
 //const BASE_URL = "http://localhost:56952";
-
+const BASE_URL_PROD = "https://api.aracimhakkinda.com";
+const imageUrl = userData?.ImagePath ? `${BASE_URL_PROD}${userData.ImagePath}` : logo;
+const navigate = useNavigate();
 
 
 
 const fetchPost = async() => {
   try {
-    const response = await axios.get('/api/UserSetting/Setting');
+     const response = await axios.get(`${BASE_URL_PROD}/api/UserSetting/Setting`);
    // member/UserSetting/Setting
     setUserData(response.data)
   } catch (error: unknown) {
@@ -126,11 +128,6 @@ const fetchPost = async() => {
 useEffect(() => {
   fetchPost();
 },[])
-
-// const BASE_URL_PROD = "https://www.aracimhakkinda.com";
-const imageUrl = userData?.ImagePath ? `${API_URL}${userData?.ImagePath}` : logo;
-const navigate = useNavigate();
-
 console.log(imageUrl)
 const open = Boolean(anchorEl);
 const handleClick = (event: React.MouseEvent<HTMLElement>) => {
