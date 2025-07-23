@@ -113,7 +113,7 @@ const navigate = useNavigate();
 
 const fetchPost = async() => {
   try {
-     const response = await axios.get('/api/UserSetting/Setting');
+     const response = await axios.get(`${BASE_URL_PROD}/api/UserSetting/Setting`);
    // member/UserSetting/Setting
     setUserData(response.data)
   } catch (error: unknown) {
