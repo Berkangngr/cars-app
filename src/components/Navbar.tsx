@@ -104,8 +104,9 @@ const [openModal, setOpenModal] = useState(false);
 const handleOpenModal = () => setOpenModal(true);
 const handleCloseModal = () => setOpenModal(false)
 
-const BASE_URL = "http://localhost:56952";
-const imageUrl = userData?.ImagePath ? `${BASE_URL}${userData.ImagePath}` : logo;
+//const BASE_URL = "http://localhost:56952";
+const BASE_URL_PROD = "https://www.aracimhakkinda.com";
+const imageUrl = userData?.ImagePath ? `${BASE_URL_PROD}${userData.ImagePath}` : logo;
 const navigate = useNavigate();
 
 
@@ -127,7 +128,7 @@ const fetchPost = async() => {
 useEffect(() => {
   fetchPost();
 },[])
-
+console.log(imageUrl)
 const open = Boolean(anchorEl);
 const handleClick = (event: React.MouseEvent<HTMLElement>) => {
   setAnchorEl(event.currentTarget);
