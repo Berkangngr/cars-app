@@ -2,9 +2,11 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
+export const API_URL = process.env.NODE_ENV === "development" ? "http://localhost:56952" : "https://api.aracimhakkinda.com";
+
 // Axios instance oluştur
 const api = axios.create({
-  baseURL: process.env.NODE_ENV === "development" ? "http://localhost:56952" : "https://api.aracimhakkinda.com", // API URL'si
+  baseURL: API_URL, // API URL'si
   withCredentials: true, // Cookie gönderimi için
 });
 
