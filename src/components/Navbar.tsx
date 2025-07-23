@@ -105,7 +105,7 @@ const handleOpenModal = () => setOpenModal(true);
 const handleCloseModal = () => setOpenModal(false)
 
 //const BASE_URL = "http://localhost:56952";
-const BASE_URL_PROD = "https://www.aracimhakkinda.com/Resimler";
+const BASE_URL_PROD = "https://www.aracimhakkinda.com/";
 const imageUrl = userData?.ImagePath ? `${BASE_URL_PROD}${userData.ImagePath}` : logo;
 const navigate = useNavigate();
 
