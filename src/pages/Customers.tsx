@@ -372,7 +372,7 @@ function Customers() {
 const columns: GridColDef[] = [
   // { field: 'id', headerName: 'ID', width: 50},
   { field: 'Şahıs/Müşteri_İsmi', headerName: 'Şahıs/Müşteri İsmi', width: 125 ,headerAlign: 'center' , align: 'center' },
-  { field: 'MüşteriSorumlusu', headerName: 'Müşteri Sorumlusu', width: 125 ,headerAlign: 'center' , align: 'center' },
+  { field: 'MusteriSorumlusu', headerName: 'Müşteri Sorumlusu', width: 125 ,headerAlign: 'center' , align: 'center' },
   { field: 'Adres', headerName: 'Adres', width: 125 ,headerAlign: 'center' , align: 'center' },
   { field: 'Telefon', headerName: 'Telefon', width: 125 ,headerAlign: 'center' , align: 'center' },
   { field: 'Email', headerName: 'Email', width: 125 ,headerAlign: 'center' , align: 'center' },
