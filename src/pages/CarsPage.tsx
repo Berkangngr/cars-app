@@ -36,6 +36,7 @@ interface FormData {
   // BakimKM?: number | null; // Opsiyonel olabilir
   FirmaSahisId: number; // MüşteriİsmiId yerine bu kullanılmalı
   FirmaAdi: string; // Müşteri ismi 
+  RuhsatSeriNo: string;
 }
 
 //Araba marka ve modelleri
@@ -190,6 +191,7 @@ const handleChangeCarsFuel = (e : React.ChangeEvent<HTMLInputElement>) => {
     // BakimKM:null,
     FirmaSahisId:0,
     FirmaAdi:"",
+    RuhsatSeriNo:"",
   });
 
   const resetForm: () => void = () => {
@@ -211,6 +213,7 @@ const handleChangeCarsFuel = (e : React.ChangeEvent<HTMLInputElement>) => {
       // BakimKM:null,
       FirmaSahisId: 0, // Sıfırlama
       FirmaAdi:"",
+      RuhsatSeriNo:"",
     });
     setselectedCustomers(""); // Varsayılan değere döndürme
     setModels(carsBrandData[""] || []); // Modelleri sıfırlama
@@ -391,6 +394,7 @@ useEffect(() => {
             Km: response.data.Km || 0,
             FirmaSahisId: response.data.FirmaSahisId || 0,
             FirmaAdi: response.data.FirmaAdi || "",
+            RuhsatSeriNo:response.data.RuhsatSeriNo || "",
           });
           setSelectedCarsBrand(response.data.Marka || ""); // Seçilen markayı state'e kaydediyoruz
           setModels(carsBrandData[response.data.Marka] || []); // Seçilen modeli state'e kaydediyoruz
@@ -477,10 +481,11 @@ const columns: GridColDef[] = [
   { field: 'Model', headerName: 'Model', width: 100,headerAlign: 'center' , align: 'center' },
   { field: 'Yil', headerName: 'Yıl', width: 100,headerAlign: 'center' , align: 'center' },
   { field: 'SasiNo', headerName: 'Sasi No', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'RuhsatSeriNo', headerName: 'Ruhsat Seri No', width: 100,headerAlign: 'center' , align: 'center' },
   { field: 'YakitTur', headerName: 'Yakit Tur', width: 100,headerAlign: 'center' , align: 'center' },
   { field: 'Renk', headerName: 'Renk', width: 100,headerAlign: 'center' , align: 'center' },
   { field: 'MotorHacim', headerName: 'Motor Hacim', width: 100,headerAlign: 'center' , align: 'center' },
-  { field: 'MotorBeygir', headerName: 'Motor Beygir', width: 100,headerAlign: 'center' , align: 'center' },
+  { field: 'MotorBeygir', headerName: 'Motor Gücü(kW)', width: 100,headerAlign: 'center' , align: 'center' },
   { field: 'Km', headerName: 'Km', width: 50,headerAlign: 'center' , align: 'center' },
   // { field: 'BakimKM', headerName: 'Bakım Km', width: 50 ,headerAlign: 'center' , align: 'center'},
   // { field: 'SonBakim', headerName: 'Son Bakım Tarih', width: 100,headerAlign: 'center' , align: 'center' },
@@ -518,6 +523,7 @@ const rows = carsData.map((cars) => ({
   Km: cars.Km,
   // BakimKM: cars.BakimKM,
   FirmaAdi:cars.FirmaAdi,
+  RuhsatSeriNo:cars.RuhsatSeriNo,
 }));
 
 
@@ -577,6 +583,32 @@ const paginationModel = { page: 0, pageSize: 100 };
           Araç Tanıtım Ekranı
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+
+                {/* Burada yaptığımız müşteri verileri bize string olarak geliyorlar biz onu integeera çeviriyoruz çünkü backend bizden integer bekliyor. */}
+
+                                {/* Müşteri İsim */}
+                                <TextField
+                    id="FirmaSahisId"
+                    name="FirmaSahisId"
+                    select
+                    label="Müşteri İsmi"
+                    value={selectedCustomers}
+                    onChange={handleCustomerChange}
+                    sx={{ marginBottom: 2, minWidth: '222px' }}
+                    helperText="Lütfen müşteri ismini seçiniz!"
+                       FormHelperTextProps={{
+                sx:{
+                  color: 'red',
+                },
+              }}
+                  >
+                    {customersId.map((option) => (
+                      <MenuItem key={option.Value} value={option.Value}>
+                        {option.Text}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+
              {/* Plaka Alanı */}
              <TextField
               id="Plaka"
@@ -651,6 +683,16 @@ const paginationModel = { page: 0, pageSize: 100 };
               sx={{ marginBottom: 2 }}
               />
 
+              {/*Ruhsat Seri No*/}
+              <TextField 
+              id='RuhsatSeriNo'
+              name='RuhsatSeriNo'
+              label='Ruhsat Seri No'
+              value={formData.RuhsatSeriNo}
+              onChange={handleInputChange}
+              sx={{ marginBottom: 2 }}
+              />
+
                {/* Yakıt türü */}
                 <TextField
               id="YakitTur"
@@ -698,7 +740,7 @@ const paginationModel = { page: 0, pageSize: 100 };
                 <TextField
                   id="MotorBeygir"
                   name="MotorBeygir"
-                  label="Motor Beygir"
+                  label="Motor Gücü(kW)"
                   type="number"
                   value={formData.MotorBeygir || ''}
                   onChange={(e) => {
@@ -746,28 +788,6 @@ const paginationModel = { page: 0, pageSize: 100 };
   }}
   sx={{ marginBottom: 2 }}
 /> */}
-
-
-{/* Burada yaptığımız müşteri verileri bize string olarak geliyorlar biz onu integeera çeviriyoruz çünkü backend bizden integer bekliyor. */}
-
-              {/* Müşteri İsim */}
-              <TextField
-  id="FirmaSahisId"
-  name="FirmaSahisId"
-  select
-  label="Müşteri İsmi"
-  value={selectedCustomers}
-  onChange={handleCustomerChange}
-  sx={{ marginBottom: 2, minWidth: '222px' }}
-  helperText="Lütfen müşteri ismini seçiniz!"
->
-  {customersId.map((option) => (
-    <MenuItem key={option.Value} value={option.Value}>
-      {option.Text}
-    </MenuItem>
-  ))}
-</TextField>
-
 
 
 

@@ -36,6 +36,7 @@ interface   FormData {
   SehirId:number;
   UlkeId:number;
   Tur:string;
+  MusteriSorumlusu:string;
   Ulkeler: [];
   Sehirler: [];
 }
@@ -112,6 +113,7 @@ function Customers() {
     SehirId:null as any,
     UlkeId:null as any,
     Tur:"",
+    MusteriSorumlusu:"",
     Ulkeler: [],
     Sehirler: [],
   });
@@ -130,6 +132,7 @@ function Customers() {
     SehirId:null as any,
     UlkeId:null as any,
     Tur:"",
+    MusteriSorumlusu:"",
     Ulkeler: [],
     Sehirler: [],
     })
@@ -151,6 +154,7 @@ function Customers() {
       UlkeId: null as any,
       SehirId: null as any,
       Tur: "",
+      MusteriSorumlusu:"",
       Ulkeler: [],
       Sehirler: [],
     });
@@ -302,6 +306,7 @@ function Customers() {
         UlkeId: response.data.UlkeId,
         SehirId: response.data.SehirId,
         Tur: response.data.Tur || "",
+        MusteriSorumlusu: response.data.MusteriSorumlusu || "",
         Ulkeler: response.data.Ulkeler || [],
         Sehirler: response.data.Sehirler || [],
       });
@@ -367,6 +372,7 @@ function Customers() {
 const columns: GridColDef[] = [
   // { field: 'id', headerName: 'ID', width: 50},
   { field: 'Şahıs/Müşteri_İsmi', headerName: 'Şahıs/Müşteri İsmi', width: 125 ,headerAlign: 'center' , align: 'center' },
+  { field: 'MüşteriSorumlusu', headerName: 'Müşteri Sorumlusu', width: 125 ,headerAlign: 'center' , align: 'center' },
   { field: 'Adres', headerName: 'Adres', width: 125 ,headerAlign: 'center' , align: 'center' },
   { field: 'Telefon', headerName: 'Telefon', width: 125 ,headerAlign: 'center' , align: 'center' },
   { field: 'Email', headerName: 'Email', width: 125 ,headerAlign: 'center' , align: 'center' },
@@ -408,6 +414,7 @@ const columns: GridColDef[] = [
 const rows = customersData.map((customer) => ({
   ID: customer.ID, // Her satıra benzersiz bir id ekliyoruz
   'Şahıs/Müşteri_İsmi': customer.Adi,
+  MusteriSorumlusu: customer.MusteriSorumlusu,
   Adres: customer.Adres,
   Telefon: customer.Telefon,
   Email: customer.Email,
@@ -481,8 +488,45 @@ const paginationModel = { page: 0, pageSize:10};
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
 
-       
+               {/* Müşteri Tipi */}
+            <TextField
+            id="Tur"
+            name="Tur"
+            select
+            label="Müşteri Tipi"
+            value={formData.Tur}
+            onChange={(e) => {
+              const Tur = e.target.value;
+              setSelectedTur(Tur);
+              setFormData({...formData, Tur});
+            }}
+            sx={{marginBottom: 2}}
+            helperText='Lütfen müşteri tipini seçiniz!'
+               FormHelperTextProps={{
+                sx:{
+                  color: 'red'
+                },
+              }}
+            >
+              {Tur.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
 
+            </TextField>
+
+              {/* Müşteri Sorumlusu Alanı */}
+                   <TextField
+              id="MusteriSorumlusu"
+              name="MusteriSorumlusu"
+              label="Müşteri Sorumlusu"
+              value={formData.MusteriSorumlusu}
+              onChange={handleInputChange}
+              disabled= {formData.Tur === 'Bireysel Müşteri'}
+              sx={{marginBottom: 2}}
+              />
+              
              {/* İsim Alanı */}
              <TextField
               id="Adi"
@@ -555,6 +599,12 @@ const paginationModel = { page: 0, pageSize:10};
                 pattern: "[0-9]*", // Sadece sayılara izin ver
               }} // Maksimum 10 karakter girişi için
               sx={{marginBottom: 2}}
+                FormHelperTextProps={{
+                sx:{
+                  color: 'red',
+                },
+              }}
+              disabled={formData.Tur === 'Bireysel Müşteri'}
               />
 
                 {/* VergiDairesi Alanı */}
@@ -566,6 +616,12 @@ const paginationModel = { page: 0, pageSize:10};
               onChange={handleInputChange}
               sx={{marginBottom: 2}}
               helperText="Kurumsal müşteri ise!"
+                 FormHelperTextProps={{
+                sx:{
+                  color: 'red',
+                },
+              }}
+              disabled={formData.Tur === 'Bireysel Müşteri'}
               />
 
               {/* Tc Alanı */}
@@ -582,7 +638,8 @@ const paginationModel = { page: 0, pageSize:10};
                 }
               }}
               error={formData.TC.length > 0 && formData.TC.length !== 11}
-              helperText={formData.TC.length > 0 && formData.TC.length !== 11 ? "TC Kimlik numarası 11 haneli olmalıdır." : ""}
+              helperText={formData.TC.length > 0 && formData.TC.length !== 11 ?  "TC Kimlik numarası 11 haneli olmalıdır." : "" }
+              disabled={formData.Tur === 'Kurumsal Müşteri'}
               inputProps= {{ 
                 maxLength: 11, 
                 pattern: "[0-9]*", // Sadece sayılara izin ver
@@ -644,30 +701,6 @@ const paginationModel = { page: 0, pageSize:10};
             </TextField>
 
  
-              {/* Müşteri Tipi */}
-            <TextField
-            id="Tur"
-            name="Tur"
-            select
-            label="Müşteri Tipi"
-            value={formData.Tur}
-            onChange={(e) => {
-              const Tur = e.target.value;
-              setSelectedTur(Tur);
-              setFormData({...formData, Tur});
-            }}
-            sx={{marginBottom: 2}}
-            helperText='Lütfen müşteri tipini seçiniz!'
-            >
-              {Tur.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-
-            </TextField>
-
-
           
         {/* Butonlar */}
         <div>
