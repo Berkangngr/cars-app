@@ -22,7 +22,69 @@ import { setGlobalLoading } from '../utils/globalLoading';
 
 
 
-const transactionType: string[] = ["Yağ Değişimi", "Parça Değişimi", "Bilinmiyor"];
+const transactionType: string[] = [
+  "Genel Bakım",
+  "Yağ Değişimi",
+  "Parça Değişimi",
+  "İşçilik Ücreti",
+  "Diğer",
+
+  // Periyodik Bakım
+  "Yağ Filtresi Değişimi",
+  "Hava Filtresi Değişimi",
+  "Polen Filtresi Değişimi",
+  "Yakıt Filtresi Değişimi",
+  "Motor Temizliği",
+  "Antifriz Kontrolü",
+  "Antifriz Değişimi",
+  "Triger Kayışı Değişimi",
+  "V Kayışı Değişimi",
+
+  // Mekanik
+  "Fren Balatası Değişimi",
+  "Fren Diski Değişimi",
+  "Debriyaj Seti Değişimi",
+  "Amortisör Değişimi",
+  "Salıncak Değişimi",
+  "Rotil Değişimi",
+  "Aks Değişimi",
+  "Direksiyon Kutusu Revizyonu",
+
+  // Elektrik ve Akü
+  "Akü Değişimi",
+  "Far Değişimi",
+  "Ampul Değişimi",
+  "Marş Dinamosu Kontrolü",
+  "Alternatör Bakımı",
+  "Sigorta Değişimi",
+
+  // Klima ve Havalandırma
+  "Klima Gazı Dolumu",
+  "Klima Kompresörü Değişimi",
+  "Klima Filtresi Değişimi",
+  "Klima Temizliği",
+
+  // Görsel / Kaporta
+  "Far Parlatma",
+  "Pasta Cila",
+  "Boya Koruma",
+  "Kaporta Düzeltme",
+  "Cam Filmi Uygulaması",
+  "Cam Değişimi",
+
+  // Elektronik / Yazılım
+  "OBD Arıza Tespiti",
+  "Beyin Yazılım Güncellemesi",
+  "ECU Reset",
+  "Şanzıman Adaptasyon",
+  "Servis Işığı Sıfırlama",
+  
+  "Muayene Öncesi Kontrol",
+  "Arıza Tespiti",
+  "Test Sürüşü",
+  "Yedek Parça Montajı"
+];
+
 
 function NewRepairPage() {
   const [plakaNoList, setPlakaNoList] = useState<any[]>([]); // Get apisi ile çektiğim tüm plakaları buraya yazacağım.
