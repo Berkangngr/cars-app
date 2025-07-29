@@ -473,247 +473,222 @@ const paginationModel = { page: 0, pageSize:10};
    
 <Grid>
       <Grid>    
-    <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+   <Modal
+  open={open}
+  onClose={handleClose}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+>
+  <Box
+    component="form"
+    onSubmit={handleSubmit}
+    sx={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '90%',
+      maxWidth: 1000,
+      maxHeight: 600,
+      bgcolor: 'background.paper',
+      borderRadius: 4,
+      boxShadow: 24,
+      p: 4,
+      overflow: 'auto',
+    }}
+  >
+    <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
+      Müşteri Tanıtım Ekranı
+    </Typography>
+
+    {/* Tüm input alanlarını kapsayan grid */}
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+      {/* Her biri bir hücre */}
+      <TextField
+        select
+        label="Müşteri Tipi"
+        name="Tur"
+        value={formData.Tur}
+        onChange={(e) => {
+          const Tur = e.target.value;
+          setSelectedTur(Tur);
+          setFormData({ ...formData, Tur });
+        }}
+        helperText="Lütfen müşteri tipini seçiniz!"
+        FormHelperTextProps={{ sx: { color: 'red' } }}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
       >
-        <Box sx={style}
-         component="form"
-         onSubmit={handleSubmit}
-        >
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-          Müşteri Tanıtım Ekranı
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+        {Tur.map((option) => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </TextField>
 
-               {/* Müşteri Tipi */}
-            <TextField
-            id="Tur"
-            name="Tur"
-            select
-            label="Müşteri Tipi"
-            value={formData.Tur}
-            onChange={(e) => {
-              const Tur = e.target.value;
-              setSelectedTur(Tur);
-              setFormData({...formData, Tur});
-            }}
-            sx={{marginBottom: 2}}
-            helperText='Lütfen müşteri tipini seçiniz!'
-               FormHelperTextProps={{
-                sx:{
-                  color: 'red'
-                },
-              }}
-            >
-              {Tur.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
+      <TextField
+        name="MusteriSorumlusu"
+        label="Müşteri Sorumlusu"
+        value={formData.MusteriSorumlusu}
+        onChange={handleInputChange}
+        disabled={formData.Tur === 'Bireysel Müşteri'}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-            </TextField>
+      <TextField
+        name="Adi"
+        label="Şahıs veya Şirket ismi"
+        value={formData.Adi}
+        onChange={handleInputChange}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-              {/* Müşteri Sorumlusu Alanı */}
-                   <TextField
-              id="MusteriSorumlusu"
-              name="MusteriSorumlusu"
-              label="Müşteri Sorumlusu"
-              value={formData.MusteriSorumlusu}
-              onChange={handleInputChange}
-              disabled= {formData.Tur === 'Bireysel Müşteri'}
-              sx={{marginBottom: 2}}
-              />
-              
-             {/* İsim Alanı */}
-             <TextField
-              id="Adi"
-              name="Adi"
-              label="Şahıs veya Şirket ismi"
-              value={formData.Adi}
-              onChange={handleInputChange}
-              sx={{marginBottom: 2}}
-              />
+      <TextField
+        name="Adres"
+        label="Adres"
+        value={formData.Adres}
+        onChange={handleInputChange}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-              {/* Adres Alanı */}
-              <TextField
-              id="Adres"
-              name="Adres"
-              label="Adres"
-              value={formData.Adres}
-              onChange={handleInputChange}
-              sx={{marginBottom: 2}}
-              />
+      <MuiTelInput
+        name="Telefon"
+        label="Telefon"
+        value={formData.Telefon}
+        onChange={(value, info) => {
+          setFormData({ ...formData, Telefon: info?.numberValue ?? value });
+        }}
+        defaultCountry="TR"
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-              {/* Telefon Alanı */}
+      <TextField
+        name="Email"
+        label="Email"
+        value={formData.Email}
+        onChange={(e) => setFormData({ ...formData, Email: e.target.value })}
+        error={formData.Email.length > 0 && !isValidEmail(formData.Email)}
+        helperText={
+          formData.Email.length > 0 && !isValidEmail(formData.Email)
+            ? 'Geçersiz email adresi.'
+            : ''
+        }
+        type="email"
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-              <MuiTelInput
-              id="Telefon"
-              name="Telefon"
-              label="Telefon"
-              value={formData.Telefon}
-              onChange={(value, info) => {
-                setFormData({...formData, Telefon: info?.numberValue ?? value});
-              }}
-              
-              sx={{marginBottom: 2}}
-              defaultCountry="TR" // Varsayılan ülke kodu 
-              />
+      <TextField
+        name="VergiNo"
+        label="Vergi No"
+        value={formData.VergiNo}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (/^\d*$/.test(value) && value.length <= 10) {
+            setFormData({ ...formData, VergiNo: value });
+          }
+        }}
+        error={formData.VergiNo.length > 0 && formData.VergiNo.length !== 10}
+        helperText={
+          formData.VergiNo.length > 0 && formData.VergiNo.length !== 10
+            ? 'Vergi numarası 10 haneli olmalıdır.'
+            : 'Kurumsal müşteri ise!'
+        }
+        FormHelperTextProps={{ sx: { color: 'red' } }}
+        inputProps={{ maxLength: 10, pattern: '[0-9]*' }}
+        disabled={formData.Tur === 'Bireysel Müşteri'}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
+      <TextField
+        name="VergiDairesi"
+        label="Vergi Dairesi"
+        value={formData.VergiDairesi}
+        onChange={handleInputChange}
+        helperText="Kurumsal müşteri ise!"
+        FormHelperTextProps={{ sx: { color: 'red' } }}
+        disabled={formData.Tur === 'Bireysel Müşteri'}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
+      <TextField
+        name="TC"
+        label="TC"
+        value={formData.TC}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (/^\d*$/.test(value) && value.length <= 11) {
+            setFormData({ ...formData, TC: value });
+          }
+        }}
+        error={formData.TC.length > 0 && formData.TC.length !== 11}
+        helperText={
+          formData.TC.length > 0 && formData.TC.length !== 11
+            ? 'TC Kimlik numarası 11 haneli olmalıdır.'
+            : ''
+        }
+        disabled={formData.Tur === 'Kurumsal Müşteri'}
+        inputProps={{ maxLength: 11, pattern: '[0-9]*' }}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-              {/* Email Alanı */}
-              <TextField
-              id="Email"
-              name="Email"
-              label="Email"
-              value={formData.Email}
-              onChange={(e) => {
-                const value = e.target.value;
-                setFormData({...formData, Email: value });
-              }}
-              error={formData.Email.length > 0 && !isValidEmail(formData.Email)}
-              helperText={formData.Email.length > 0 && !isValidEmail(formData.Email) ? "Geçersiz email adresi." : ""} 
-              sx={{marginBottom: 2}}
-              type='email'
-              />
+      <TextField
+        name="PostaNo"
+        label="Posta No"
+        value={formData.PostaNo}
+        onChange={handleInputChange}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-              {/* VergiNo Alanı */}
-              <TextField
-              id="VergiNo"
-              name="VergiNo"
-              label="Vergi No"
-              value={formData.VergiNo}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*$/.test(value) && value.length <= 10) {
-                  setFormData({...formData, VergiNo: value });
-                }
-              }}
-              error = {formData.VergiNo.length > 0 && formData.VergiNo.length !== 10}
-              helperText={formData.VergiNo.length > 0 && formData.VergiNo.length !== 10 ? "Vergi numarası 10 haneli olmalıdır." : "Kurumsal müşteri ise!"}
-              inputProps= {{
-                maxLength: 10, 
-                pattern: "[0-9]*", // Sadece sayılara izin ver
-              }} // Maksimum 10 karakter girişi için
-              sx={{marginBottom: 2}}
-                FormHelperTextProps={{
-                sx:{
-                  color: 'red',
-                },
-              }}
-              disabled={formData.Tur === 'Bireysel Müşteri'}
-              />
+      <TextField
+        name="Ülke"
+        select
+        label="Ülke"
+        value={formData.UlkeId || ''}
+        onChange={(e) => {
+          const UlkeId = parseInt(e.target.value, 10);
+          setFormData({ ...formData, UlkeId });
+        }}
+        helperText="Lütfen ülkeyi seçiniz!"
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      >
+        {country.map((countryOption) => (
+          <MenuItem key={countryOption.Value} value={Number(countryOption.Value)}>
+            {countryOption.Text}
+          </MenuItem>
+        ))}
+      </TextField>
 
-                {/* VergiDairesi Alanı */}
-                <TextField
-              id="VergiDairesi"
-              name="VergiDairesi"
-              label="Vergi Dairesi"
-              value={formData.VergiDairesi}
-              onChange={handleInputChange}
-              sx={{marginBottom: 2}}
-              helperText="Kurumsal müşteri ise!"
-                 FormHelperTextProps={{
-                sx:{
-                  color: 'red',
-                },
-              }}
-              disabled={formData.Tur === 'Bireysel Müşteri'}
-              />
+      <TextField
+        name="Şehir"
+        select
+        label="Şehir"
+        value={formData.SehirId || ''}
+        onChange={(e) => {
+          const SehirId = parseInt(e.target.value, 10);
+          setFormData({ ...formData, SehirId });
+        }}
+        helperText="Lütfen şehri seçiniz!"
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      >
+        {city.map((cityOption) => (
+          <MenuItem key={cityOption.Value} value={Number(cityOption.Value)}>
+            {cityOption.Text}
+          </MenuItem>
+        ))}
+      </TextField>
+    </Box>
 
-              {/* Tc Alanı */}
-              <TextField
-              id="TC"
-              name="TC"
-              label="TC"
-              value={formData.TC}
-              sx={{marginBottom: 2}}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*$/.test(value) && value.length <= 11) {
-                  setFormData({...formData, TC: value });
-                }
-              }}
-              error={formData.TC.length > 0 && formData.TC.length !== 11}
-              helperText={formData.TC.length > 0 && formData.TC.length !== 11 ?  "TC Kimlik numarası 11 haneli olmalıdır." : "" }
-              disabled={formData.Tur === 'Kurumsal Müşteri'}
-              inputProps= {{ 
-                maxLength: 11, 
-                pattern: "[0-9]*", // Sadece sayılara izin ver
-              }} // Maksimum 11 karakter girişi için
-              />
+    {/* Butonlar */}
+    <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+      <Button type="button" variant="contained" color="error" onClick={resetForm}>
+        Formu Temizle
+      </Button>
+      <Button type="submit" variant="contained" color="success" disabled={isLoading}>
+        {isLoading ? 'Yükleniyor...' : 'Kaydet'}
+      </Button>
+    </Box>
+  </Box>
+</Modal>
 
-              {/* PostoNo Alanı */}
-              <TextField
-              id="PostaNo"
-              name="PostaNo"
-              label="Posta No"
-              value={formData.PostaNo}
-              onChange={handleInputChange}
-              sx={{marginBottom: 2}}
-              />
-
-            {/* Ülke Alanı */}
-
-            <TextField
-            id="Ülke"
-            name="Ülke"
-            select
-            label="Ülke"
-            value={formData.UlkeId || ""}
-            onChange={(e) => {
-              const UlkeId = parseInt(e.target.value,10);
-              setFormData({...formData, UlkeId});
-            }
-              }
-            helperText="Lütfen ülkeyi seçiniz!"
-            >
-              {country.map((countryOption) => (
-                  <MenuItem key={countryOption.Value} value={Number(countryOption.Value)}>
-                  {countryOption.Text}
-                </MenuItem>
-              ) )}
-              
-            </TextField>
-
-
-              {/* Şehir Alanı */}
-              <TextField
-              id="Şehir"
-              name="Şehir"
-              select
-              label="Şehir"
-              value={formData.SehirId || ""}
-              onChange={(e) => {
-                const SehirId = parseInt(e.target.value,10);
-                setFormData({...formData, SehirId});
-              }}
-              helperText="Lütfen şehri seçiniz!"
-            >
-              {city.map((cityOption) => (
-                <MenuItem key={cityOption.Value} value={Number(cityOption.Value)}>
-                  {cityOption.Text}
-                </MenuItem>
-              ))}
-            </TextField>
-
- 
-          
-        {/* Butonlar */}
-        <div>
-        <Button type="button" variant="contained" color="error" onClick={resetForm}>
-                Formu Temizle
-              </Button>
-              <Button type="submit" variant="contained" color="success" disabled={isLoading}>
-                {isLoading ? "Yükleniyor..." : "Kaydet"}
-              </Button>
-        </div>
-          </Typography>
-        </Box>
-      </Modal>
 
 {/* TABLE */}
 
