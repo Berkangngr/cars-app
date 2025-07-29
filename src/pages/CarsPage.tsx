@@ -634,240 +634,201 @@ const paginationModel = { page: 0, pageSize: 100 };
 <Grid>
       <Grid>    
     <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+  open={open}
+  onClose={handleClose}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+>
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 2,
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '90%',
+      maxWidth: 1000,
+      maxHeight: 600,
+      bgcolor: 'background.paper',
+      borderRadius: 4,
+      boxShadow: 24,
+      p: 4,
+      overflow: 'auto',
+    }}
+    component="form"
+    onSubmit={carsHandleSubmit}
+  >
+    <Typography id="modal-modal-title" variant="h6" component="h2">
+      Araç Tanıtım Ekranı
+    </Typography>
+
+    <Box
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 2,
+      }}
+    >
+      {/* Müşteri İsim */}
+      <TextField
+        id="FirmaSahisId"
+        name="FirmaSahisId"
+        select
+        label="Müşteri İsmi"
+        value={selectedCustomers}
+        onChange={handleCustomerChange}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+        helperText="Lütfen müşteri ismini seçiniz!"
+        FormHelperTextProps={{
+          sx: { color: 'red' },
+        }}
       >
-        <Box sx={style}
-         component="form"
-         onSubmit={carsHandleSubmit}
-        >
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-          Araç Tanıtım Ekranı
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+        {customersId.map((option) => (
+          <MenuItem key={option.Value} value={option.Value}>
+            {option.Text}
+          </MenuItem>
+        ))}
+      </TextField>
 
-                {/* Burada yaptığımız müşteri verileri bize string olarak geliyorlar biz onu integeera çeviriyoruz çünkü backend bizden integer bekliyor. */}
+      {/* Diğer Alanlar */}
+      <TextField id="Plaka" name="Plaka" label="Plaka" value={formData.Plaka} onChange={handleInputChange} sx={{ flex: '1 1 calc(25% - 16px)' }} />
 
-                                {/* Müşteri İsim */}
-                                <TextField
-                    id="FirmaSahisId"
-                    name="FirmaSahisId"
-                    select
-                    label="Müşteri İsmi"
-                    value={selectedCustomers}
-                    onChange={handleCustomerChange}
-                    sx={{ marginBottom: 2, minWidth: '222px' }}
-                    helperText="Lütfen müşteri ismini seçiniz!"
-                       FormHelperTextProps={{
-                sx:{
-                  color: 'red',
-                },
-              }}
-                  >
-                    {customersId.map((option) => (
-                      <MenuItem key={option.Value} value={option.Value}>
-                        {option.Text}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+      <TextField
+        id="Marka"
+        name="Marka"
+        select
+        label="Marka"
+        value={selectedCarsBrand}
+        onChange={handleChangeCarsBrand}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      >
+        {Object.entries(carsBrandData).map(([brand]) => (
+          <MenuItem key={brand} value={brand}>
+            {brand}
+          </MenuItem>
+        ))}
+      </TextField>
 
-             {/* Plaka Alanı */}
-             <TextField
-              id="Plaka"
-              name="Plaka"
-              label="Plaka"
-              value={formData.Plaka}
-              onChange={handleInputChange}
-              sx={{ marginBottom: 2 }}
-              />
+      <TextField
+        id="Model"
+        name="Model"
+        select
+        label="Model"
+        value={selectedModels}
+        onChange={handleChangeModels}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      >
+        {models.map((model, index) => (
+          <MenuItem key={index} value={model}>
+            {model}
+          </MenuItem>
+        ))}
+      </TextField>
 
-              {/* Marka Alanı */}
-              
-              <TextField
-                id="Marka"
-                name="Marka"
-                select
-                label="Marka"
-                value={selectedCarsBrand}
-                onChange={handleChangeCarsBrand}
-                sx={{ marginBottom: 2 , minWidth: '222px' }}
-              >
-                {Object.entries(carsBrandData).map(([brand]) => (
-                  <MenuItem key={brand} value={brand}>
-                    {brand}
-                  </MenuItem>
-                ))}
-              </TextField>
+      <TextField
+        id="Yil"
+        name="Yil"
+        label="Yıl"
+        value={formData.Yil || ''}
+        onChange={(e) =>
+          setFormData((prevState) => ({
+            ...prevState,
+            Yil: e.target.value ? parseInt(e.target.value, 10) : null,
+          }))
+        }
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-                
-              {/* Model Alanı */}
-              <TextField
-                  id="Model"
-                  name="Model"
-                  select
-                  label="Model"
-                  value={selectedModels} // Burada state bağlı olmalı
-                  onChange={handleChangeModels} // Değer değişiminde çalışır
-                  sx={{ marginBottom: 2, minWidth: '222px' }}
-                >
-                  {models.map((model, index) => (
-                    <MenuItem key={index} value={model}>
-                      {model}
-                    </MenuItem>
-                  ))}
-                </TextField>
+      <TextField id="SasiNo" name="SasiNo" label="Şasi No" value={formData.SasiNo} onChange={handleInputChangeSasiNo} onBlur={handleBlurSasiNo} sx={{ flex: '1 1 calc(25% - 16px)' }} />
 
+      <TextField id="RuhsatSeriNo" name="RuhsatSeriNo" label="Ruhsat Seri No" value={formData.RuhsatSeriNo} onChange={handleInputChange} sx={{ flex: '1 1 calc(25% - 16px)' }} />
 
-          {/* Yıl alanı */}
-              <TextField
-                id="Yil"
-                name="Yil"
-                label="Yıl"
-                value={formData.Yil || ''} // Eğer formData.Yil null ise, boş bir string göster
-                onChange={(e) =>
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    Yil: e.target.value ? parseInt(e.target.value, 10) : null, // Eğer değer yoksa null gönder
-                  }))
-                }
-                sx={{ marginBottom: 2 }}
-              />
+      <TextField
+        id="YakitTur"
+        name="YakitTur"
+        select
+        label="Yakıt Türü"
+        value={formData.YakitTur}
+        onChange={handleChangeCarsFuel}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      >
+        {carsFuel.map((fuel, index) => (
+          <MenuItem key={index} value={fuel}>
+            {fuel}
+          </MenuItem>
+        ))}
+      </TextField>
 
+      <TextField id="Renk" name="Renk" label="Renk" value={formData.Renk} onChange={handleInputChange} sx={{ flex: '1 1 calc(25% - 16px)' }} />
 
-              {/* Şasi No */}
-              <TextField
-              id="SasiNo"
-              name="SasiNo"
-              label="Sasi No"
-              value={formData.SasiNo}
-              onChange={handleInputChangeSasiNo}
-              onBlur={handleBlurSasiNo}
-              sx={{ marginBottom: 2 }}
-              />
+      <TextField
+        id="MotorHacim"
+        name="MotorHacim"
+        label="Motor Hacim"
+        type="number"
+        value={formData.MotorHacim || ''}
+        onChange={(e) =>
+          setFormData((prevState) => ({
+            ...prevState,
+            MotorHacim: e.target.value ? parseFloat(e.target.value) : null,
+          }))
+        }
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-              {/*Ruhsat Seri No*/}
-              <TextField 
-              id='RuhsatSeriNo'
-              name='RuhsatSeriNo'
-              label='Ruhsat Seri No'
-              value={formData.RuhsatSeriNo}
-              onChange={handleInputChange}
-              sx={{ marginBottom: 2 }}
-              />
+      <TextField
+        id="MotorBeygir"
+        name="MotorBeygir"
+        label="Motor Gücü(kW)"
+        type="number"
+        value={formData.MotorBeygir || ''}
+        onChange={(e) =>
+          setFormData((prevState) => ({
+            ...prevState,
+            MotorBeygir: e.target.value ? parseFloat(e.target.value) : null,
+          }))
+        }
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-               {/* Yakıt türü */}
-                <TextField
-              id="YakitTur"
-              name="YakitTur"
-              select
-              label="Yakıt Türü"
-              value={formData.YakitTur}
-              onChange={handleChangeCarsFuel}
-              sx={{ marginBottom: 2, minWidth: '222px' }}
-              >
-                {carsFuel.map((fuel,index) =>
-                <MenuItem key={index} value={fuel} >
-                {fuel}
-                </MenuItem>
-                )}
-                </TextField>
+      <TextField
+        id="Km"
+        name="Km"
+        label="Km"
+        type="number"
+        value={formData.Km || ''}
+        onChange={(e) => {
+          const value = e.target.value ? parseInt(e.target.value, 10) : null;
+          setFormData((prevState) => ({
+            ...prevState,
+            Km: value,
+          }));
+        }}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
+    </Box>
 
-          
-              <TextField
-              id="Renk"
-              name="Renk"
-              label="Renk"
-              value={formData.Renk}
-              onChange={handleInputChange}
-              sx={{ marginBottom: 2 }}
-              />
+    {/* Butonlar */}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: 2,
+        mt: 3,
+      }}
+    >
+      <Button type="button" variant="contained" color="error" onClick={resetForm}>
+        Formu Temizle
+      </Button>
+      <Button type="submit" variant="contained" color="success" disabled={isLoading}>
+        {isLoading ? 'Yükleniyor...' : 'Kaydet'}
+      </Button>
+    </Box>
+  </Box>
+</Modal>
 
-              
-              <TextField
-              id="MotorHacim"
-              name="MotorHacim"
-              label="Motor Hacim"
-              type="number"
-              value={formData.MotorHacim || ''}
-              onChange={(e) => {
-                setFormData((prevState) => ({
-                  ...prevState,
-                  MotorHacim: e.target.value ? parseFloat(e.target.value) : null,
-                }))
-              }}
-              sx={{ marginBottom: 2 }}
-              />
-
-            
-                <TextField
-                  id="MotorBeygir"
-                  name="MotorBeygir"
-                  label="Motor Gücü(kW)"
-                  type="number"
-                  value={formData.MotorBeygir || ''}
-                  onChange={(e) => {
-                    setFormData((prevState) => ({
-                      ...prevState,
-                    MotorBeygir: e.target.value ? parseFloat(e.target.value) : null,
-                    }))
-                  }
-                  }
-                 
-                  sx={{ marginBottom: 2 }}
-                />
-
-
-              <TextField
-              id="Km"
-              name="Km"
-              label="Km"
-              type="number"
-              value={formData.Km || ''}
-              onChange={(e) => {
-                const value = e.target.value ? parseInt(e.target.value,10) :null;
-                setFormData((prevState) => ({
-                  ...prevState,
-                  Km:value,
-                }))
-              }
-              }
-              sx={{ marginBottom: 2 }}
-            />
-
-              {/* Bakım Km
-              <TextField
-  id="BakimKm"
-  name="BakimKm"
-  label="Bakım Km"
-  type="number"
-  value={formData.BakimKM || ''}
-  onChange={(e) => {
-    const value = e.target.value ? parseInt(e.target.value, 10) : null;
-    setFormData((prevState) => ({
-      ...prevState,
-      BakimKM: value,
-    }));
-  }}
-  sx={{ marginBottom: 2 }}
-/> */}
-
-
-
-          
-        {/* Butonlar */}
-        <div>
-        <Button type="button" variant="contained" color="error" onClick={resetForm}>
-                Formu Temizle
-              </Button>
-              <Button type="submit" variant="contained" color="success" disabled={isLoading}>
-                {isLoading ? "Yükleniyor..." : "Kaydet"}
-              </Button>
-        </div>
-          </Typography>
-        </Box>
-      </Modal>
 
 {/* TABLE */}
 
