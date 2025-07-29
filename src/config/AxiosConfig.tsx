@@ -6,8 +6,11 @@ export const API_URL = process.env.NODE_ENV === "development" ? "http://localhos
 
 // Axios instance oluştur
 const api = axios.create({
-  baseURL: API_URL, // API URL'si
-  withCredentials: true, // Cookie gönderimi için
+  baseURL: API_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  }
 });
 
 // Interceptor ile Authorization başlığı ekle
