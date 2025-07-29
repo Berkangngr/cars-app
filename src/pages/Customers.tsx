@@ -427,7 +427,7 @@ const rows = customersData.map((customer) => ({
 }));
 
 
-const paginationModel = { page: 0, pageSize:10};
+const paginationModel = { page: 0, pageSize:100};
 
   return (
     <>

@@ -639,8 +639,11 @@ const paginationModel = { page: 0, pageSize: 100 };
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={{
-                position: 'absolute',
+        <Box 
+         component="form"
+         onSubmit={carsHandleSubmit}
+        sx={{
+      position: 'absolute',
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
@@ -653,8 +656,6 @@ const paginationModel = { page: 0, pageSize: 100 };
       p: 4,
       overflow: 'auto',
         }}
-         component="form"
-         onSubmit={carsHandleSubmit}
         >
           <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
           Araç Tanıtım Ekranı
@@ -849,7 +850,7 @@ const paginationModel = { page: 0, pageSize: 100 };
               }
               sx={{ flex: '1 1 calc(25% - 16px)' }}
             />
-
+            </Box>
               {/* Bakım Km
               <TextField
   id="BakimKm"
@@ -871,14 +872,13 @@ const paginationModel = { page: 0, pageSize: 100 };
 
           
         {/* Butonlar */}
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+        <Box  sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
         <Button type="button" variant="contained" color="error" onClick={resetForm}>
                 Formu Temizle
               </Button>
               <Button type="submit" variant="contained" color="success" disabled={isLoading}>
                 {isLoading ? "Yükleniyor..." : "Kaydet"}
               </Button>
-        </Box>
           </Box>
         </Box>
       </Modal>
