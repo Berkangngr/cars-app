@@ -1,0 +1,12 @@
+.dx-datagrid .dx-data-row > td.bullet {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.dx-datagrid-search-panel input {
+  background-color: #f0f8ff; /* İstediğin renk kodunu yazabilirsin */
+  color: #000; /* Yazı rengini ayarlamak istersen */
+  border-radius: 4px; /* İstersen köşeleri yuvarla */
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+}
