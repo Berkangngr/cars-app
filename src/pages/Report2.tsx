@@ -58,7 +58,8 @@ const MyDataGrid = () => {
 
       <GroupPanel visible={true} />      
       <Grouping autoExpandAll={false} />
-
+      
+      <Column dataField="islemYilNo" caption="İşlem Yıl No" />
       <Column dataField="Adi" caption="Adı" />
       <Column dataField="Plaka" caption="Plaka" />
       <Column dataField="AracMarka" caption="Araç Marka" />
@@ -70,7 +71,6 @@ const MyDataGrid = () => {
       <Column dataField="IscilikFiyat" caption="İşçilik Fiyat" dataType="number" />
       <Column dataField="ToplamFiyat" caption="Toplam Fiyat" dataType="number"  />
       <Column dataField="islemAciklama" caption="İşlem Açıklama" />
-      <Column dataField="islemYilNo" caption="İşlem Yıl No" />
 
       {/* Toplamlar (Footer'da) */}
       <Summary>
