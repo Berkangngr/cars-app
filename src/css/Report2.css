@@ -10,3 +10,8 @@
   padding: 4px 8px;
   border: 1px solid #ccc;
 }
+/* App.css veya global CSS dosyana ekle */
+.dx-datagrid .dx-header-row > td {
+  font-weight: bold;     /* Kalın yazı */
+  color: black;          /* Siyah renk */
+}

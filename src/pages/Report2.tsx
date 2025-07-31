@@ -5,7 +5,6 @@ import DataGrid, {
   GroupPanel,
   Pager,
   Paging,
-  SearchPanel,
   Summary,
   TotalItem,
   GroupItem,
@@ -23,7 +22,6 @@ const messages = {
     'dxDataGrid-searchPanelPlaceholder': 'Arama'
   },
 };
-
 loadMessages(messages);
 locale('tr');
 const pageSizes = [10, 25, 50, 100];
@@ -58,7 +56,7 @@ const MyDataGrid = () => {
 
       <GroupPanel visible={true} />      
       <Grouping autoExpandAll={false} />
-      
+
       <Column dataField="islemYilNo" caption="İşlem Yıl No" />
       <Column dataField="Adi" caption="Adı" />
       <Column dataField="Plaka" caption="Plaka" />
@@ -66,10 +64,10 @@ const MyDataGrid = () => {
       <Column dataField="AracModel" caption="Araç Model" />
       <Column dataField="Tarih" caption="Tarih" dataType="string" />
       <Column dataField="islemTur" caption="İşlem Türü" />
-      <Column dataField="BakimKM" caption="Bakım KM" dataType="number" />
-      <Column dataField="MalzemeFiyat" caption="Malzeme Fiyat" dataType="number"  />
-      <Column dataField="IscilikFiyat" caption="İşçilik Fiyat" dataType="number" />
-      <Column dataField="ToplamFiyat" caption="Toplam Fiyat" dataType="number"  />
+      <Column dataField="BakimKM" caption="Bakım KM" dataType="number" alignment="center" />
+      <Column dataField="MalzemeFiyat" caption="Malzeme Fiyat" dataType="number"  alignment="center" />
+      <Column dataField="IscilikFiyat" caption="İşçilik Fiyat" dataType="number" alignment="center" />
+      <Column dataField="ToplamFiyat" caption="Toplam Fiyat" dataType="number"  alignment="center" />
       <Column dataField="islemAciklama" caption="İşlem Açıklama" />
 
       {/* Toplamlar (Footer'da) */}
@@ -77,17 +75,17 @@ const MyDataGrid = () => {
         <TotalItem
           column="MalzemeFiyat"
           summaryType="sum"
-          displayFormat=" Malzeme: {0}"
+          displayFormat=" Malzeme: {0}"  alignment="left"
         />
         <TotalItem
           column="IscilikFiyat"
           summaryType="sum"
-          displayFormat=" İşçilik: {0}"
+          displayFormat=" İşçilik: {0}" alignment="left"
         />
         <TotalItem
           column="ToplamFiyat"
           summaryType="sum"
-          displayFormat=" Toplam: {0}"
+          displayFormat=" Toplam: {0}"  alignment="left"
         />
 
         {/* Grup içi toplamlar */}
