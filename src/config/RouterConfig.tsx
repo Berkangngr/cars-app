@@ -9,8 +9,7 @@ import Receivables from '../pages/Receivables'
 import RegisterPage from '../pages/RegisterPage'
 import Reports from '../pages/Reports'
 import StockReport from '../pages/StockReport'
-
-
+import Reports2 from '../pages/Report2';
 function RouterConfig() {
   return (
   
@@ -24,6 +23,8 @@ function RouterConfig() {
 <Route  path='/report' element={<Layout><Reports/></Layout>} />
 <Route path='/cars' element={<Layout><CarsPage/></Layout>} />
 <Route path='/report/stockReport' element={<Layout><StockReport/></Layout>} />
+<Route path='/report2' element={<Layout><Reports2/></Layout>} />
+
 </Routes>
 
 

@@ -115,6 +115,16 @@ function Sidebar({ open, onToggle }: { open: boolean; onToggle: () => void }) {
           </Tooltip>
           {open && <ListItemText primary="Stok Raporu" sx={{ color: "#333" }} />}
         </ListItem>
+
+         <ListItem button component={Link} to="/report2" sx={{ px: 2.5 }}>
+          <Tooltip title="Report2 '" placement="right" disableHoverListener={open}>
+            <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : "auto", justifyContent: "center", color: "#333" }}>
+              <WarehouseIcon />
+            </ListItemIcon>
+          </Tooltip>
+          {open && <ListItemText primary="Report 2 " sx={{ color: "#333" }} />}
+        </ListItem>
+
         <ListItem button component={Link} to="/report" sx={{ px: 2.5 }}>
           <Tooltip title="Rapor İsim2" placement="right" disableHoverListener={open}>
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : "auto", justifyContent: "center", color: "#333" }}>
