@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar';
 const drawerWidth = 240;
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [drawerOpen, setDrawerOpen] = React.useState(true);
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
