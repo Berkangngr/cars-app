@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 
-const drawerWidth = 240;
+//const drawerWidth = 240;
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
