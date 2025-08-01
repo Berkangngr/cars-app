@@ -87,7 +87,6 @@ const MyDataGrid = () => {
   // Burada stateStoring için custom load ve save işlemleri api çağrıları ile yapılacak:
   return (
     <div>
-      <Button variant="outlined" onClick={handleSaveLayout}>Tasarımı Kaydet</Button>
       <DataGrid
         key={userId} // ✅ userId geldikten sonra yeniden render olur
         id="myDataGrid"
@@ -160,7 +159,10 @@ const MyDataGrid = () => {
 
         <Pager visible={true} allowedPageSizes={pageSizes} showPageSizeSelector={true} />
         <Paging defaultPageSize={10} />
+
       </DataGrid>
+      <Button id='raporkayıtbtn' size='small' color='success' type="button" variant="contained" onClick={handleSaveLayout}>Tasarımı Kaydet</Button>
+
     </div>
   );
 };

@@ -15,3 +15,8 @@
   font-weight: bold;     /* Kalın yazı */
   color: black;          /* Siyah renk */
 }
+#raporkayıtbtn {
+  margin-left: auto;
+  display: block; /* veya inline-block */
+  margin-right: 10px;
+}
