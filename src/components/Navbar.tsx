@@ -213,7 +213,7 @@ validationSchema: newPasswordSchema,
         {/* Ortada başlık */}
         <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: '#333333e1', fontWeight:'bold' }}>
           {/* //Apiden bilgiyi aldıktan sonra buraya usurname gelicek. */}
-          {userData?.UserName}
+          {userData?.UserName.toUpperCase()}
         </Typography>
         
       {/* Admin panel butonu */}
