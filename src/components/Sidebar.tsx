@@ -139,7 +139,8 @@ function Sidebar({ open, onToggle }: { open: boolean; onToggle: () => void }) {
 }
 
 // Sidebar wrapper component that manages open state and margin for content
-export function SidebarWrapper({ children, setDrawerOpen }: { children: React.ReactNode, setDrawerOpen: (open: boolean) => any })
+export function SidebarWrapper({ children, setDrawerOpen }: { children?: React.ReactNode, setDrawerOpen: (open: boolean) => any })
+
  {
   const [open, setOpen] = useState(true);
 
