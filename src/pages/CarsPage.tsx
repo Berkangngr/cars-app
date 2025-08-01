@@ -639,29 +639,14 @@ const paginationModel = { page: 0, pageSize: 100 };
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box 
+        <Box sx={style}
          component="form"
          onSubmit={carsHandleSubmit}
-        sx={{
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: '90%',
-      maxWidth: 1000,
-      maxHeight: 600,
-      bgcolor: 'background.paper',
-      borderRadius: 4,
-      boxShadow: 24,
-      p: 4,
-      overflow: 'auto',
-        }}
         >
-          <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
           Araç Tanıtım Ekranı
           </Typography>
-         
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
 
                 {/* Burada yaptığımız müşteri verileri bize string olarak geliyorlar biz onu integeera çeviriyoruz çünkü backend bizden integer bekliyor. */}
 
@@ -673,7 +658,7 @@ const paginationModel = { page: 0, pageSize: 100 };
                     label="Müşteri İsmi"
                     value={selectedCustomers}
                     onChange={handleCustomerChange}
-                    sx={{ flex: '1 1 calc(25% - 16px)' }}
+                    sx={{ marginBottom: 2, minWidth: '222px' }}
                     helperText="Lütfen müşteri ismini seçiniz!"
                        FormHelperTextProps={{
                 sx:{
@@ -695,7 +680,7 @@ const paginationModel = { page: 0, pageSize: 100 };
               label="Plaka"
               value={formData.Plaka}
               onChange={handleInputChange}
-              sx={{ flex: '1 1 calc(25% - 16px)' }}
+              sx={{ marginBottom: 2 }}
               />
 
               {/* Marka Alanı */}
@@ -707,7 +692,7 @@ const paginationModel = { page: 0, pageSize: 100 };
                 label="Marka"
                 value={selectedCarsBrand}
                 onChange={handleChangeCarsBrand}
-                sx={{ flex: '1 1 calc(25% - 16px)' }}
+                sx={{ marginBottom: 2 , minWidth: '222px' }}
               >
                 {Object.entries(carsBrandData).map(([brand]) => (
                   <MenuItem key={brand} value={brand}>
@@ -725,7 +710,7 @@ const paginationModel = { page: 0, pageSize: 100 };
                   label="Model"
                   value={selectedModels} // Burada state bağlı olmalı
                   onChange={handleChangeModels} // Değer değişiminde çalışır
-                  sx={{ flex: '1 1 calc(25% - 16px)' }}
+                  sx={{ marginBottom: 2, minWidth: '222px' }}
                 >
                   {models.map((model, index) => (
                     <MenuItem key={index} value={model}>
@@ -747,7 +732,7 @@ const paginationModel = { page: 0, pageSize: 100 };
                     Yil: e.target.value ? parseInt(e.target.value, 10) : null, // Eğer değer yoksa null gönder
                   }))
                 }
-                sx={{ flex: '1 1 calc(25% - 16px)' }}
+                sx={{ marginBottom: 2 }}
               />
 
 
@@ -759,7 +744,7 @@ const paginationModel = { page: 0, pageSize: 100 };
               value={formData.SasiNo}
               onChange={handleInputChangeSasiNo}
               onBlur={handleBlurSasiNo}
-             sx={{ flex: '1 1 calc(25% - 16px)' }}
+              sx={{ marginBottom: 2 }}
               />
 
               {/*Ruhsat Seri No*/}
@@ -769,7 +754,7 @@ const paginationModel = { page: 0, pageSize: 100 };
               label='Ruhsat Seri No'
               value={formData.RuhsatSeriNo}
               onChange={handleInputChange}
-              sx={{ flex: '1 1 calc(25% - 16px)' }}
+              sx={{ marginBottom: 2 }}
               />
 
                {/* Yakıt türü */}
@@ -780,7 +765,7 @@ const paginationModel = { page: 0, pageSize: 100 };
               label="Yakıt Türü"
               value={formData.YakitTur}
               onChange={handleChangeCarsFuel}
-              sx={{ flex: '1 1 calc(25% - 16px)' }}
+              sx={{ marginBottom: 2, minWidth: '222px' }}
               >
                 {carsFuel.map((fuel,index) =>
                 <MenuItem key={index} value={fuel} >
@@ -796,7 +781,7 @@ const paginationModel = { page: 0, pageSize: 100 };
               label="Renk"
               value={formData.Renk}
               onChange={handleInputChange}
-              sx={{ flex: '1 1 calc(25% - 16px)' }}
+              sx={{ marginBottom: 2 }}
               />
 
               
@@ -812,7 +797,7 @@ const paginationModel = { page: 0, pageSize: 100 };
                   MotorHacim: e.target.value ? parseFloat(e.target.value) : null,
                 }))
               }}
-              sx={{ flex: '1 1 calc(25% - 16px)' }}
+              sx={{ marginBottom: 2 }}
               />
 
             
@@ -830,7 +815,7 @@ const paginationModel = { page: 0, pageSize: 100 };
                   }
                   }
                  
-                  sx={{ flex: '1 1 calc(25% - 16px)' }}
+                  sx={{ marginBottom: 2 }}
                 />
 
 
@@ -848,9 +833,9 @@ const paginationModel = { page: 0, pageSize: 100 };
                 }))
               }
               }
-              sx={{ flex: '1 1 calc(25% - 16px)' }}
+              sx={{ marginBottom: 2 }}
             />
-            </Box>
+
               {/* Bakım Km
               <TextField
   id="BakimKm"
@@ -872,16 +857,18 @@ const paginationModel = { page: 0, pageSize: 100 };
 
           
         {/* Butonlar */}
-        <Box  sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+        <div>
         <Button type="button" variant="contained" color="error" onClick={resetForm}>
                 Formu Temizle
               </Button>
               <Button type="submit" variant="contained" color="success" disabled={isLoading}>
                 {isLoading ? "Yükleniyor..." : "Kaydet"}
               </Button>
-          </Box>
+        </div>
+          </Typography>
         </Box>
       </Modal>
+
 
 {/* TABLE */}
 
