@@ -14,6 +14,7 @@ import { loadMessages, locale } from 'devextreme/localization';
 import '/src/css/Report2.css';
 import Button from '@mui/material/Button';
 import axios from '../config/AxiosConfig';
+import { toast } from 'react-toastify';
 
 const messages = {
   'en-US': {
@@ -43,6 +44,7 @@ const MyDataGrid = () => {
         setData(response.data);
       } catch (error) {
         console.error('Veri çekme hatası:', error);
+        toast.error("Veri çekme hatası");
       }
     };
     fetchData();
@@ -57,6 +59,7 @@ const MyDataGrid = () => {
         console.clear();
       } catch (error) {
         console.error('Veri çekme hatası:', error);
+        toast.error('Veri çekme hatası');
       }
     };
     fetchData();
