@@ -19,7 +19,6 @@ import { setGlobalLoading } from '../utils/globalLoading';
 
 
 
-
 //Genel Formdatamızın interface'i
 interface FormData {
   ID: number;
@@ -70,7 +69,7 @@ const carsBrandData: Record<string, string[]> = {
   FORD: ["","B-MAX","C-MAX","ESCORT","FUSİON","GALAXY","GRAND C-MAX","KA","MONDEO","S-MAX","TAURUS","COUGAR","CROWN VİCTORİA","FESTİVA","GRANADA","PROBE","SCORPİO","SİERRA","TAUNUS","THUNDERBİRD", "FOCUS", "FIESTA", "MUSTANG", "KUGA", "ECOSPORT", "EDGE", "EXPLORER", "EXPEDITION", "RANGER", "TRANSIT","BRONCO","BRONCO SPORT","ECHO SPORT","F","FLEX","PUMA","RANGER RAPTOR","ESCAPE","FREESTYLE"],
   GEELY:["","ECHO","EMGRAND","FAMİLİA","FC"],
   GMC:["","Acadia","CANYON","ENVOY","HUMMER","JIMMY","SIERRA","TERRAIN","TYPHOON","YUKON"],
-  HONDA: ["","CİTY","CR-Z","CRX","E","FV","INTEGRA","LEGEND","PRELUDE", "S2000","SHUTTE","STREAM","CIVIC", "ACCORD", "CR‑V", "HR-V","ZR-V","JAZZ", "HR‑V", "ODYSSEY", "PILOT"],
+  HONDA: ["","CİTY","CR-Z","CRX","E","FV","INTEGRA","LEGEND","PRELUDE", "S2000","SHUTTE","STREAM","CIVIC", "ACCORD", "CR V", "HR-V","ZR-V","JAZZ", "HR V", "ODYSSEY", "PILOT"],
   HYUNDAI: ["","ACCENT","ACCENT BLUE","ACCENT ERA","ATOS","COUPE","EXCEL","GENESİS","GETZ","GRANDUER" ,"I10", "I20","I20 ACTİVE","I20 N","I20 TROY","I30", "I40","BAYON","INSTER","IONİQ 6","IX20","IX35","IX55","MATRİX","S-COUPE","SONATA","TRAJET","GALLOPER","TERRACAN","ELANTRA", "IONIQ", "KONA", "TUCSON", "SANTA FE", "PALISADE", "VENUE"],
   HUMMER:["","H1","H2","H3"],
   IKCO:["","SAMAND"],
@@ -78,14 +77,14 @@ const carsBrandData: Record<string, string[]> = {
   KIA: ["", "CAPITAL","CARENS","CARNIVAL","CERATO","MAGENTIS","OPIRUS","OPTIMA","PRİDE","PICANTO", "RIO", "CEED", "PRO CEED","SEPHIA","SHUMA","STINGER", "SOUL","STONIC","SPORTAGE", "SORENTO","RENOTA","XCEED","EV3", "EV6", "K5", "K7", "NIRO", "TELLURIDE","VENGA",""],
   KUBA:["","CITY","M5"],
   LADA:["","KALINA","NOVA","PRIORA","SANARA","VAZ","VEGA","NIVA"],
-  MAZDA: ["", "MAZDA2", "MAZDA3", "MAZDA5","MAZDA6","MPV","MX","PREMACY","121","323","626","929","LANTIS","RX","XEDOS", "CX‑3", "CX‑30", "CX‑5", "CX‑9", "MX‑5","B-SERİES"],
-  "MERCEDES BENZ": ["", "A‑CLASS", "B‑CLASS", "C‑CLASS", "CLA", "CLS", "E‑CLASS", "AMG GT","CL","CLA","CLE","CLC","CLK","CLS","GLE", "GLC","GL","GLB","GLK", "GLS","ML","X","GLA", "G‑CLASS", "S‑CLASS", "SL", "SLC", "V‑CLASS", "EQC", "EQB", "EQE", "EQS","MAYBACH S","R-CLASS"],
+  MAZDA: ["", "MAZDA2", "MAZDA3", "MAZDA5","MAZDA6","MPV","MX","PREMACY","121","323","626","929","LANTIS","RX","XEDOS", "CX 3", "CX 30", "CX 5", "CX 9", "MX 5","B-SERİES"],
+  "MERCEDES BENZ": ["", "A CLASS", "B CLASS", "C CLASS", "CLA", "CLS", "E CLASS", "AMG GT","CL","CLA","CLE","CLC","CLK","CLS","GLE", "GLC","GL","GLB","GLK", "GLS","ML","X","GLA", "G CLASS", "S CLASS", "SL", "SLC", "V CLASS", "EQC", "EQB", "EQE", "EQS","MAYBACH S","R-CLASS"],
   MINI: ["", "COOPER SD","COOPER S","HATCH/COOPER","JOHN COOPER","ONE","", "COUNTRYMAN", "COOPER CLUBMAN", "CONVERTIBLE", "ELECTRIC","PACEMAN"],
   MITSUBISHI: ["", "ATTRAGE","COLT","GALANT","LANCER EVOLUTION","3000GT","CARISMA","SPACE STAR", "PHEV", "LANCER", "ASX/OUTLANDER SPORT", "OUTLANDER","ECPLISE", "ECLIPSE CROSS","SIGMA","L200","PAJERO"],
-  NISSAN: ["", "MICRA", "NOTE", "LEAF", "QASHQAI", "X‑TRAIL", "JUKE", "KICKS", "PATROL", "PATHFINDER", "ARiYA"],
+  NISSAN: ["", "MICRA", "NOTE", "LEAF", "QASHQAI", "X TRAIL", "JUKE", "KICKS", "PATROL", "PATHFINDER", "ARiYA"],
   NIEVE:["","EVZOOM"],
   OPEL: ["","ADAM","AGILA","CALIBRA","CASCADA","CORSA","CORSA-E","GT-ROADSTAR","KAYETT","MERIVA","OMEGA","REKORT","SIGNUM","TIGRA","VECTRA",  "ASTRA", "INSIGNIA", "CROSSLAND","ANTARA","CROSSLAND X","FRONTERA", "MOKKA", "GRANDLAND", "COMBO", "VIVARO", "ZAFIRA"],
-  PEUGEOT: ["", "106","107","108","205","206","206+","207","208","e-208","301","305","306","307","308","e-308", "2008", "405","406","407","408","4007","5008", "3008", "508","605","607","806","807","RCZ","1007", "RIFTER", "TRAVELLER", "E‑208", "E‑2008"],
+  PEUGEOT: ["", "106","107","108","205","206","206+","207","208","e-208","301","305","306","307","308","e-308", "2008", "405","406","407","408","4007","5008", "3008", "508","605","607","806","807","RCZ","1007", "RIFTER", "TRAVELLER", "E 208", "E 2008"],
   PORSCHE: ["", "911", "718", "928", "BOXSTER","CAYMAN","Cayenne", "Macan", "Panamera", "Taycan"],
   PROTON:["","GEN-2","SAGA","SAVVY","WAJA","218","315","316","415","416","418","420","PERSONA"],
   RENAULT: ["", "ESPACE","FLUENCE","FLUENCE Z.E","GRAND SCENIC","GRAND MODUS","LAGUNA","LATITUDE","MODUS","TWINGO","TWIZY","VEL SATIS", "CLIO", "MEGANE","MEGANE E-TECH","SAFRANE","SYMBOL","TALIANT","TALISMAN","KONDAR", "CAPTUR", "KADJAR", "ARKANA", "SCENIC", "KOLEOS", "TRAFIC","ZOE","R5 TECH","R 5","R 9","R 11","R 12","R 19 ","R 21","R 25"],
@@ -95,7 +94,7 @@ const carsBrandData: Record<string, string[]> = {
   SKODA: ["", "CITIGO", "FABIA","FAVORIT","FELICIA","FORMAN","RAPID","ROOMSTAR", "SCALA", "OCTAVIA", "ELROQ","ENYAQ","SUPERB", "KAMIQ", "KAROQ", "KODIAQ","YETI","FELICIA PICKUP"],
   SMART:["","FORTWO","FORFOUR","ROADSTAR"],
   SUBARU: ["", "IMPREZA", "LEGACY","JUSTY","VIVIO","XV", "FORESTER", "OUTBACK", "BRZ", "LEVORG","CROSSTREK","SOLTERRA","XV","TRIBECA"],
-  SUZUKI: ["","ALTO","SPLASH", "SX4","WAGON R","LIANA","MARUTI","SWIFT", "BALENO", "VITARA","GRAND VITARA","SJ","X-90", "IGNIS", "CROSSOVER", "S‑CROSS", "JIMNY", "S‑PULSE"],
+  SUZUKI: ["","ALTO","SPLASH", "SX4","WAGON R","LIANA","MARUTI","SWIFT", "BALENO", "VITARA","GRAND VITARA","SJ","X-90", "IGNIS", "CROSSOVER", "S CROSS", "JIMNY", "S PULSE"],
   SYKWELL:["","ET5"],
   SSANGYONG:["","ACTYON","ACTYON SPORTS","KORANDO","KORANDO SPORTS","KYRON","MUSSO","MUSSO GRAND","REXTON","TIVOLI","TORRES","XLV","RODIUS"],
   SWM:["","G01","G01F","G03F","G05 PRO"],
@@ -103,7 +102,7 @@ const carsBrandData: Record<string, string[]> = {
   TESLA: ["", "MODEL S", "MODEL 3", "MODEL X", "MODEL Y", "CYBERTRUCK"],
   TOFAŞ:["","DOĞAN","KARTAL","MURAT","ŞAHİN","SERÇE"],
   TOGG:["","T10X"],
-  TOYOTA: ["","AURIS","AVENSIS", "YARIS", "CARINA","CELICA","COROLLA","CORONA","CRESSIDA", "CAMRY","GT86","MR2", "PRIUS","SCARLET","SUPRA","TERCEL","URBAN CRUISER","VERSO", "C‑HR", "RAV4", "HIGHLANDER", "LAND CRUISER", "GR86", "YARIS CROSS", "SEQUOIA","COROLLA CROSS","FJ CRUISER","HILUX","FORTUNER","TUNDRA"],
+  TOYOTA: ["","AURIS","AVENSIS", "YARIS", "CARINA","CELICA","COROLLA","CORONA","CRESSIDA", "CAMRY","GT86","MR2", "PRIUS","SCARLET","SUPRA","TERCEL","URBAN CRUISER","VERSO", "C HR", "RAV4", "HIGHLANDER", "LAND CRUISER", "GR86", "YARIS CROSS", "SEQUOIA","COROLLA CROSS","FJ CRUISER","HILUX","FORTUNER","TUNDRA"],
   VOLKSWAGEN: ["", "BEETLE","BORA","CORRADO","EOS","ID.3","ID.7","JETTA","LUPO","Polo", "Golf", "Passat","PASSAT ALLTARCK","PASSAT VARIANT","PHATEON","SCIROCCO","SHARAN","TOURAN","UP CLUB","VW CC","VENTO","Arteon", "Tiguan", "Touareg", "Touran", "Up!", "ID.3", "ID.4","ID.6", "ID. Buzz","AMAROK","T-CROSS","T-ROC","TAIGO","TAYRON"],
   VOLVO: ["", "C30","C70","S40","S60","S70","S80","S90","S60","V40","V40 CROSS COUNTRY","V50","V60","V60 CROSS COUNTRY","V70","V90","V90 CROS COUNTRY","245","740","850","940","960", "XC40", "XC60","XC70", "XC90", "C40", "S90", "V90","EX40"],
   ACURA: ["", "ILX", "Integra", "TLX", "MDX", "RDX", "NSX"],
@@ -111,7 +110,7 @@ const carsBrandData: Record<string, string[]> = {
   GENESIS: ["", "G70", "G80", "GV70", "GV80", "GV60"],
   INFINITI: ["","FX","QX","EX","Q30","Q50","G","I30", "M","Q60", "QX50", "QX55", "QX60", "QX80"],
   ISUZU:["","D-MAX","TROOPER"],
-  JAGUAR: ["", "DAIMLER","F-TYPE","S-TYPE","SOVEREİNG","X-TYPE","XJ","XJ6","XJR","XJS","XK8","XKR","XF", "XE", "F‑PACE", "E‑PACE", "I‑PACE"],
+  JAGUAR: ["", "DAIMLER","F-TYPE","S-TYPE","SOVEREİNG","X-TYPE","XJ","XJ6","XJR","XJS","XK8","XKR","XF", "XE", "F PACE", "E PACE", "I PACE"],
   JEEP: ["", "Renegade", "Compass", "Wrangler", "Grand Cherokee", "Gladiator", "Cherokee","COMMANDER","PATRIOT","CJ"],
   "LAND ROVER": ["", "Discovery", "Defender", "Range Rover", "Range Rover Sport","DISCOVERY SPORT","RANGE ROVER EVOQUE", "Velar","FREELANDER"],
   LEXUS: ["","CT","GS","IS","LC","LS","LBX","RC", "UX", "NX", "RX", "GX", "LX", "IS", "ES", "LM","RZ"],
@@ -133,7 +132,6 @@ const carsBrandData: Record<string, string[]> = {
 };
 
 
-
 //Gelen musteri isimlerinin interface'i 
   // interface musterıIsmı {
   //   Value:string;
@@ -145,24 +143,23 @@ const carsBrandData: Record<string, string[]> = {
   
 
 //Modal styleları
-const style = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 2,
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90%',
-  maxWidth: 400,
-  maxHeight: 600,
-  bgcolor: 'background.paper',
-  borderRadius: 4,
-  boxShadow: 24,
-  p: 4,
-  overflow:'auto',
-};
-
+// const style = {
+//   display: 'flex',
+//   flexDirection: 'column',
+//   gap: 2,
+//   position: 'absolute',
+//   top: '50%',
+//   left: '50%',
+//   transform: 'translate(-50%, -50%)',
+//   width: '90%',
+//   maxWidth: 400,
+//   maxHeight: 600,
+//   bgcolor: 'background.paper',
+//   borderRadius: 4,
+//   boxShadow: 24,
+//   p: 4,
+//   overflow:'auto',
+// };
 
 
 
@@ -190,7 +187,6 @@ function CarsPage() {
   const [options, ] = useState<any[]>([]); // Autocomplete için seçenekler
   const [, setAracListesi] = useState<any[]>([]); // Araç listesini tutmak için state
   
-
 
   const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
   const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
@@ -399,7 +395,6 @@ useEffect(() => {
   
 
 
-
   //Araç silme fonksiyonu olacak
   const handleDeleteCar = async (id: number) => {
     console.log(id)
@@ -432,7 +427,6 @@ useEffect(() => {
       
     }
   }
-
 
     //Araç Düzenleme fonksiyonu olacak
     const handleRepairCar = async (selectedRow: any) => {
@@ -572,7 +566,6 @@ const columns: GridColDef[] = [
   )}
 ];
 
-
 const rows = carsData.map((cars) => ({
   id: cars.ID,
   Plaka: cars.Plaka,
@@ -589,7 +582,6 @@ const rows = carsData.map((cars) => ({
   FirmaAdi:cars.FirmaAdi,
   RuhsatSeriNo:cars.RuhsatSeriNo,
 }));
-
 
 const paginationModel = { page: 0, pageSize: 100 };
 
@@ -634,241 +626,200 @@ const paginationModel = { page: 0, pageSize: 100 };
 <Grid>
       <Grid>    
     <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+  open={open}
+  onClose={handleClose}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+>
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 2,
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '90%',
+      maxWidth: 1000,
+      maxHeight: 600,
+      bgcolor: 'background.paper',
+      borderRadius: 4,
+      boxShadow: 24,
+      p: 4,
+      overflow: 'auto',
+    }}
+    component="form"
+    onSubmit={carsHandleSubmit}
+  >
+    <Typography id="modal-modal-title" variant="h6" component="h2">
+      Araç Tanıtım Ekranı
+    </Typography>
+
+    <Box
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 2,
+      }}
+    >
+      {/* Müşteri İsim */}
+      <TextField
+        id="FirmaSahisId"
+        name="FirmaSahisId"
+        select
+        label="Müşteri İsmi"
+        value={selectedCustomers}
+        onChange={handleCustomerChange}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+        helperText="Lütfen müşteri ismini seçiniz!"
+        FormHelperTextProps={{
+          sx: { color: 'red' },
+        }}
       >
-        <Box sx={style}
-         component="form"
-         onSubmit={carsHandleSubmit}
-        >
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-          Araç Tanıtım Ekranı
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+        {customersId.map((option) => (
+          <MenuItem key={option.Value} value={option.Value}>
+            {option.Text}
+          </MenuItem>
+        ))}
+      </TextField>
 
-                {/* Burada yaptığımız müşteri verileri bize string olarak geliyorlar biz onu integeera çeviriyoruz çünkü backend bizden integer bekliyor. */}
+      {/* Diğer Alanlar */}
+      <TextField id="Plaka" name="Plaka" label="Plaka" value={formData.Plaka} onChange={handleInputChange} sx={{ flex: '1 1 calc(25% - 16px)' }} />
 
-                                {/* Müşteri İsim */}
-                                <TextField
-                    id="FirmaSahisId"
-                    name="FirmaSahisId"
-                    select
-                    label="Müşteri İsmi"
-                    value={selectedCustomers}
-                    onChange={handleCustomerChange}
-                    sx={{ marginBottom: 2, minWidth: '222px' }}
-                    helperText="Lütfen müşteri ismini seçiniz!"
-                       FormHelperTextProps={{
-                sx:{
-                  color: 'red',
-                },
-              }}
-                  >
-                    {customersId.map((option) => (
-                      <MenuItem key={option.Value} value={option.Value}>
-                        {option.Text}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+      <TextField
+        id="Marka"
+        name="Marka"
+        select
+        label="Marka"
+        value={selectedCarsBrand}
+        onChange={handleChangeCarsBrand}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      >
+        {Object.entries(carsBrandData).map(([brand]) => (
+          <MenuItem key={brand} value={brand}>
+            {brand}
+          </MenuItem>
+        ))}
+      </TextField>
 
-             {/* Plaka Alanı */}
-             <TextField
-              id="Plaka"
-              name="Plaka"
-              label="Plaka"
-              value={formData.Plaka}
-              onChange={handleInputChange}
-              sx={{ marginBottom: 2 }}
-              />
+      <TextField
+        id="Model"
+        name="Model"
+        select
+        label="Model"
+        value={selectedModels}
+        onChange={handleChangeModels}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      >
+        {models.map((model, index) => (
+          <MenuItem key={index} value={model}>
+            {model}
+          </MenuItem>
+        ))}
+      </TextField>
 
-              {/* Marka Alanı */}
-              
-              <TextField
-                id="Marka"
-                name="Marka"
-                select
-                label="Marka"
-                value={selectedCarsBrand}
-                onChange={handleChangeCarsBrand}
-                sx={{ marginBottom: 2 , minWidth: '222px' }}
-              >
-                {Object.entries(carsBrandData).map(([brand]) => (
-                  <MenuItem key={brand} value={brand}>
-                    {brand}
-                  </MenuItem>
-                ))}
-              </TextField>
+      <TextField
+        id="Yil"
+        name="Yil"
+        label="Yıl"
+        value={formData.Yil || ''}
+        onChange={(e) =>
+          setFormData((prevState) => ({
+            ...prevState,
+            Yil: e.target.value ? parseInt(e.target.value, 10) : null,
+          }))
+        }
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-                
-              {/* Model Alanı */}
-              <TextField
-                  id="Model"
-                  name="Model"
-                  select
-                  label="Model"
-                  value={selectedModels} // Burada state bağlı olmalı
-                  onChange={handleChangeModels} // Değer değişiminde çalışır
-                  sx={{ marginBottom: 2, minWidth: '222px' }}
-                >
-                  {models.map((model, index) => (
-                    <MenuItem key={index} value={model}>
-                      {model}
-                    </MenuItem>
-                  ))}
-                </TextField>
+      <TextField id="SasiNo" name="SasiNo" label="Şasi No" value={formData.SasiNo} onChange={handleInputChangeSasiNo} onBlur={handleBlurSasiNo} sx={{ flex: '1 1 calc(25% - 16px)' }} />
 
+      <TextField id="RuhsatSeriNo" name="RuhsatSeriNo" label="Ruhsat Seri No" value={formData.RuhsatSeriNo} onChange={handleInputChange} sx={{ flex: '1 1 calc(25% - 16px)' }} />
 
-          {/* Yıl alanı */}
-              <TextField
-                id="Yil"
-                name="Yil"
-                label="Yıl"
-                value={formData.Yil || ''} // Eğer formData.Yil null ise, boş bir string göster
-                onChange={(e) =>
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    Yil: e.target.value ? parseInt(e.target.value, 10) : null, // Eğer değer yoksa null gönder
-                  }))
-                }
-                sx={{ marginBottom: 2 }}
-              />
+      <TextField
+        id="YakitTur"
+        name="YakitTur"
+        select
+        label="Yakıt Türü"
+        value={formData.YakitTur}
+        onChange={handleChangeCarsFuel}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      >
+        {carsFuel.map((fuel, index) => (
+          <MenuItem key={index} value={fuel}>
+            {fuel}
+          </MenuItem>
+        ))}
+      </TextField>
 
+      <TextField id="Renk" name="Renk" label="Renk" value={formData.Renk} onChange={handleInputChange} sx={{ flex: '1 1 calc(25% - 16px)' }} />
 
-              {/* Şasi No */}
-              <TextField
-              id="SasiNo"
-              name="SasiNo"
-              label="Sasi No"
-              value={formData.SasiNo}
-              onChange={handleInputChangeSasiNo}
-              onBlur={handleBlurSasiNo}
-              sx={{ marginBottom: 2 }}
-              />
+      <TextField
+        id="MotorHacim"
+        name="MotorHacim"
+        label="Motor Hacim"
+        type="number"
+        value={formData.MotorHacim || ''}
+        onChange={(e) =>
+          setFormData((prevState) => ({
+            ...prevState,
+            MotorHacim: e.target.value ? parseFloat(e.target.value) : null,
+          }))
+        }
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-              {/*Ruhsat Seri No*/}
-              <TextField 
-              id='RuhsatSeriNo'
-              name='RuhsatSeriNo'
-              label='Ruhsat Seri No'
-              value={formData.RuhsatSeriNo}
-              onChange={handleInputChange}
-              sx={{ marginBottom: 2 }}
-              />
+      <TextField
+        id="MotorBeygir"
+        name="MotorBeygir"
+        label="Motor Gücü(kW)"
+        type="number"
+        value={formData.MotorBeygir || ''}
+        onChange={(e) =>
+          setFormData((prevState) => ({
+            ...prevState,
+            MotorBeygir: e.target.value ? parseFloat(e.target.value) : null,
+          }))
+        }
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
 
-               {/* Yakıt türü */}
-                <TextField
-              id="YakitTur"
-              name="YakitTur"
-              select
-              label="Yakıt Türü"
-              value={formData.YakitTur}
-              onChange={handleChangeCarsFuel}
-              sx={{ marginBottom: 2, minWidth: '222px' }}
-              >
-                {carsFuel.map((fuel,index) =>
-                <MenuItem key={index} value={fuel} >
-                {fuel}
-                </MenuItem>
-                )}
-                </TextField>
+      <TextField
+        id="Km"
+        name="Km"
+        label="Km"
+        type="number"
+        value={formData.Km || ''}
+        onChange={(e) => {
+          const value = e.target.value ? parseInt(e.target.value, 10) : null;
+          setFormData((prevState) => ({
+            ...prevState,
+            Km: value,
+          }));
+        }}
+        sx={{ flex: '1 1 calc(25% - 16px)' }}
+      />
+    </Box>
 
-          
-              <TextField
-              id="Renk"
-              name="Renk"
-              label="Renk"
-              value={formData.Renk}
-              onChange={handleInputChange}
-              sx={{ marginBottom: 2 }}
-              />
-
-              
-              <TextField
-              id="MotorHacim"
-              name="MotorHacim"
-              label="Motor Hacim"
-              type="number"
-              value={formData.MotorHacim || ''}
-              onChange={(e) => {
-                setFormData((prevState) => ({
-                  ...prevState,
-                  MotorHacim: e.target.value ? parseFloat(e.target.value) : null,
-                }))
-              }}
-              sx={{ marginBottom: 2 }}
-              />
-
-            
-                <TextField
-                  id="MotorBeygir"
-                  name="MotorBeygir"
-                  label="Motor Gücü(kW)"
-                  type="number"
-                  value={formData.MotorBeygir || ''}
-                  onChange={(e) => {
-                    setFormData((prevState) => ({
-                      ...prevState,
-                    MotorBeygir: e.target.value ? parseFloat(e.target.value) : null,
-                    }))
-                  }
-                  }
-                 
-                  sx={{ marginBottom: 2 }}
-                />
-
-
-              <TextField
-              id="Km"
-              name="Km"
-              label="Km"
-              type="number"
-              value={formData.Km || ''}
-              onChange={(e) => {
-                const value = e.target.value ? parseInt(e.target.value,10) :null;
-                setFormData((prevState) => ({
-                  ...prevState,
-                  Km:value,
-                }))
-              }
-              }
-              sx={{ marginBottom: 2 }}
-            />
-
-              {/* Bakım Km
-              <TextField
-  id="BakimKm"
-  name="BakimKm"
-  label="Bakım Km"
-  type="number"
-  value={formData.BakimKM || ''}
-  onChange={(e) => {
-    const value = e.target.value ? parseInt(e.target.value, 10) : null;
-    setFormData((prevState) => ({
-      ...prevState,
-      BakimKM: value,
-    }));
-  }}
-  sx={{ marginBottom: 2 }}
-/> */}
-
-
-
-          
-        {/* Butonlar */}
-        <div>
-        <Button type="button" variant="contained" color="error" onClick={resetForm}>
-                Formu Temizle
-              </Button>
-              <Button type="submit" variant="contained" color="success" disabled={isLoading}>
-                {isLoading ? "Yükleniyor..." : "Kaydet"}
-              </Button>
-        </div>
-          </Typography>
-        </Box>
-      </Modal>
-
+    {/* Butonlar */}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: 2,
+        mt: 3,
+      }}
+    >
+      <Button type="button" variant="contained" color="error" onClick={resetForm}>
+        Formu Temizle
+      </Button>
+      <Button type="submit" variant="contained" color="success" disabled={isLoading}>
+        {isLoading ? 'Yükleniyor...' : 'Kaydet'}
+      </Button>
+    </Box>
+  </Box>
+</Modal>
 
 {/* TABLE */}
 
@@ -937,6 +888,5 @@ const paginationModel = { page: 0, pageSize: 100 };
     </>
   )
 }
-
 
 export default CarsPage;
