@@ -179,7 +179,7 @@ function NewRepairPage() {
       MüsteriIsmi: "",
       BakimKM: "",
       Detaylar: [
-        { islemTur: '', MalzemeFiyat: null, iscilikFiyat: null, islemAciklama: '', ToplamFiyat: 0 },
+        { islemTur: '', MalzemeFiyat: 0, iscilikFiyat: 0, islemAciklama: '', ToplamFiyat: 0 },
       ],
     },
     onSubmit: submit,
@@ -240,10 +240,10 @@ function NewRepairPage() {
   const handleAddInputButton = () => {
     const newDetay = {
       islemTur: '',
-      MalzemeFiyat: null,
-      iscilikFiyat: null,
+      MalzemeFiyat: 0,
+      iscilikFiyat: 0,
       islemAciklama: '',
-      ToplamFiyat: null
+      ToplamFiyat: 0
     };
     setFieldValue('Detaylar', [...values.Detaylar, newDetay]);
   };
