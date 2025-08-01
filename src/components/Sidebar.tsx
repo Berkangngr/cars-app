@@ -107,40 +107,39 @@ function Sidebar({ open, onToggle }: { open: boolean; onToggle: () => void }) {
           ) : null
         }
       >
-        <ListItem  component={Link} to="/report/stockReport" sx={{ px: 2.5 }}>
+       {/* <ListItem  component={Link} to="/report/stockReport" sx={{ px: 2.5 }}>
           <Tooltip title="Stok Raporu" placement="right" disableHoverListener={open}>
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : "auto", justifyContent: "center", color: "#333" }}>
               <WarehouseIcon />
             </ListItemIcon>
           </Tooltip>
           {open && <ListItemText primary="Stok Raporu" sx={{ color: "#333" }} />}
-        </ListItem>
+        </ListItem>*/}
 
          <ListItem  component={Link} to="/report2" sx={{ px: 2.5 }}>
           <Tooltip title="Report2 '" placement="right" disableHoverListener={open}>
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : "auto", justifyContent: "center", color: "#333" }}>
-              <WarehouseIcon />
+              <BarChartIcon />
             </ListItemIcon>
           </Tooltip>
-          {open && <ListItemText primary="Report 2 " sx={{ color: "#333" }} />}
+          {open && <ListItemText primary="İşlem Raporu" sx={{ color: "#333" }} />}
         </ListItem>
 
-        <ListItem  component={Link} to="/report" sx={{ px: 2.5 }}>
+       {/* <ListItem  component={Link} to="/report" sx={{ px: 2.5 }}>
           <Tooltip title="Rapor İsim2" placement="right" disableHoverListener={open}>
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : "auto", justifyContent: "center", color: "#333" }}>
               <BarChartIcon />
             </ListItemIcon>
           </Tooltip>
           {open && <ListItemText primary="Rapor İsim2" sx={{ color: "#333" }} />}
-        </ListItem>
+        </ListItem>*/}
       </List>
     </Drawer>
   );
 }
 
 // Sidebar wrapper component that manages open state and margin for content
-export function SidebarWrapper({ children, setDrawerOpen }: { children?: React.ReactNode, setDrawerOpen: (open: boolean) => any })
-
+export function SidebarWrapper({ children, setDrawerOpen }: { children: React.ReactNode, setDrawerOpen: (open: boolean) => any })
  {
   const [open, setOpen] = useState(true);
 
