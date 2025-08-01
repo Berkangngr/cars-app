@@ -23,8 +23,17 @@ const messages = {
     'dxDataGrid-groupPanelEmptyText': 'Drag a column header here to group by that column',
   },
   'tr': {
-    'dxDataGrid-groupPanelEmptyText': 'Gruplamak için sütun başlığını buraya sürükleyin',
+     'dxDataGrid-groupPanelEmptyText': 'Gruplamak için sütun başlığını buraya sürükleyin',
     'dxDataGrid-searchPanelPlaceholder': 'Arama',
+    'dxDataGrid-sortingAscendingText': 'Artan sırala',
+    'dxDataGrid-sortingDescendingText': 'Azalan sırala',
+    'dxDataGrid-sortingClearText': 'Sıralamayı temizle',
+    'dxDataGrid-groupHeaderText': 'Bu sütuna göre grupla',
+    'dxDataGrid-ungroupHeaderText': 'Gruplamayı kaldır',
+    'dxDataGrid-ungroupAllText': 'Tüm gruplamaları kaldır',
+
+    'dxDataGrid-columnFixingFix': 'Sütunu sabitle',
+    'dxDataGrid-columnFixingUnfix': 'Sabitlemeyi kaldır',    
   },
 };
 loadMessages(messages);
