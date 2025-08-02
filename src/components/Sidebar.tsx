@@ -39,8 +39,8 @@ function Sidebar({ open, onToggle }: { open: boolean; onToggle: () => void }) {
           backgroundColor: "#faf8fd",
           boxShadow: "none",
           position: "fixed",
-          top: "0",
-          height: `100%`,
+          top: "64px",
+          height: `height: calc(100vh - 64px)`,
           transition: "width 0.3s",
           borderRight: "1px solid #ddd",
           zIndex: 1000,
@@ -51,8 +51,8 @@ function Sidebar({ open, onToggle }: { open: boolean; onToggle: () => void }) {
         sx={{
           display: "flex",
           justifyContent: open ? "flex-end" : "center",
-          p: 1.9,
-          borderBottom: "1px solid #ddd",
+          p:"5px",
+          
         }}
       >
         <IconButton onClick={onToggle} size="small" sx={{ color: "#333" }}>
@@ -60,7 +60,7 @@ function Sidebar({ open, onToggle }: { open: boolean; onToggle: () => void }) {
         </IconButton>
       </Box>
       <List>
-        <Divider />
+       
         <ListItem  component={Link} to="/home" sx={{ px: 2.5 }}>
           <Tooltip title="Ana Sayfa" placement="right" disableHoverListener={open}>
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : "auto", justifyContent: "center", color: "#333" }}>
@@ -79,6 +79,17 @@ function Sidebar({ open, onToggle }: { open: boolean; onToggle: () => void }) {
           {open && <ListItemText primary="Yeni Tamirat" sx={{ color: "#333" }} />}
         </ListItem>
         <Divider />
+        </List>
+       { /* Tanıtımlar */ }
+             <List
+        subheader={
+          open ? (
+            <ListSubheader sx={{ backgroundColor: "#efedf1", fontWeight: "bold", color: "#333" }}>
+              Tanıtımlar
+            </ListSubheader>
+          ) : null
+        }
+      >
         <ListItem  component={Link} to="/customers" sx={{ px: 2.5 }}>
           <Tooltip title="Müşteriler" placement="right" disableHoverListener={open}>
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : "auto", justifyContent: "center", color: "#333" }}>

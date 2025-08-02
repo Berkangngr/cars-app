@@ -711,7 +711,7 @@ const paginationModel = { page: 0, pageSize:100};
           columns={columns.map((column) => ({
             ...column,
             flex: 1,
-            minWidth: 100,}
+            width: 125,}
           ))}
           getRowId={(row) => row.ID}
           initialState={{ 

@@ -449,17 +449,17 @@ const saveAsPDF = async () => {
   // }
 const columns: GridColDef[] = [
   
-  {field:'islemYilNo', headerName: 'İşlem Kodu', minWidth:100, maxWidth:200, flex:1, headerAlign:'center', align:'center'},
-  { field: 'Müşteri', headerName: 'Müşteri İsmi', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
-  { field: 'Marka', headerName: 'Marka', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
-  { field: 'Model', headerName: 'Model', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
-  {field: 'Tarih', headerName: 'Tarih', type: 'string', minWidth: 100, maxWidth:200, flex:1,headerAlign: 'center' , align: 'center'},
-  { field: 'islemTur', headerName: 'İşlem Türü', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
-  { field: 'islem', headerName: 'İşlem', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
-  { field: 'KM', headerName: 'KM', type: 'number', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
-  { field: 'Plaka', headerName: 'Plaka', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center' , align: 'center' },
-  {field: 'ToplamFiyat', headerName: 'Toplam Fiyat', type: 'number', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center' },
-  {field: 'Statu', headerName: 'Durum', minWidth: 100, maxWidth:200, flex:1, headerAlign: 'center', align: 'center',
+  {field:'islemYilNo', headerName: 'İşlem Kodu', width:150, flex:1, headerAlign:'center', align:'center'},
+  { field: 'Müşteri', headerName: 'Müşteri İsmi',  width:150, flex:1, headerAlign: 'center', align: 'center' },
+  { field: 'Marka', headerName: 'Marka',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
+  { field: 'Model', headerName: 'Model',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
+  {field: 'Tarih', headerName: 'Tarih', type: 'string',  width:150, flex:1,headerAlign: 'center' , align: 'center'},
+  { field: 'islemTur', headerName: 'İşlem Türü',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
+  { field: 'islem', headerName: 'İşlem',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
+  { field: 'KM', headerName: 'KM', type: 'number',  width:150, flex:1, headerAlign: 'center', align: 'center' },
+  { field: 'Plaka', headerName: 'Plaka',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
+  {field: 'ToplamFiyat', headerName: 'Toplam Fiyat', type: 'number',  width:150, flex:1, headerAlign: 'center', align: 'center' },
+  {field: 'Statu', headerName: 'Durum',  width:150, flex:1, headerAlign: 'center', align: 'center',
      renderCell: (params) => {
     const statu = params.value; // params.row.Statu yerine params.value kullanın
     let backgroundColor = '';
@@ -526,7 +526,7 @@ const columns: GridColDef[] = [
       </div>
     );
   },},
-  {field: 'actions', headerName: 'İşlemler', minWidth: 240, maxWidth:300, flex:1, headerAlign:'center', align: 'left', sortable: false,renderCell: (params) => (
+  {field: 'actions', headerName: 'İşlemler',width: 150, flex:1, headerAlign:'center', align: 'left', sortable: false,renderCell: (params) => (
     <div style={{ width:'300px', display: 'flex', justifyContent: 'space-between'}}>
           <div>
             <InfoOutlineIcon
@@ -586,8 +586,9 @@ const paginationModel = { page: 0, pageSize:10};
   return (
 
 <div>
+  
 
-     <Grid container spacing={2} sx={{ marginTop: "4px", marginBottom: "15px", marginLeft:"5px" }}>
+     <Grid container spacing={2} sx={{ marginTop: "4px", marginBottom: "15px", marginLeft:"5px", padding:"15px" }}>
   <Grid item xs={12} md={6} lg={4}> {/* Responsive genişlik */}
     <Autocomplete
       freeSolo
@@ -612,6 +613,8 @@ const paginationModel = { page: 0, pageSize:10};
           setFilteredData(filtered);
         }
       }}
+
+      
       renderInput={(params) => (
         <TextField 
           {...params} 
@@ -620,6 +623,7 @@ const paginationModel = { page: 0, pageSize:10};
         />
         
       )}
+
     />
     
   </Grid>
@@ -829,7 +833,7 @@ const paginationModel = { page: 0, pageSize:10};
           columns={columns.map((column) => ({
             ...column,
             flex: 1, // Tüm sütunların esnek genişlikte olmasını sağlar
-            minWidth: 100, // Minimum genişlik ayarı
+            width: 125, // Minimum genişlik ayarı
           }))}
           getRowId={(row) => row.islemdetayid || row.ID}
           initialState={{ 
