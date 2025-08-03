@@ -21,6 +21,7 @@ import { useReactToPrint } from "react-to-print";
 import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
 import { setGlobalLoading } from '../utils/globalLoading';
+import { da } from 'date-fns/locale';
 
 
 
@@ -49,10 +50,35 @@ interface FormData {
   islemAciklama: string;
   islemdetayid: number;
   AracId: number;
-  AracMarka:string;
-  AracModel:string;
+  Marka:string;
+  Model:string;
   IslemId:number;
   islemYilNo:string;
+  IslemDetaylar?: IslemDetay[];
+}
+
+interface IslemDetay {
+        DetayId: number,
+        MalzemeFiyat: number,
+        IscilikFiyat: number,
+        ToplamFiyat: number,
+        islemAciklama: string,
+        AracId: number,
+        Plaka: string,
+        Marka: string,
+        Model: string,
+        Statu: number
+}
+
+interface userData {
+  FirstName: string;
+  LastName: string;
+  Password: string;
+  Image: null;
+  ImagePath: string;
+  Email: string;
+  UserName: string;
+  Statu: boolean;
 }
 
 // Güncelleme için beklenen veri yapısı
@@ -144,12 +170,13 @@ const [processFormData, setProcessFormData] = useState<FormData>({
   islemAciklama: "",
   islemdetayid: 0,
   AracId: 0,
-  AracMarka:"",
-  AracModel:"",
+  Marka:"",
+  Model:"",
   IslemId:0,
   islemYilNo:""
 });
-
+const [selectedDetails, setSelectedDetails] = useState<IslemDetay[]>([]);
+const [userData, setUserData] = useState<userData>(); // Kullanıcı verileri
 
 
 
@@ -158,7 +185,7 @@ const [processFormData, setProcessFormData] = useState<FormData>({
 const fetchProcess = async () => {
   setGlobalLoading(true)
   try {
-    const response = await axios.get(`/api/islemNew/GetIslemlerNew`);
+    const response = await axios.get(`/api/islemNew/GetIslemlerDetaylı`);
     const inComingData = response.data;
 
     if (Array.isArray(inComingData)) {
@@ -183,6 +210,22 @@ const fetchProcess = async () => {
 
 const options: OptionType[] = processData.map(item => ({ Adi: item.Adi, id: item.ID }));
 
+//Kullanıcı verilerini alma
+const handleUserData = async () => {
+  try {
+      const response = await axios.get('/api/UserSetting/Setting');
+      setUserData(response.data);
+      console.log("Kullanıcı verileri:", response.data);
+  } catch (error) {
+    toast.error("Kullanıcı verileri alınırken bir hata oluştu.");
+    console.log("Error fetching user data:", error);
+  }
+
+}
+useEffect(() => {
+  handleUserData(); // Kullanıcı verilerini al
+},[])
+
 
 const resetForm = () => {
   setProcessFormData({
@@ -200,8 +243,8 @@ const resetForm = () => {
     IscilikFiyat: 0,
     islemAciklama: "",
     islemdetayid: 0,
-    AracMarka:"",
-    AracModel:"",
+    Marka:"",
+    Model:"",
     IslemId:0,
     islemYilNo:""
   })
@@ -283,8 +326,8 @@ const handleEditProcess = async (id: number) => {
       islemAciklama: data.islemAciklama,
        islemdetayid: data.ID,
       AracId: data.AracId,
-      AracMarka:data.AracMarka,
-      AracModel:data.AracModel,
+      Marka:data.Marka,
+      Model:data.Model,
       IslemId:data.IslemId,
       islemYilNo:data.islemYilNo
     });
@@ -360,43 +403,18 @@ const handlePriceChange = (field: 'MalzemeFiyat' | 'IscilikFiyat', value: number
 };
 
 // İşlem detayı fonksiyonu
-const handleİnfoProcess = async (id: number) => {
-
-  try {
-  const response = await axios.get(`/api/islemNew/GetIslemDetailsById?islemDetayId=${id}`);
-  const data = response.data;
-  console.log(data)
-   setProcessFormData({
-      ID: data.ID,
-      Adi: data.Adi,
-      Araç: data.Araç,
-      Tarih: data.Tarih,
-      islemTur: data.islemTur,
-      BakimKM: data.BakimKM,
-      Plaka: data.Plaka,
-      ToplamFiyat: data.ToplamFiyat,
-      Statu: data.Statu,
-      MalzemeFiyat: data.MalzemeFiyat,
-      IscilikFiyat: data.IscilikFiyat,
-      islemAciklama: data.islemAciklama,
-       islemdetayid: data.ID,
-      AracId: data.AracId,
-      AracMarka:data.AracMarka,
-      AracModel:data.AracModel,
-      IslemId:data.IslemId,
-      islemYilNo:data.islemYilNo
-    });
-    
-    setSelectedRow([data.ID]);
-        setTimeout(() => {
-      handleOpenDetail();
-    }, 100);
-
-  } catch (error) {
-    console.log("Veri çekilirken hata oluştu:", error);
+const handleInfoProcess = async (id: number) => {
+  const selectedItem = filteredData.find((data) => data.ID === id);
+  if(selectedItem) {
+    setSelectedDetails(selectedItem.IslemDetaylar ?? []);
+    setSelectedRow([id]);
+    handleOpenDetail();
+    console.log("Seçilen İşlem Detayları:", selectedItem.IslemDetaylar);
   }
- 
+  console.log(selectedItem?.IslemDetaylar, "Seçilen İşlem Detayları");
 }
+
+
 
 // Yazdırma Fonksiyonları
 const contentRef = useRef<HTMLDivElement>(null);
@@ -455,8 +473,6 @@ const columns: GridColDef[] = [
   { field: 'Model', headerName: 'Model',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
   {field: 'Tarih', headerName: 'Tarih', type: 'string',  width:150, flex:1,headerAlign: 'center' , align: 'center'},
   { field: 'islemTur', headerName: 'İşlem Türü',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
-  { field: 'islem', headerName: 'İşlem',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
-  { field: 'KM', headerName: 'KM', type: 'number',  width:150, flex:1, headerAlign: 'center', align: 'center' },
   { field: 'Plaka', headerName: 'Plaka',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
   {field: 'ToplamFiyat', headerName: 'Toplam Fiyat', type: 'number',  width:150, flex:1, headerAlign: 'center', align: 'center' },
   {field: 'Statu', headerName: 'Durum',  width:150, flex:1, headerAlign: 'center', align: 'center',
@@ -531,7 +547,7 @@ const columns: GridColDef[] = [
           <div>
             <InfoOutlineIcon
             titleAccess= 'İşlem Detayı'
-            onClick={() => handleİnfoProcess(params.row.ID)}
+            onClick={() => handleInfoProcess(params.row.ID)}
             style={{cursor: 'pointer',marginTop:'15px', color:'#c54c82', fontSize:'20px',opacity:'0.8'}}
             />
           </div>
@@ -542,13 +558,14 @@ const columns: GridColDef[] = [
       style={{ cursor: 'pointer', marginLeft:'5px',marginTop:'15px', color:'green', fontSize:'20px',opacity:'0.8' } }>
       </DoneAllIcon>
       </div>
-      <div>
+      {/* İşlem Düzenleme butonu detay içerisine taşınacak. */}
+      {/* <div>
       <EditIcon
       titleAccess='İşlemi Düzenle'
       onClick={() => handleEditProcess(params.row.ID)}
         style={{ cursor: 'pointer', marginLeft:'5px',marginTop:'15px', color:'#F3C623', fontSize:'20px', opacity:'0.8' } }
         ></EditIcon>
-      </div>
+      </div> */}
       <div>
       <DeleteIcon
       titleAccess='İşlemi Sil'
@@ -563,16 +580,16 @@ const columns: GridColDef[] = [
 
 const rows = filteredData.map((data) => ({
   islemYilNo: data.islemYilNo,
-  ID: data.islemdetayid,
-  id: data.islemdetayid,
+  ID: data.ID,
+  id: data.ID,
   Müşteri: data.Adi,
-  Marka: data.AracMarka,
-  Model: data.AracModel,
+  Marka: data.Marka,
+  Model: data.Model,
   Tarih: data.Tarih,
-  islemTur: data.islemTur,
-  islem : data.islemAciklama,
+  // islemTur: data.islemTur,
+  // islem : data.islemAciklama,
   Statu: data.Statu,
-  KM: data.BakimKM,
+  // KM: data.BakimKM,
   Plaka: data.Plaka,
   ToplamFiyat: data.ToplamFiyat,
   
@@ -743,7 +760,74 @@ const paginationModel = { page: 0, pageSize:10};
   <Dialog open={printDetailOpen} onClose={handleCloseDetail}>
     <Card sx={{ width: 500, margin: 'auto',  boxShadow: 3, padding: 8 }}>
       
-      {/* Buton grubu */}
+
+      
+      <div ref={contentRef}>
+        <CardContent
+        sx={{p:2}}
+        >
+
+          {/* Form verileri */}
+          <CardContent sx={{ p: 2 }}>
+            <div> 
+            <div>
+              <Typography variant="h6" gutterBottom sx={{   mb: 4, textAlign: 'center', color: '#333' , fontWeight: 'bold' , fontSize: '30px'}}>
+                  {userData ? `${userData.FirstName} - İşlem Detayları` : "Yükleniyor..."}
+              </Typography>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'right', gap: '8px' }}>
+              <Typography variant="body1" gutterBottom>
+                <strong>İşlem Kodu:</strong> {filteredData.islemYilNo || "N/A"}<br />
+                </Typography>
+            </div>
+            </div>
+
+  {selectedDetails.map((detay, index) => (
+  <Box key={detay.DetayId} sx={{ mb: 4, borderBottom: '1px solid #ccc', pb: 2 }}>
+
+
+    <TextField
+      fullWidth
+      label="İşlem Açıklama"
+      value={detay.islemAciklama}
+      onChange={(e) => handleEditProcess(index, 'islemAciklama', e.target.value)}
+      sx={{ mb: 2 }}
+    />
+
+    <TextField
+      fullWidth
+      label="Malzeme Fiyat"
+      type="number"
+      value={detay.MalzemeFiyat}
+      onChange={(e) => handleEditProcess(index, 'MalzemeFiyat', Number(e.target.value))}
+      sx={{ mb: 2 }}
+    />
+
+    <TextField
+      fullWidth
+      label="İşçilik Fiyat"
+      type="number"
+      value={detay.IscilikFiyat}
+      onChange={(e) => handleEditProcess(index, 'IscilikFiyat', Number(e.target.value))}
+      sx={{ mb: 2 }}
+    />
+
+    <TextField
+      fullWidth
+      label="Toplam Fiyat"
+      type="number"
+      value={detay.ToplamFiyat}
+      onChange={(e) => handleEditProcess(index, 'ToplamFiyat', Number(e.target.value))}
+      sx={{ mb: 2 }}
+    />
+  </Box>
+))}
+
+</CardContent>
+
+        </CardContent>
+      </div>
+            {/* Buton grubu */}
       <Box sx={{ display: 'flex', gap: 2, mb: 4, p:2 }}>
         <Button 
           variant="contained" 
@@ -765,49 +849,6 @@ const paginationModel = { page: 0, pageSize:10};
           PDF Kaydet
         </Button>
       </Box>
-      
-      <div ref={contentRef}>
-        <CardContent
-        sx={{p:2}}
-        >
-          
-
-          {/* Form verileri */}
-          <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 2}}>
-            İşlem Detayları
-          </Typography>
-          
-          <Box sx={{mb: 4}}>
-            <Typography sx={{mb:2}} variant="subtitle2" color="text.secondary">Sayın</Typography>
-            <Typography variant="body1">{processFormData.Adi}</Typography>
-            <hr />
-          </Box>
-
-          <Box sx={{mb: 4}}>
-            <Typography sx={{mb:2}} variant="subtitle2" color="text.secondary">Araç Plaka</Typography>
-            <Typography variant="body1">{processFormData.Plaka}</Typography>
-            <hr />
-          </Box>
-
-          <Box sx={{mb: 4}}>
-            <Typography sx={{mb:2}} variant="subtitle2" color="text.secondary">İşlem Türü</Typography>
-            <Typography variant="body1">{processFormData.islemTur}</Typography>
-            <hr />
-          </Box>
-
-          <Box sx={{mb: 4}}>
-            <Typography sx={{mb:2}} variant="subtitle2" color="text.secondary">Yapılacak işlem</Typography>
-            <Typography variant="body1">{processFormData.islemAciklama}</Typography>
-            <hr />
-          </Box>
-
-          <Box sx={{mb: 4}}>
-            <Typography sx={{mb:2}} variant="subtitle2" color="text.secondary">Ödenecek Toplam Tutar</Typography>
-            <Typography variant="body1">{processFormData.ToplamFiyat}</Typography>
-            <hr />
-          </Box>
-        </CardContent>
-      </div>
     </Card>
   </Dialog>
 </Grid>
@@ -835,7 +876,7 @@ const paginationModel = { page: 0, pageSize:10};
             flex: 1, // Tüm sütunların esnek genişlikte olmasını sağlar
             width: 125, // Minimum genişlik ayarı
           }))}
-          getRowId={(row) => row.islemdetayid || row.ID}
+          getRowId={(row) => row.IslemId || row.ID}
           initialState={{ 
             pagination: { paginationModel },
             columns: {
