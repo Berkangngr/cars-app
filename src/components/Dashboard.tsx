@@ -9,7 +9,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutlined';
 import PrintIcon from '@mui/icons-material/Print';
 import SaveIcon from '@mui/icons-material/Save';
-import { Autocomplete, Box, Button, Card, CardContent, Dialog, Grid, TextField, Typography, useMediaQuery } from '@mui/material';
+import { Autocomplete, Box, Button, Card, CardContent, Dialog, Grid, Grid2, ListItem, Switch, TextField, Typography, useMediaQuery } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import Paper from '@mui/material/Paper';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -21,7 +21,7 @@ import { useReactToPrint } from "react-to-print";
 import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
 import { setGlobalLoading } from '../utils/globalLoading';
-import { da } from 'date-fns/locale';
+import { da, se } from 'date-fns/locale';
 
 
 
@@ -79,6 +79,16 @@ interface userData {
   Email: string;
   UserName: string;
   Statu: boolean;
+}
+interface ProcessData {
+  IslemDetaylar?: IslemDetay[];
+  islemYilNo: string;
+  Tarih: string;
+  Adi: string;
+  Marka: string;
+  Model: string;
+  Plaka: string;
+  BakımKM: number;
 }
 
 // Güncelleme için beklenen veri yapısı
@@ -177,9 +187,22 @@ const [processFormData, setProcessFormData] = useState<FormData>({
 });
 const [selectedDetails, setSelectedDetails] = useState<IslemDetay[]>([]);
 const [userData, setUserData] = useState<userData>(); // Kullanıcı verileri
+const [checked, setChecked] = useState(false);
+const [selectedIdProcessData,setSelectedIdProcessData] = useState<ProcessData>({
+  islemYilNo: "",
+  Tarih: "",
+  Adi: "",
+  Marka: "",
+  Model: "",
+  Plaka: "",
+  BakımKM: 0
+}); // Seçilen işlem kodu
 
 
-
+// Detay ekranı switch fonksiyonu
+const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  setChecked(event.target.checked);
+}
 
 
 const fetchProcess = async () => {
@@ -187,11 +210,12 @@ const fetchProcess = async () => {
   try {
     const response = await axios.get(`/api/islemNew/GetIslemlerDetaylı`);
     const inComingData = response.data;
-
+    console.log("Test state veri:", inComingData);
     if (Array.isArray(inComingData)) {
       setProcessData(inComingData);
       setFilteredData(inComingData); // Bu satır önemli!
       console.log(inComingData);
+      console.log("İşlem verileri:", filteredData);
     } else {
       console.log("Veri bir array değil:", inComingData);
     }
@@ -404,9 +428,19 @@ const handlePriceChange = (field: 'MalzemeFiyat' | 'IscilikFiyat', value: number
 
 // İşlem detayı fonksiyonu
 const handleInfoProcess = async (id: number) => {
+  console.log("Seçilen İşlem Detayı:", id);
   const selectedItem = filteredData.find((data) => data.ID === id);
   if(selectedItem) {
     setSelectedDetails(selectedItem.IslemDetaylar ?? []);
+    setSelectedIdProcessData({
+      islemYilNo: selectedItem.islemYilNo,
+      Tarih: selectedItem.Tarih,
+      Adi: selectedItem.Adi,
+      Marka: selectedItem.Marka,
+      Model: selectedItem.Model,
+      Plaka: selectedItem.Plaka,
+      BakımKM: selectedItem.BakimKM
+    });
     setSelectedRow([id]);
     handleOpenDetail();
     console.log("Seçilen İşlem Detayları:", selectedItem.IslemDetaylar);
@@ -757,100 +791,205 @@ const paginationModel = { page: 0, pageSize:10};
 
           {/* Detay Card */}
         <Grid>
-  <Dialog open={printDetailOpen} onClose={handleCloseDetail}>
-    <Card sx={{ width: 500, margin: 'auto',  boxShadow: 3, padding: 8 }}>
+  <Dialog
+  open={printDetailOpen}
+  onClose={handleCloseDetail}
+  maxWidth="lg"
+  fullWidth
+  PaperProps={{
+    sx: {
+      width: '90%',
+      maxWidth: '1000px',
+      borderRadius: '12px',
+      overflow: 'hidden',
+      maxHeight: '90vh',
+      display: 'flex',
+      flexDirection: 'column'
+    }
+  }}
+>
+  {/* Scrollable Content Area */}
+  <Box sx={{ 
+    p: 4,
+    overflow: 'auto',
+    flex: 1
+  }} ref={contentRef}>
+    
+    {/* Header Section */}
+    <Box sx={{ 
+      display: 'flex', 
+      justifyContent: 'space-between', 
+      alignItems: 'center',
+      mb: 4,
+      flexWrap: 'wrap'
+    }}>
+      <Typography 
+        variant="h4" 
+        sx={{ 
+          fontWeight: 'bold',
+          fontSize: { xs: '32px', md: '50px' },
+          flex: 1,
+          textAlign: 'center',
+          mb: { xs: 2, md: 0 }
+        }}
+      >
+        {userData ? `${userData.FirstName}` : "Yükleniyor..."}
+      </Typography>
       
+      <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+        <strong>İşlem Kodu:</strong> {selectedIdProcessData.islemYilNo || "N/A"}
+      </Typography>
+    </Box>
 
-      
-      <div ref={contentRef}>
-        <CardContent
-        sx={{p:2}}
-        >
+    {/* Customer Details Grid */}
+    <Grid container spacing={2} sx={{ mb: 4 }}>
+      <Grid item xs={12} md={6} lg={4}>
+        <ListItem sx={{ p: 0 }}>
+          <Typography component="span" sx={{ minWidth: '120px', display: 'inline-block', fontWeight: 'bold' }}>Müşteri Adı:</Typography>
+          {selectedIdProcessData.Adi}
+        </ListItem>
+      </Grid>
+      <Grid item xs={12} md={6} lg={4}>
+        <ListItem sx={{ p: 0 }}>
+          <Typography component="span" sx={{ minWidth: '120px', display: 'inline-block', fontWeight: 'bold' }}>Aracın Km:</Typography>
+          {selectedIdProcessData.BakımKM}
+        </ListItem>
+      </Grid>
+      <Grid item xs={12} md={6} lg={4}>
+        <ListItem sx={{ p: 0 }}>
+          <Typography component="span" sx={{ minWidth: '120px', display: 'inline-block', fontWeight: 'bold' }}>Servis Giriş Tarihi:</Typography>
+          {selectedIdProcessData.Tarih}
+        </ListItem>
+      </Grid>
+      <Grid item xs={12} md={6} lg={4}>
+        <ListItem sx={{ p: 0 }}>
+          <Typography component="span" sx={{ minWidth: '120px', display: 'inline-block', fontWeight: 'bold' }}>Aracın Marka:</Typography>
+          {selectedIdProcessData.Marka}
+        </ListItem>
+      </Grid>
+      <Grid item xs={12} md={6} lg={4}>
+        <ListItem sx={{ p: 0 }}>
+          <Typography component="span" sx={{ minWidth: '120px', display: 'inline-block', fontWeight: 'bold' }}>Aracın Model:</Typography>
+          {selectedIdProcessData.Model}
+        </ListItem>
+      </Grid>
+      <Grid item xs={12} md={6} lg={4}>
+        <ListItem sx={{ p: 0 }}>
+          <Typography component="span" sx={{ minWidth: '120px', display: 'inline-block', fontWeight: 'bold' }}>Aracın Plaka:</Typography>
+          {selectedIdProcessData.Plaka}
+        </ListItem>
+      </Grid>
+    </Grid>
 
-          {/* Form verileri */}
-          <CardContent sx={{ p: 2 }}>
-            <div> 
-            <div>
-              <Typography variant="h6" gutterBottom sx={{   mb: 4, textAlign: 'center', color: '#333' , fontWeight: 'bold' , fontSize: '30px'}}>
-                  {userData ? `${userData.FirstName} - İşlem Detayları` : "Yükleniyor..."}
-              </Typography>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'right', gap: '8px' }}>
-              <Typography variant="body1" gutterBottom>
-                <strong>İşlem Kodu:</strong> {filteredData.islemYilNo || "N/A"}<br />
-                </Typography>
-            </div>
-            </div>
+    {/* Process Details */}
+    {selectedDetails.map((detay, index) => (
+      <Box key={detay.DetayId} sx={{ 
+        mb: 4, 
+        pb: 3,
+        borderBottom: '1px solid',
+        borderColor: 'divider'
+      }}>
+        <TextField
+          fullWidth
+          label="İşlem Açıklama"
+          value={detay.islemAciklama}
+          onChange={(e) => handleEditProcess(index, 'islemAciklama', e.target.value)}
+          sx={{ mb: 2 }}
+          disabled={!checked}
+          variant="outlined"
+          
+        />
 
-  {selectedDetails.map((detay, index) => (
-  <Box key={detay.DetayId} sx={{ mb: 4, borderBottom: '1px solid #ccc', pb: 2 }}>
-
-
-    <TextField
-      fullWidth
-      label="İşlem Açıklama"
-      value={detay.islemAciklama}
-      onChange={(e) => handleEditProcess(index, 'islemAciklama', e.target.value)}
-      sx={{ mb: 2 }}
-    />
-
-    <TextField
-      fullWidth
-      label="Malzeme Fiyat"
-      type="number"
-      value={detay.MalzemeFiyat}
-      onChange={(e) => handleEditProcess(index, 'MalzemeFiyat', Number(e.target.value))}
-      sx={{ mb: 2 }}
-    />
-
-    <TextField
-      fullWidth
-      label="İşçilik Fiyat"
-      type="number"
-      value={detay.IscilikFiyat}
-      onChange={(e) => handleEditProcess(index, 'IscilikFiyat', Number(e.target.value))}
-      sx={{ mb: 2 }}
-    />
-
-    <TextField
-      fullWidth
-      label="Toplam Fiyat"
-      type="number"
-      value={detay.ToplamFiyat}
-      onChange={(e) => handleEditProcess(index, 'ToplamFiyat', Number(e.target.value))}
-      sx={{ mb: 2 }}
-    />
-  </Box>
-))}
-
-</CardContent>
-
-        </CardContent>
-      </div>
-            {/* Buton grubu */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 4, p:2 }}>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={reactToPrintFn}
-          startIcon={<PrintIcon />}
-          sx={{marginRight: 2}}
-        >
-          Yazdır
-        </Button>
-        
-        <Button 
-          variant="contained" 
-          color="warning" 
-          onClick={saveAsPDF} // veya downloadPDF, downloadPDFWithFetch
-          startIcon={<SaveIcon />}
-          sx={{marginLeft: 2}}
-        >
-          PDF Kaydet
-        </Button>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="Malzeme Fiyat"
+              type="number"
+              value={detay.MalzemeFiyat}
+              onChange={(e) => handleEditProcess(index, 'MalzemeFiyat', Number(e.target.value))}
+              disabled={!checked}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="İşçilik Fiyat"
+              type="number"
+              value={detay.IscilikFiyat}
+              onChange={(e) => handleEditProcess(index, 'IscilikFiyat', Number(e.target.value))}
+              disabled={!checked}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="Toplam Fiyat"
+              type="number"
+              value={detay.ToplamFiyat}
+              onChange={(e) => handleEditProcess(index, 'ToplamFiyat', Number(e.target.value))}
+              disabled={!checked}
+            />
+          </Grid>
+        </Grid>
       </Box>
-    </Card>
-  </Dialog>
+    ))}
+  </Box>
+
+  {/* Fixed Footer with Actions */}
+  <Box sx={{ 
+    p: 2,
+    bgcolor: 'background.paper',
+    borderTop: '1px solid',
+    borderColor: 'divider',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 2
+  }}>
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Switch
+        checked={checked}
+        onChange={handleChange}
+        color="primary"
+        title="İşlem Detaylarını Düzenle"
+      />
+      <Typography variant="body2" sx={{ ml: 1 }}>
+        Düzenleme Modu
+      </Typography>
+    </Box>
+    
+    <Button 
+      variant="contained" 
+      color="primary" 
+      onClick={reactToPrintFn}
+      startIcon={<PrintIcon />}
+      sx={{ px: 3 }}
+    >
+      Yazdır
+    </Button>
+    
+    <Button 
+      variant="contained" 
+      color="secondary" 
+      onClick={saveAsPDF}
+      startIcon={<SaveIcon />}
+      sx={{ px: 3 }}
+    >
+      PDF Kaydet
+    </Button>
+
+        <Button 
+      variant="contained" 
+      color="warning" 
+      onClick={saveAsPDF}
+      startIcon={<SaveIcon />}
+      sx={{ px: 3 }}
+    >
+      Değişiklikleri Kaydet
+    </Button>
+  </Box>
+</Dialog>
 </Grid>
 
 {/* TABLE */}
