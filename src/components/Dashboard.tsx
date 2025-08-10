@@ -427,7 +427,7 @@ const columns: GridColDef[] = [
   { field: 'Marka', headerName: 'Marka',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
   { field: 'Model', headerName: 'Model',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
   {field: 'Tarih', headerName: 'Tarih', type: 'string',  width:150, flex:1,headerAlign: 'center' , align: 'center'},
-  { field: 'islemTur', headerName: 'İşlem Türü',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
+  
   { field: 'Plaka', headerName: 'Plaka',  width:150, flex:1, headerAlign: 'center' , align: 'center' },
   {field: 'ToplamFiyat', headerName: 'Toplam Fiyat', type: 'number',  width:150, flex:1, headerAlign: 'center', align: 'center' },
   {field: 'Statu', headerName: 'Durum',  width:150, flex:1, headerAlign: 'center', align: 'center',
@@ -780,7 +780,7 @@ const paginationModel = { page: 0, pageSize:10};
               <TextField
                 label="İşlem Türü"
                 value={detay.islemTur}
-                disabled={!checked}
+                disabled={true}
                 onChange={(e) => {
                   const updatedDetails = selectedDetails.map((detail, i) => 
                     i === index ? { ...detail, islemTur: e.target.value } : detail
