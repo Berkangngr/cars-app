@@ -5,12 +5,10 @@
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
-import EditIcon from '@mui/icons-material/Edit';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutlined';
 import PrintIcon from '@mui/icons-material/Print';
 import SaveIcon from '@mui/icons-material/Save';
-import { Autocomplete, Box, Button, Card, CardContent, Dialog, Grid, Grid2, ListItem, Switch, TextField, Typography, useMediaQuery } from '@mui/material';
-import Modal from '@mui/material/Modal';
+import { Autocomplete, Box, Button,  Dialog, Grid,  ListItem, Switch, TextField, Typography, useMediaQuery } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import html2canvas from 'html2canvas';
@@ -21,7 +19,7 @@ import { useReactToPrint } from "react-to-print";
 import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
 import { setGlobalLoading } from '../utils/globalLoading';
-import { da, se } from 'date-fns/locale';
+
 
 
 
@@ -67,7 +65,8 @@ interface IslemDetay {
         Plaka: string,
         Marka: string,
         Model: string,
-        Statu: number
+        Statu: number,
+        islemTur:string,
 }
 
 interface userData {
@@ -89,19 +88,11 @@ interface ProcessData {
   Model: string;
   Plaka: string;
   BakımKM: number;
+  ID:number;
+  islemTur:string;
 }
 
-// Güncelleme için beklenen veri yapısı
-// interface UpdateData {
-//   ID: number;
-//   MalzemeFiyat: number;
-//   IscilikFiyat: number;
-//   ToplamFiyat: number;
-//   islemAciklama: string;
-//   BakimKM: number;
-//   islemTur: string;
-//   AracId: number;
-// }
+
 
 //Modal style
 const style = {
@@ -128,31 +119,13 @@ interface OptionType {
 }
 
 
-// const CustomNoRowsOverlay = () => {
-//   return(
-//     <GridOverlay>
-//        <Box
-//         sx={{
-//           display: 'flex',
-//           flexDirection: 'column',
-//           alignItems: 'center',
-//           justifyContent: 'center',
-//           height: '100%',
-//         }}
-//       >
-//         <Typography variant="subtitle1">Henüz veri yok</Typography>
-//       </Box>
-//     </GridOverlay>
-//   )
-// }
+
 
 function Dashboard() {
 const isSmallScreen = useMediaQuery('(max-width:1366px)'); // Küçük ekranlar
 const isLargeScreen = useMediaQuery('(min-width:1920px)'); // Büyük ekranlar
 const [, setSelectedRow] = useState<any[]>([]);
-//const [statu, setStatu] = useState(1); // Durum kontrolü
-const [open, setOpen] = useState(false);
-const handleOpen = () => setOpen(true);
+const [, setOpen] = useState(false);
 const handleClose = () => {
     setOpen(false);
     resetForm();
@@ -163,8 +136,6 @@ const handleCloseDetail = () => setPrintDetailOpen(false);
 const [filteredData, setFilteredData] = useState<FormData[]>([]); // Filtrelenmiş tablo verisi
 const [inputValue, setInputValue] = useState(""); // Autocomplete için input değeri
 const [processData, setProcessData] = useState<FormData[]>([]); // İŞLEM VERİLERİ
-//const [, setNumPages] = useState<number>();
-//const [pageNumber, setPageNumber] = useState<number>(1);
 const [processFormData, setProcessFormData] = useState<FormData>({
   ID: 0,
   Adi: "",
@@ -195,7 +166,9 @@ const [selectedIdProcessData,setSelectedIdProcessData] = useState<ProcessData>({
   Marka: "",
   Model: "",
   Plaka: "",
-  BakımKM: 0
+  BakımKM: 0,
+  ID:0,
+  islemTur:""
 }); // Seçilen işlem kodu
 
 
@@ -204,7 +177,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   setChecked(event.target.checked);
 }
 
-
+// İşlemleri ekrana çekme.
 const fetchProcess = async () => {
   setGlobalLoading(true)
   try {
@@ -274,6 +247,7 @@ const resetForm = () => {
   })
 }
 
+//İşlem tamamlama fonksiyonu
 const handleDoneProcess = async (id: number) => {
     const isConfirmed = confirm("İşlem tamamlanacak. Devam etmek istiyor musunuz?");
   if (!isConfirmed) {
@@ -327,66 +301,31 @@ const handleDoneProcess = async (id: number) => {
     }
   }
 
-  //İşlem düzenleme fonksiyonu olacak
-const handleEditProcess = async (id: number) => {
-  console.log("Seçilen id:" , id)
-  try {
-    // GET isteği ile veriyi çekiyoruz
-    const response = await axios.get(`/api/islemNew/GetIslemDetailsById?islemDetayId=${id}`);
-    const data = response.data;
-    console.log("Güncellemek için Gelen veri:", data);
-    setProcessFormData({
-      ID: data.ID,
-      Adi: data.Adi,
-      Araç: data.Araç,
-      Tarih: data.Tarih,
-      islemTur: data.islemTur,
-      BakimKM: data.BakimKM,
-      Plaka: data.Plaka,
-      ToplamFiyat: data.ToplamFiyat,
-      Statu: data.Statu,
-      MalzemeFiyat: data.MalzemeFiyat,
-      IscilikFiyat: data.IscilikFiyat,
-      islemAciklama: data.islemAciklama,
-       islemdetayid: data.ID,
-      AracId: data.AracId,
-      Marka:data.Marka,
-      Model:data.Model,
-      IslemId:data.IslemId,
-      islemYilNo:data.islemYilNo
-    });
-    
-    setSelectedRow([data.ID]);
-    fetchProcess()
-        setTimeout(() => {
-      handleOpen();
-    }, 100);
 
-  } catch (error) {
-    console.error("Veri çekme hatası:", error);
-    toast.error("İşlem bilgileri alınamadı!");
-  }
-};
+
 
 // Form submit işlemi - DÜZGÜN HALİ
-const processHandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+const processHandleSubmit = async (event?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
   console.log("FormData ID:", processFormData.ID);
   event.preventDefault();
+
   try {
     const updateData = {
-      ID: processFormData.ID,
-      MalzemeFiyat: processFormData.MalzemeFiyat,
-      IscilikFiyat: processFormData.IscilikFiyat,
-      ToplamFiyat: processFormData.ToplamFiyat,
-      islemAciklama: processFormData.islemAciklama,
-      BakimKM: processFormData.BakimKM,
-      islemTur: processFormData.islemTur,
-      AracId: processFormData.AracId
-    };
+      ID: selectedIdProcessData.ID,
+      Detaylar: selectedDetails.map(detail => ({
+        ID: detail.DetayId,
+        islemAciklama: detail.islemAciklama,
+        iscilikFiyat: detail.IscilikFiyat,
+        MalzemeFiyat: detail.MalzemeFiyat,
+        ToplamFiyat: detail.ToplamFiyat,
+        islemTur: detail.islemTur,
+        
+      }))
+    }
     console.log("Güncellenen veri:", updateData);
     
     const response = await axios.post(
-      `/api/islemNew/UpdateIslemD`,
+      `/api/islemNew/UpdateIslemDetaylı`,
       updateData,
       {
         headers: {
@@ -409,22 +348,22 @@ const processHandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 };
 
 //Güncellemede toplam fiyatı hesaplama
-const handlePriceChange = (field: 'MalzemeFiyat' | 'IscilikFiyat', value: number) => {
-  const newFormData = {
-    ...processFormData,
-    [field]: value,
-    ToplamFiyat: processFormData.MalzemeFiyat + processFormData.IscilikFiyat
-  };
+// const handlePriceChange = (field: 'MalzemeFiyat' | 'IscilikFiyat', value: number) => {
+//   const newFormData = {
+//     ...processFormData,
+//     [field]: value,
+//     ToplamFiyat: processFormData.MalzemeFiyat + processFormData.IscilikFiyat
+//   };
   
-  // Eğer değişen alan zaten yeni değerle güncellenmişse:
-  if (field === 'MalzemeFiyat') {
-    newFormData.ToplamFiyat = value + processFormData.IscilikFiyat;
-  } else {
-    newFormData.ToplamFiyat = processFormData.MalzemeFiyat + value;
-  }
+//   // Eğer değişen alan zaten yeni değerle güncellenmişse:
+//   if (field === 'MalzemeFiyat') {
+//     newFormData.ToplamFiyat = value + processFormData.IscilikFiyat;
+//   } else {
+//     newFormData.ToplamFiyat = processFormData.MalzemeFiyat + value;
+//   }
 
-  setProcessFormData(newFormData);
-};
+//   setProcessFormData(newFormData);
+// };
 
 // İşlem detayı fonksiyonu
 const handleInfoProcess = async (id: number) => {
@@ -439,7 +378,9 @@ const handleInfoProcess = async (id: number) => {
       Marka: selectedItem.Marka,
       Model: selectedItem.Model,
       Plaka: selectedItem.Plaka,
-      BakımKM: selectedItem.BakimKM
+      BakımKM: selectedItem.BakimKM,
+      ID: selectedItem.ID,
+      islemTur:selectedItem.islemTur,
     });
     setSelectedRow([id]);
     handleOpenDetail();
@@ -496,9 +437,6 @@ const saveAsPDF = async () => {
 };
 
 
-  // function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-  //   setNumPages(numPages);
-  // }
 const columns: GridColDef[] = [
   
   {field:'islemYilNo', headerName: 'İşlem Kodu', width:150, flex:1, headerAlign:'center', align:'center'},
@@ -568,7 +506,7 @@ const columns: GridColDef[] = [
           fontSize,
           fontWeight,
           
-          // fontWeight: statu === 1 ? 'bold' : 'normal',
+          
 
         }}
       >
@@ -592,14 +530,6 @@ const columns: GridColDef[] = [
       style={{ cursor: 'pointer', marginLeft:'5px',marginTop:'15px', color:'green', fontSize:'20px',opacity:'0.8' } }>
       </DoneAllIcon>
       </div>
-      {/* İşlem Düzenleme butonu detay içerisine taşınacak. */}
-      {/* <div>
-      <EditIcon
-      titleAccess='İşlemi Düzenle'
-      onClick={() => handleEditProcess(params.row.ID)}
-        style={{ cursor: 'pointer', marginLeft:'5px',marginTop:'15px', color:'#F3C623', fontSize:'20px', opacity:'0.8' } }
-        ></EditIcon>
-      </div> */}
       <div>
       <DeleteIcon
       titleAccess='İşlemi Sil'
@@ -680,114 +610,6 @@ const paginationModel = { page: 0, pageSize:10};
   </Grid>
 </Grid>
 
-          {/* MODAL */}
-          <Grid>
-            <Grid>
-              <Modal
-                open={open}
-                onClose={handleClose}
-                
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                >
-                  <Box sx={style}
-                           component="form"
-                           onSubmit={processHandleSubmit}
-                          >
-                             <Typography variant="h6" gutterBottom>
-        İşlem Düzenle
-      </Typography>
-
-      {/* Sadece güncellenebilir alanlar */}
-      <TextField
-        label="Malzeme Fiyatı"
-        type="number"
-        value={processFormData.MalzemeFiyat}
-        onChange={(e) => handlePriceChange('MalzemeFiyat', Number(e.target.value))}
-        fullWidth
-        margin="normal"
-      />
-
-      <TextField
-        label="İşçilik Fiyatı"
-        type="number"
-        value={processFormData.IscilikFiyat}
-        onChange={(e) => handlePriceChange('IscilikFiyat', Number(e.target.value))}
-        fullWidth
-        margin="normal"
-      />
-
-      <TextField
-        label="İşlem Açıklaması"
-        value={processFormData.islemAciklama}
-        onChange={(e) =>
-          setProcessFormData({
-            ...processFormData,
-            islemAciklama: e.target.value,
-          })
-        }
-        fullWidth
-        margin="normal"
-      />
-
-      <TextField
-        label="İşlem Türü"
-        value={processFormData.islemTur}
-        onChange={(e) =>
-          setProcessFormData({
-            ...processFormData,
-            islemTur: e.target.value,
-          })
-        }
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Bakım KM"
-        type="number"
-        value={processFormData.BakimKM}
-        onChange={(e) =>
-          setProcessFormData({
-            ...processFormData,
-            BakimKM: Number(e.target.value),
-          })
-        }
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Toplam Fiyat"
-        type="number"
-        value={processFormData.ToplamFiyat}
-        InputProps={{
-    readOnly: true,
-  }}
-
-        fullWidth
-        margin="normal"
-        sx={{
-    "& .MuiInputBase-input": {
-      fontWeight: "bold",
-      
-    }
-  }}
-      />
-
-      
-
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-        <Button onClick={handleClose} sx={{ mr: 1 }}>
-          İptal
-        </Button>
-        <Button type="submit" variant="contained">
-          Kaydet
-        </Button>
-      </Box>
-        </Box>
-        
-              </Modal>
-            </Grid>
-          </Grid>
 
           {/* Detay Card */}
         <Grid>
@@ -804,7 +626,8 @@ const paginationModel = { page: 0, pageSize:10};
       overflow: 'hidden',
       maxHeight: '90vh',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      
     }
   }}
 >
@@ -889,37 +712,67 @@ const paginationModel = { page: 0, pageSize:10};
         borderBottom: '1px solid',
         borderColor: 'divider'
       }}>
+
+      
         <TextField
-          fullWidth
-          label="İşlem Açıklama"
-          value={detay.islemAciklama}
-          onChange={(e) => handleEditProcess(index, 'islemAciklama', e.target.value)}
-          sx={{ mb: 2 }}
-          disabled={!checked}
-          variant="outlined"
-          
-        />
+        sx={{marginBottom: '15px'}}
+  fullWidth
+  label="İşlem Açıklama"
+  value={detay.islemAciklama}
+  disabled={!checked}
+  onChange={(e) => {
+    const updatedDetails = selectedDetails.map((detail, i) => 
+      i === index ? { ...detail, islemAciklama: e.target.value } : detail
+    );
+    setSelectedDetails(updatedDetails);
+  }}
+  // ...
+/>
 
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="Malzeme Fiyat"
-              type="number"
-              value={detay.MalzemeFiyat}
-              onChange={(e) => handleEditProcess(index, 'MalzemeFiyat', Number(e.target.value))}
-              disabled={!checked}
-            />
+              <TextField
+                fullWidth
+                label="Malzeme Fiyat"
+                type="number"
+                value={detay.MalzemeFiyat}
+                disabled={!checked}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  const updatedDetails = selectedDetails.map((detail, i) => {
+                    if (i === index) {
+                      const updatedDetail = { ...detail, MalzemeFiyat: value };
+                      updatedDetail.ToplamFiyat = updatedDetail.MalzemeFiyat + updatedDetail.IscilikFiyat;
+                      return updatedDetail;
+                    }
+                    return detail;
+                  });
+                  setSelectedDetails(updatedDetails);
+                }}
+                // ...
+              />
           </Grid>
           <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="İşçilik Fiyat"
-              type="number"
-              value={detay.IscilikFiyat}
-              onChange={(e) => handleEditProcess(index, 'IscilikFiyat', Number(e.target.value))}
-              disabled={!checked}
-            />
+              <TextField
+                fullWidth
+                label="İşçilik Fiyat"
+                type="number"
+                value={detay.IscilikFiyat}
+                disabled={!checked}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  const updatedDetails = selectedDetails.map((detail, i) => {
+                    if (i === index) {
+                      const updatedDetail = { ...detail, IscilikFiyat: value };
+                      updatedDetail.ToplamFiyat = updatedDetail.MalzemeFiyat + updatedDetail.IscilikFiyat;
+                      return updatedDetail;
+                    }
+                    return detail;
+                  });
+                  setSelectedDetails(updatedDetails);
+                }}
+                // ...
+              />
           </Grid>
           <Grid item xs={12} md={4}>
             <TextField
@@ -927,14 +780,53 @@ const paginationModel = { page: 0, pageSize:10};
               label="Toplam Fiyat"
               type="number"
               value={detay.ToplamFiyat}
-              onChange={(e) => handleEditProcess(index, 'ToplamFiyat', Number(e.target.value))}
               disabled={!checked}
+              InputProps={{
+    readOnly: true,
+  }}
+        
+        sx={{
+    "& .MuiInputBase-input": {
+      fontWeight: "bold",
+      
+    }
+  }}
             />
+            </Grid>
+             <Grid item xs={12} md={4}>
+              <TextField
+                label="İşlem Türü"
+                value={detay.islemTur}
+                disabled={!checked}
+                onChange={(e) => {
+                  const updatedDetails = selectedDetails.map((detail, i) => 
+                    i === index ? { ...detail, islemTur: e.target.value } : detail
+                  );
+                  setSelectedDetails(updatedDetails);
+                }}
+                // ...
+              />
           </Grid>
+          {/* <Grid item xs={12} md={4}>
+                 <TextField
+        label="Bakım KM"
+        type="number"
+        value={detay.BakımKM}
+        onChange={(e) =>
+          setProcessFormData({
+            ...processFormData,
+            BakimKM: Number(e.target.value),
+          })
+        }
+        fullWidth
+        margin="normal"
+      />
+          </Grid> */}
         </Grid>
       </Box>
     ))}
   </Box>
+
 
   {/* Fixed Footer with Actions */}
   <Box sx={{ 
@@ -979,10 +871,10 @@ const paginationModel = { page: 0, pageSize:10};
       PDF Kaydet
     </Button>
 
-        <Button 
+        <Button
       variant="contained" 
       color="warning" 
-      onClick={saveAsPDF}
+      onClick={processHandleSubmit}
       startIcon={<SaveIcon />}
       sx={{ px: 3 }}
     >
