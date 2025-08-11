@@ -639,7 +639,7 @@ const paginationModel = { page: 0, pageSize:10};
           mb: { xs: 2, md: 0 }
         }}
       >
-        {userData ? `${userData.FirstName}` : "Yükleniyor..."}
+        {userData ? `${userData.FirstName.toLocaleUpperCase()}` : "Yükleniyor..."}
       </Typography>
       
       <Typography variant="body1" sx={{ color: 'text.secondary' }}>
@@ -690,34 +690,57 @@ const paginationModel = { page: 0, pageSize:10};
     {/* Process Details */}
     {selectedDetails.map((detay, index) => (
       <Box key={detay.DetayId} sx={{ 
-        mb: 4, 
-        pb: 3,
+        mb: 1, 
+        pb: 2,
         borderBottom: '1px solid',
-        borderColor: 'divider'
+        borderColor: 'divider',
+        "& .MuiInputBase-input": { fontSize: '12px' } 
       }}>
 
-      
-        <TextField
-        sx={{marginBottom: '15px'}}
-  fullWidth
-  label="İşlem Açıklama"
-  value={detay.islemAciklama}
-  disabled={!checked}
-  onChange={(e) => {
-    const updatedDetails = selectedDetails.map((detail, i) => 
-      i === index ? { ...detail, islemAciklama: e.target.value } : detail
-    );
-    setSelectedDetails(updatedDetails);
-  }}
-  // ...
-/>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.4, ml: 0.20}}>
+            <Typography variant="subtitle2" >
+              {index + 1}. İşlem
+            </Typography>
+        </Box>
+            <TextField
+            sx={{marginBottom: '15px'}}
+                fullWidth
+                label="İşlem Açıklama"
+                value={detay.islemAciklama}
+                multiline
+                disabled={!checked}
+                onChange={(e) => {
+                  const updatedDetails = selectedDetails.map((detail, i) => 
+                    i === index ? { ...detail, islemAciklama: e.target.value } : detail
+                  );
+                  setSelectedDetails(updatedDetails);
+                }}
+                // ...
+            />
 
         <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
+           <Grid item xs={12} md={3}>
+              <TextField
+                label="İşlem Türü"
+                fullWidth 
+                size="small"
+                value={detay.islemTur}
+                disabled={true}
+                onChange={(e) => {
+                  const updatedDetails = selectedDetails.map((detail, i) => 
+                    i === index ? { ...detail, islemTur: e.target.value } : detail
+                  );
+                  setSelectedDetails(updatedDetails);
+                }}
+                // ...
+              />
+          </Grid>
+          <Grid item xs={12} md={3}>
               <TextField
                 fullWidth
                 label="Malzeme Fiyat"
                 type="number"
+                size="small"
                 value={detay.MalzemeFiyat}
                 disabled={!checked}
                 onChange={(e) => {
@@ -735,11 +758,12 @@ const paginationModel = { page: 0, pageSize:10};
                 // ...
               />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
               <TextField
                 fullWidth
                 label="İşçilik Fiyat"
                 type="number"
+                size="small"
                 value={detay.IscilikFiyat}
                 disabled={!checked}
                 onChange={(e) => {
@@ -757,11 +781,12 @@ const paginationModel = { page: 0, pageSize:10};
                 // ...
               />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
             <TextField
               fullWidth
               label="Toplam Fiyat"
               type="number"
+              size="small"
               value={detay.ToplamFiyat}
               disabled={!checked}
               InputProps={{
@@ -776,20 +801,7 @@ const paginationModel = { page: 0, pageSize:10};
   }}
             />
             </Grid>
-             <Grid item xs={12} md={4}>
-              <TextField
-                label="İşlem Türü"
-                value={detay.islemTur}
-                disabled={true}
-                onChange={(e) => {
-                  const updatedDetails = selectedDetails.map((detail, i) => 
-                    i === index ? { ...detail, islemTur: e.target.value } : detail
-                  );
-                  setSelectedDetails(updatedDetails);
-                }}
-                // ...
-              />
-          </Grid>
+            
           {/* <Grid item xs={12} md={4}>
                  <TextField
         label="Bakım KM"

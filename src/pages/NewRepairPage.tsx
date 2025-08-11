@@ -495,6 +495,7 @@ function NewRepairPage() {
                 <TextField
                   id={`islemAciklama-${index}`}
                   name={`Detaylar[${index}].islemAciklama`}
+                  multiline
                   value={item.islemAciklama}
                   onChange={handleChange}
                   fullWidth
