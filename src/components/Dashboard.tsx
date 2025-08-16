@@ -19,6 +19,9 @@ import { useReactToPrint } from "react-to-print";
 import { toast } from 'react-toastify';
 import axios from '../config/AxiosConfig';
 import { setGlobalLoading } from '../utils/globalLoading';
+import logo from '../images/Logo-Photoroom.png';
+
+
 
 
 
@@ -30,6 +33,7 @@ import { setGlobalLoading } from '../utils/globalLoading';
 
 
 //const paginationModel = { page: 0, pageSize: 10 };
+
 
 
 
@@ -154,6 +158,10 @@ const [selectedIdProcessData,setSelectedIdProcessData] = useState<ProcessData>({
   islemTur:""
 }); // Seçilen işlem kodu
 
+const BASE_URL_PROD = "https://api.aracimhakkinda.com";
+const imageUrl = userData?.ImagePath ? `${BASE_URL_PROD}${userData.ImagePath}` : logo;
+
+
 
 // Detay ekranı switch fonksiyonu
 const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,12 +174,10 @@ const fetchProcess = async () => {
   try {
     const response = await axios.get(`/api/islemNew/GetIslemlerDetaylı`);
     const inComingData = response.data;
-    console.log("Test state veri:", inComingData);
     if (Array.isArray(inComingData)) {
       setProcessData(inComingData);
       setFilteredData(inComingData); // Bu satır önemli!
       console.log(inComingData);
-      console.log("İşlem verileri:", filteredData);
     } else {
       console.log("Veri bir array değil:", inComingData);
     }
@@ -237,7 +243,7 @@ const handleDoneProcess = async (id: number) => {
     return; // Kullanıcı onay vermezse işlemi iptal et
   }
   try {
-     await axios.post(`/api/islemNew/OkislemD`, id, {
+     await axios.post(`/api/islemNew/Okislem?ID=${id}`, null, {
       headers: {
         "Content-Type" : "application/json",
       },
@@ -252,36 +258,48 @@ const handleDoneProcess = async (id: number) => {
 }
 
  //İşlem silme fonksiyonu olacak
-  const handleDeleteProcess = async (id: number) => {
+  const handleDeleteProcess = async (id: number, type: "process" | "detail" ) => {
     console.log(id)
     const isConfirmed = confirm("İşlem silinecek. Devam etmek istiyor musunuz?");
     if (!isConfirmed) {
       return; // Kullanıcı onay vermezse işlemi iptal et
     }
   
-    // Silme işlemi için API çağrısı yapın
-    try {
-        const response = await axios.post(`/api/islemNew/DeleteIslemD`, id, {
-          headers: {
-            "Content-Type": "application/json",
+ 
+          try {
+            let response;
+            if (type === "process") {
+                response = await axios.post(`/api/islemNew/DeleteIslem?islemId=${id}`, null, {
+               headers: {
+              "Content-Type": "application/json",
           },
         });
+            } else {
+              response = await axios.post(`/api/islemNew/DeleteIslemD?ID=${id}`, null, {
+                headers: {
+                  "Content-Type":"application/json",
+                },
+              });
+            }
         if (response.data.success) {
-          console.log("İşlem silindi:", response.data);
-          setProcessData((prevData) => prevData.filter((process) => process.ID !== id)); // Silinen aracı listeden çıkarın
-          toast.success("Araç silindi.");
-          fetchProcess() // Verileri güncelleyin
-          
-        } else {
-          console.log("İşlem silinemedi:", response.data);
-          toast.error("İşlem silinemedi.");
+          toast.success(`${type === "process" ? "Ana işlem" : "Detay"} silindi.`);
+
+          if (type === "process") {
+            setProcessData((prevData) => prevData.filter((p) => p.ID !== id));
+            fetchProcess()
+          } else {
+            setSelectedDetails((prev) => prev.filter((d) => d.DetayId !== id));
         }
-        
+      }else {
+      toast.error("Silme işlemi başarısız oldu.");
+    }    
     } catch (error) {
       console.log("İşlem silinirken hata oluştu", error);
       toast.error("İşlem silinirken bir hata oluştu.");
       
     }
+  
+
   }
 
 
@@ -516,7 +534,7 @@ const columns: GridColDef[] = [
       <div>
       <DeleteIcon
       titleAccess='İşlemi Sil'
-      onClick={() => handleDeleteProcess(params.row.ID)}
+      onClick={() => handleDeleteProcess(params.row.ID, "process")}
       style={{ cursor: 'pointer',  marginLeft:'5px',marginTop:'15px', color:'red', fontSize:'20px',opacity:'0.8' } }>
       </DeleteIcon>
       </div>
@@ -629,6 +647,9 @@ const paginationModel = { page: 0, pageSize:10};
       mb: 4,
       flexWrap: 'wrap'
     }}>
+        <img src={ imageUrl || logo} alt="logo"
+            style={{width:'60px',height:'60px'}}
+        />
       <Typography 
         variant="h4" 
         sx={{ 
@@ -697,10 +718,18 @@ const paginationModel = { page: 0, pageSize:10};
         "& .MuiInputBase-input": { fontSize: '12px' } 
       }}>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.4, ml: 0.20}}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.4, ml: 0.20, marginBottom:'15px'}}>
             <Typography variant="subtitle2" >
               {index + 1}. İşlem
             </Typography>
+            {/* Burada işlem 1 den fazla ise silme butonu çıksın istiyorum. */}
+            {selectedDetails.length > 1 && (
+             <DeleteIcon
+                    titleAccess='İşlemi Sil'
+                    onClick={() => handleDeleteProcess(detay.DetayId, "detail")}
+                    style={{ cursor: 'pointer',  color:'red', fontSize:'20px',opacity:'0.8', marginLeft:'5px' } }>
+              </DeleteIcon>
+            )}     
         </Box>
             <TextField
             sx={{marginBottom: '15px'}}

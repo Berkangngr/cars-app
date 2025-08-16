@@ -48,12 +48,14 @@ function HomePage() {
           flex: 1,
           display:'flex',
           flexDirection:'column', 
-          overflow: 'auto'
+          overflow: 'auto',
+          justifyContent: 'space-between',
+          p:2
         }}>
           <Box sx={{ textAlign: 'center', mb: 2 }}>
-          
-          </Box>
           <TodoApp />
+          </Box>
+          
         </Paper>
 
         
